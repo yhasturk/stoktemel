@@ -204,7 +204,7 @@
         .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px 0; background-color: #222; padding: 8px 10px; border-radius: 6px; }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .log-kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .log-kasa-etiket { background-color: #ff5722 !important; color: #fff !important; }
+        .log-kasa-etiket { background-color: #ff5722 !important; color: #fff !important; animation: blink 1.5s infinite; }
         .log-marka { font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase; }
         .log-kod-span { font-size: 15px; font-weight: bold; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-align: right; }
         
@@ -410,7 +410,8 @@
             </div>
 
             <div class="modal-buttons">
-                <button class="btn-kaydet" onclick="veriKaydetPreCheck()">Kaydet</button>
+                <!-- KAYDET BUTONUNA ID EKLENDİ -->
+                <button id="btnModalKaydet" class="btn-kaydet" onclick="veriKaydetPreCheck()">Kaydet</button>
                 <button class="btn-iptal" onclick="document.getElementById('GuncelleModal').style.display='none'">İptal</button>
             </div>
         </div>
@@ -799,12 +800,22 @@
         }
 
         async function gercekVeriKaydet(kategori, marka, kod, raf_no) {
+            // MÜKERRER KAYIT BUTON KİLİDİ
+            const btn = document.getElementById('btnModalKaydet');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = 'Kaydediliyor...';
+            }
+
             const ikinci_el = parseInt(document.getElementById('inputIkinciEl').value) || 0;
             const acik_kutu = parseInt(document.getElementById('inputAcikKutu').value) || 0;
             const kapali_kutu = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
             const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
             const toplam = ikinci_el + acik_kutu + kapali_kutu;
             
+            // LOG İÇİNE KATEGORİ VE MARKA MÜHÜRLEME
+            let logPrefix = `[CAT:${kategori}|MRK:${marka}] `;
+
             if (islemTuru === 'guncelle') {
                 const id = document.getElementById('duzenlenenId').value;
                 const { error } = await sbClient.from('malzemeler').update({ 
@@ -817,7 +828,7 @@
                     let k1 = aktifDuzenlenenMalzeme.kapali_kutu || 0;
                     let r1 = aktifDuzenlenenMalzeme.arizali || 0;
 
-                    let logMetni = `GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - Açık Kutu (${a1} → ${acik_kutu})<br>Kapalı Kutu (${k1} → ${kapali_kutu}) - Arızalı (${r1} → ${arizali})`;
+                    let logMetni = `${logPrefix}GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - Açık Kutu (${a1} → ${acik_kutu})<br>Kapalı Kutu (${k1} → ${kapali_kutu}) - Arızalı (${r1} → ${arizali})`;
                     await logKaydet(logMetni, kod);
                     basariSonrasi();
                 } else {
@@ -835,7 +846,7 @@
                     let vK = kapali_kutu === 0 ? '' : kapali_kutu;
                     let vR = arizali === 0 ? '' : arizali;
 
-                    let logMetni = `YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
+                    let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
                     await logKaydet(logMetni, kod);
                     secenekleriYukle(); 
                     basariSonrasi();
@@ -846,6 +857,12 @@
                         uyariGoster("<b>Kayıt sırasında hata oluştu:</b><br>" + error.message, 'hata');
                     }
                 }
+            }
+
+            // İŞLEM BİTİNCE BUTONU GERİ AÇ
+            if(btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Kaydet';
             }
         }
 
@@ -864,29 +881,26 @@
             const logGövdesi = document.getElementById('logGövdesi');
             logGövdesi.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Kayıtlar çekiliyor...</div>';
 
-            // 1. Log tablosundan en son 200 kaydı çek
             const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(200);
 
             if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Kayıtlar alınamadı!</div>'; return; }
 
-            // 2. Malzemeler tablosundan tüm kodların Kategori ve Marka bilgilerini çek
             const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
-            
-            // Kodları hızlı eşleştirebilmek için bir sözlük (map) oluşturuyoruz
             const malzemeMap = {};
             if (malzemeData) {
-                malzemeData.forEach(m => {
-                    malzemeMap[(m.kod || '').toLocaleUpperCase('tr-TR')] = {
-                        kategori: m.kategori || '-',
-                        marka: (m.marka || '-').toLocaleUpperCase('tr-TR')
-                    };
+                // Akıllı Ayıklama: Eski logların KASALAR olarak görünmemesi için öncelik normal kategorilerin.
+                malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
+                    malzemeMap[(m.kod || '').toLocaleUpperCase('tr-TR')] = { kategori: m.kategori || '-', marka: (m.marka || '-').toLocaleUpperCase('tr-TR') };
+                });
+                malzemeData.filter(m => m.kategori === 'KASALAR').forEach(m => {
+                    const k = (m.kod || '').toLocaleUpperCase('tr-TR');
+                    if (!malzemeMap[k]) { malzemeMap[k] = { kategori: 'KASALAR', marka: (m.marka || '-').toLocaleUpperCase('tr-TR') }; }
                 });
             }
 
-            // 3. Logları bu bilgilerle birleştiriyoruz
             tumLoglar = logData.map(log => {
                 const mapInfo = malzemeMap[(log.kod || '').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' };
-                return { ...log, kategori: mapInfo.kategori, marka: mapInfo.marka };
+                return { ...log, _mapKategori: mapInfo.kategori, _mapMarka: mapInfo.marka };
             });
 
             loglariCiz(tumLoglar);
@@ -903,9 +917,24 @@
 
             logDizisi.forEach(log => {
                 const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const islemRengi = log.islem.includes('YENİ') ? '#4caf50' : '#00bcd4';
                 
                 let hamIslem = log.islem;
+                let kayitKategori = log._mapKategori;
+                let kayitMarka = log._mapMarka;
+
+                // GÖMÜLÜ MÜHÜRÜ ÇIKART
+                if (hamIslem.startsWith('[CAT:')) {
+                    let bitisIndex = hamIslem.indexOf('] ');
+                    if (bitisIndex !== -1) {
+                        let icerik = hamIslem.substring(5, bitisIndex).split('|MRK:');
+                        kayitKategori = icerik[0] || '-';
+                        kayitMarka = icerik[1] || '-';
+                        hamIslem = hamIslem.substring(bitisIndex + 2); // mühürü metinden sil
+                    }
+                }
+
+                const islemRengi = hamIslem.includes('YENİ') ? '#4caf50' : '#00bcd4';
+                
                 if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>");
                 else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
 
@@ -918,8 +947,7 @@
                 let islemBaslik = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
                 let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
 
-                // KASALAR için özel renk kontrolü
-                const etiketClass = log.kategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
+                const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
 
                 logGövdesi.innerHTML += `
                     <div class="log-kart">
@@ -927,15 +955,13 @@
                             <span class="log-tarih">${tarih}</span>
                             <span class="log-kullanici">@${log.kullanici.split('@')[0]}</span>
                         </div>
-                        
                         <div class="log-kod-alani">
                             <div class="log-sol-bilgi">
-                                <span class="${etiketClass}">${log.kategori}</span>
-                                <span class="log-marka">${log.marka}</span>
+                                <span class="${etiketClass}">${kayitKategori}</span>
+                                <span class="log-marka">${kayitMarka}</span>
                             </div>
                             <span class="log-kod-span">${log.kod}</span>
                         </div>
-
                         <div class="log-islem-detay" style="border-left-color: ${islemRengi}">
                             ${islemBaslik}
                             ${islemAltYazi}
