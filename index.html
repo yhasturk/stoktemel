@@ -203,13 +203,21 @@
                 order: -1; 
             }
             
-            #aramaKutusu, #kategoriFiltre, #markaFiltre { 
+            /* ARAMA SATIRI YÜKSEKLİĞİ 60px'E ÇIKARILDI */
+            #aramaKutusu { 
+                width: 100%; 
+                flex: 1; 
+                height: 60px; 
+                font-size: 15px; 
+            }
+            #aramaKutusu::placeholder {
+                font-size: 14px; 
+            }
+
+            #kategoriFiltre, #markaFiltre { 
                 width: 100%; 
                 flex: 1; 
                 height: 52px; 
-                font-size: 13.5px; 
-            }
-            #aramaKutusu::placeholder {
                 font-size: 13.5px; 
             }
             
@@ -615,10 +623,10 @@
                 
                 baslat();
                 
+                // HEM MASAÜSTÜNDE HEM TELEFONDA ARAMA KUTUSUNA OTOMATİK ODAKLAN
                 setTimeout(() => {
-                    if (!telefonMu()) {
-                        document.getElementById('aramaKutusu').focus();
-                    }
+                    const arama = document.getElementById('aramaKutusu');
+                    if (arama) arama.focus();
                 }, 300);
 
             } else {
@@ -643,7 +651,6 @@
 
         // --- STOK & ARAMA İŞLEMLERİ ---
         function baslat() {
-            // Hem telefonda hem bilgisayarda başlangıçta listeyi otomatik getirir
             stokGetir();
         }
 
