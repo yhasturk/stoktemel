@@ -196,10 +196,21 @@
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; color: #ffd700; }
             
-            /* ARAMA VE FİLTRE SATIRLARI 200px DEVASA YÜKSEKLİK - YAZI BOYUTU KÜÇÜLTÜLDÜ */
-            #aramaKutusu { height: 200px; font-size: 18px; font-weight: bold; text-align: center; border-radius: 12px; width: 100%; }
-            #aramaKutusu::placeholder { font-size: 15px; font-weight: normal; }
-            #kategoriFiltre, #markaFiltre { height: 200px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 12px; width: 100%; }
+            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF KÜÇÜK YAZI, BOL BOŞLUK */
+            #aramaKutusu, #kategoriFiltre, #markaFiltre { 
+                height: 200px !important; 
+                width: 100%; 
+                font-size: 16px !important; 
+                font-weight: bold; 
+                text-align: center; 
+                border-radius: 12px; 
+                padding: 10px !important; 
+            }
+            
+            #aramaKutusu::placeholder { 
+                font-size: 15px !important; 
+                font-weight: normal; 
+            }
             
             .stok-satir { grid-template-columns: 1fr; gap: 12px; width: 100%; }
             
@@ -585,7 +596,6 @@
 
         // --- STOK & ARAMA İŞLEMLERİ ---
         function baslat() {
-            // MERKEZLEME KİLİDİ UYGULANDI
             document.getElementById('listeGövdesi').innerHTML = `
                 <div style="text-align:center; color:#888; padding:40px 20px; font-size: 16px; border: 1px dashed #333; border-radius: 8px; margin: 20px auto; width: 100%; box-sizing: border-box;">
                     <span style="font-size: 30px; display: block; margin-bottom: 15px;">🔍</span>
@@ -600,7 +610,6 @@
                 const kategori = document.getElementById('kategoriFiltre').value;
                 const marka = document.getElementById('markaFiltre').value;
 
-                // HER ŞEY BOŞSA YİNE BEKLEME EKRANINI GÖSTER (LİSTEYİ ŞİŞİRME)
                 if (!aranan && !kategori && !marka) {
                     baslat();
                     return;
@@ -718,7 +727,6 @@
                     return;
                 }
 
-                // ILIKE SORGUSU İLE BÜYÜK/KÜÇÜK HARF FARK ETMEKSİZİN MÜKERRER KONTROLÜ
                 const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod);
                 if (mevcutData && mevcutData.length > 0) {
                     uyariGoster("Bu kod sisteme zaten daha önceden kayıt edilmiş!<br>Aynı kodu (büyük/küçük harf fark etmez) tekrar ekleyemezsiniz.", 'hata');
