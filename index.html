@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok Temel</title>
+    <!-- GÖMÜLÜ SVG LOGO -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23121212'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%23f44336' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Giriş, Kayıt ve Şifre Sıfırlama Ekranları */
+        #authEkrani, #SifreSifirlamaEkrani { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #121212; }
+        .auth-kutu { background-color: #1e1e1e; padding: 40px; border-radius: 10px; border: 1px solid #333; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .auth-kutu h2 { color: #00bcd4; margin-top: 0; margin-bottom: 25px; }
+        .auth-kutu input { width: 100%; box-sizing: border-box; margin-bottom: 15px; padding: 12px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
+        .auth-kutu input:focus { border-color: #00bcd4; }
+        .btn-auth { width: 100%; padding: 12px; background-color: #00bcd4; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+        .btn-auth:hover { background-color: #008ba3; }
+        .btn-kayitol { background-color: transparent; color: #00bcd4; border: 1px solid #00bcd4; }
+        .btn-kayitol:hover { background-color: rgba(0, 188, 212, 0.1); }
+        .link-unuttum { color: #aaa; font-size: 13px; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
+        .link-unuttum:hover { color: #00bcd4; }
+
+        #anaUygulama { display: none; }
+
+        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK */
+        .sabit-ust-alan {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #121212;
+            border-bottom: 1px solid #333;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        
+        .ust-bosluklu-container { padding-top: 10px; padding-bottom: 10px; }
+
+        .istatistik-seridi {
+            background: linear-gradient(135deg, #2c2512, #1e1b12);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 6px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .istatistik-item { text-align: center; }
+        .istatistik-baslik { font-size: 12px; color: #ffd700; font-weight: bold; text-transform: uppercase; }
+        .istatistik-deger { font-size: 18px; font-weight: bold; color: #fff; margin-top: 2px; }
+
+        /* Arama ve Kontrol Paneli */
+        .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between;}
+        
+        .header input, .header select { 
+            background-color: #1e1e1e; 
+            color: #fff; 
+            border: 1px solid #444; 
+            height: 38px; 
+            padding: 0 12px; 
+            border-radius: 6px; 
+            font-size: 14px; 
+            outline: none; 
+            box-sizing: border-box;
+        }
+        .header input:focus, .header select:focus { border-color: #00bcd4; }
+        
+        #aramaKutusu { flex: 2; min-width: 140px; }
+        #kategoriFiltre { flex: 1; min-width: 110px; }
+        #markaFiltre { flex: 1; min-width: 110px; }
+        
+        /* EŞİT GENİŞLİKLİ BUTON GRUBU */
+        .buton-grup { display: flex; gap: 8px; flex: 2; min-width: 310px;}
+        .buton-grup button { 
+            flex: 1; 
+            height: 38px; 
+            padding: 0 4px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 11.5px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            white-space: nowrap;
+            box-sizing: border-box;
+        }
+        .btn-log { background-color: #9c27b0; color: #fff; }
+        .btn-log:hover { background-color: #7b1fa2; }
+        .btn-excel { background-color: #ff9800; color: #000; }
+        .btn-excel:hover { background-color: #f57c00; }
+        .btn-yeni { background-color: #4caf50; color: #fff; }
+        .btn-yeni:hover { background-color: #388e3c; }
+        .btn-cikis { background-color: #f44336; color: #fff; }
+        .btn-cikis:hover { background-color: #d32f2f; }
+        
+        .liste-alani { display: flex; flex-direction: column; gap: 10px; padding-top: 15px; padding-bottom: 30px; }
+
+        .stok-satir { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 25px; }
+        .stok-satir:hover { background-color: #222; border-color: #444; }
+        .stok-bilgi { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .stok-ust-satir { display: flex; align-items: center; gap: 10px; }
+        .kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        
+        .malzeme-kod { font-size: 16px; font-weight: bold; color: #fff; }
+        
+        .malzeme-detay { font-size: 13px; color: #aaa; }
+        .raf-no-vurgu { color: #f44336; font-weight: bold; }
+
+        /* Masaüstü için tam isimli başlıklar */
+        .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 6px; text-align: center; }
+        .sayi-kutusu { font-size: 10px; color: #aaa; background-color: #222; padding: 4px 2px; border-radius: 4px; border: 1px solid #2a2a2a; font-weight: bold; }
+        .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; font-weight: bold; margin-top: 2px; }
+        .sayi-deger { color: #fff; }
+        .sayi-toplam { color: #4caf50; }
+        .sayi-arizali { color: #f44336; }
+        
+        .btn-duzenle { background-color: #00bcd4; color: #000; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; justify-self: end; }
+        .btn-duzenle:hover { background-color: #008ba3; }
+        .btn-pasif { background-color: #333; color: #666; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; justify-self: end; cursor: not-allowed; }
+
+        /* MODAL TASARIMLARI */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background-color: #1e1e1e; padding: 25px 30px; border-radius: 12px; width: 90%; max-width: 420px; border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+        .modal-content h3 { margin-top: 0; color: #00bcd4; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; text-align: center; }
+
+        /* Özel Uyarı Modalı */
+        #CustomModal .modal-content { max-width: 380px; text-align: center; }
+        #CustomModalMesaj { font-size: 15px; line-height: 1.5; color: #e0e0e0; margin-bottom: 25px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 12px; }
+        .form-grid-tam { grid-column: span 2; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #aaa; font-weight: 500; }
+        
+        .modal-content input[type="text"], .modal-content select { width: 100%; box-sizing: border-box; padding: 10px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .modal-content input[type="text"]:focus, .modal-content select:focus { border-color: #00bcd4; }
+
+        /* ŞIK SAYI ARTIRMA / AZALTMA BUTONLARI */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+
+        .sayi-input-grup { display: flex; align-items: center; background-color: #121212; border: 1px solid #444; border-radius: 6px; overflow: hidden; transition: border-color 0.2s; }
+        .sayi-input-grup:focus-within { border-color: #00bcd4; }
+        .sayi-input-grup button { background-color: #2a2a2a; color: #00bcd4; border: none; padding: 10px 14px; font-size: 16px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
+        .sayi-input-grup button:hover { background-color: #3d3d3d; color: #fff; }
+        .sayi-input-grup input { flex: 1; width: 100%; border: none; background: transparent; text-align: center; font-size: 15px; font-weight: bold; color: #fff; padding: 10px 0; outline: none; }
+
+        .modal-buttons { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; justify-content: center; }
+        .btn-kaydet { background-color: #4caf50; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px; }
+        .btn-kaydet:hover { background-color: #388e3c; }
+        .btn-iptal { background-color: #f44336; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px;}
+        .btn-iptal:hover { background-color: #d32f2f; }
+
+        /* LOG MODALI SABİT BAŞLIK YAPISI */
+        #LogModal .modal-content { 
+            max-width: 650px; 
+            max-height: 90vh; 
+            display: flex; 
+            flex-direction: column; 
+            padding-bottom: 20px;
+        }
+        
+        .log-tablo { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
+        .log-tablo th, .log-tablo td { 
+            padding: 12px 8px; 
+            border-bottom: 1px solid #333; 
+            text-align: center; 
+            vertical-align: middle; 
+        }
+        .log-tablo th { 
+            position: sticky; 
+            top: 0; 
+            background-color: #1e1e1e; 
+            z-index: 10; 
+            color: #9c27b0; 
+            font-weight: bold; 
+            border-bottom: 2px solid #444;
+        }
+
+        /* MOBİL UYARLAMA KISMI */
+        @media screen and (max-width: 650px) {
+            .header { flex-direction: column; align-items: stretch; }
+            
+            .buton-grup { 
+                flex-wrap: wrap; 
+                order: -1; 
+            }
+            
+            #aramaKutusu, #kategoriFiltre, #markaFiltre { 
+                width: 100%; 
+                flex: 1; 
+                height: 52px; 
+                font-size: 13.5px; 
+            }
+            #aramaKutusu::placeholder {
+                font-size: 13.5px; 
+            }
+            
+            .stok-satir { grid-template-columns: 1fr; gap: 12px; }
+            
+            /* MOBİLDE SAYI BAŞLIKLARI KESİN OLARAK TEK SATIRA KİLİTLENDİ */
+            .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 3px; }
+            .sayi-kutusu { 
+                font-size: 8.5px; /* Dar ekranlar için bir tık daha küçüldü */
+                padding: 4px 0; 
+                text-transform: none !important; 
+                font-weight: 700;
+                white-space: nowrap; /* Asla alt satıra inmesini engeller */
+                letter-spacing: -0.2px; /* Sığması için harf arası yarım milim daraltıldı */
+            } 
+            .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 13px; margin-top: 3px; }
+            
+            .btn-duzenle, .btn-pasif { width: 100%; }
+            .modal-content { padding: 20px; }
+            
+            #LogModal .modal-content { padding: 15px 10px; width: 95%; }
+            .log-tablo th, .log-tablo td { padding: 8px 4px; font-size: 11px; }
+            .log-tablo th { font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="authEkrani">
+        <div class="auth-kutu">
+            <h2>Stok Sistemi Giriş</h2>
+            <form onsubmit="event.preventDefault(); girisYap();">
+                <input type="email" id="authEmail" name="email" autocomplete="username" placeholder="E-posta Adresiniz" required>
+                <input type="password" id="authSifre" name="password" autocomplete="current-password" placeholder="Şifreniz" required>
+                <button type="submit" class="btn-auth">Giriş Yap</button>
+                <button type="button" class="btn-auth btn-kayitol" onclick="kayitOl()">Hesap Oluştur</button>
+                
+                <!-- ŞİFREMİ UNUTTUM LİNKİ -->
+                <div style="margin-top: 15px;">
+                    <span class="link-unuttum" onclick="sifremiUnuttum()">Şifremi Unuttum</span>
+                </div>
+            </form>
+            <div id="authMesaj" style="margin-top: 15px; font-size: 13px; color: #f44336;"></div>
+        </div>
+    </div>
+
+    <!-- ŞİFRE SIFIRLAMA (YENİ ŞİFRE BELİRLEME) EKRANI -->
+    <div id="SifreSifirlamaEkrani" style="display: none;">
+        <div class="auth-kutu">
+            <h2>Yeni Şifre Belirle</h2>
+            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Lütfen yeni şifrenizi girin.</p>
+            <input type="password" id="yeniSifreInput" placeholder="Yeni Şifreniz" required>
+            <button type="button" class="btn-auth" onclick="yeniSifreKaydet()">Şifreyi Güncelle</button>
+            <div id="sifreSifirlaMesaj" style="margin-top: 15px; font-size: 13px; color: #f44336;"></div>
+        </div>
+    </div>
+
+    <!-- ANA UYGULAMA -->
+    <div id="anaUygulama">
+        <div class="sabit-ust-alan">
+            <div class="container ust-bosluklu-container">
+                <div class="istatistik-seridi">
+                    <div class="istatistik-item">
+                        <div class="istatistik-baslik">Toplam Çeşit Sayısı</div>
+                        <div id="cesitSayisi" class="istatistik-deger">0</div>
+                    </div>
+                    <div class="istatistik-item">
+                        <div class="istatistik-baslik">TOPLAM MALZEME SAYISI</div>
+                        <div id="toplamMalzemeSayisi" class="istatistik-deger">0</div>
+                    </div>
+                </div>
+
+                <div class="header">
+                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
+                    
+                    <select id="kategoriFiltre" onchange="stokGetir()">
+                        <option value="">Tüm Kategoriler</option>
+                        <option value="PLC">PLC</option>
+                        <option value="EKRAN">EKRAN</option>
+                        <option value="RÖLE">RÖLE</option>
+                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
+                        <option value="MOTOR">MOTOR</option>
+                    </select>
+
+                    <select id="markaFiltre" onchange="stokGetir()">
+                        <option value="">Tüm Markalar</option>
+                    </select>
+                    
+                    <div class="buton-grup">
+                        <button class="btn-log" onclick="logModalAc()">Log</button>
+                        <button class="btn-excel" onclick="excelDokumuAl()">Excel'e Aktar</button>
+                        <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+ Yeni Ekle</button>
+                        <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="listeGövdesi" class="liste-alani"></div>
+        </div>
+    </div>
+
+    <!-- ÖZEL UYARI MODALI (TAMAM / GERİ DÖN) -->
+    <div id="CustomModal" class="modal" style="z-index: 3000;">
+        <div class="modal-content">
+            <h3 id="CustomModalBaslik" style="color: #ff9800;">Sistem Mesajı</h3>
+            <p id="CustomModalMesaj"></p>
+            <div class="modal-buttons" style="border-top: none; padding-top: 0; margin-top: 0;">
+                <button id="btnCustomTamam" class="btn-kaydet">Tamam</button>
+                <button id="btnCustomGeri" class="btn-iptal">Geri Dön</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOG MODALI -->
+    <div id="LogModal" class="modal">
+        <div class="modal-content" style="padding: 25px 20px;">
+            <h3 style="color:#9c27b0; margin-top:0; text-align:center; flex-shrink: 0;">Son İşlem Kayıtları (Log)</h3>
+            <div style="flex: 1; overflow-y: auto; position: relative;">
+                <table class="log-tablo">
+                    <thead>
+                        <tr>
+                            <th>Tarih / Saat</th>
+                            <th>Kullanıcı</th>
+                            <th>İşlem Detayı</th>
+                            <th>Malzeme Kodu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logGövdesi">
+                        <tr><td colspan="4">Yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-iptal" style="width:100%; margin-top:15px; flex-shrink: 0;" onclick="document.getElementById('LogModal').style.display='none'">Kapat</button>
+        </div>
+    </div>
+
+    <!-- GÜNCELLEME / YENİ KAYIT MODALI -->
+    <div id="GuncelleModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalBaslik">Miktar Güncelle</h3>
+            <input type="hidden" id="duzenlenenId">
+            
+            <datalist id="markaListesi"></datalist>
+
+            <div class="form-grid">
+                <div class="form-group" id="grupKategori">
+                    <label>Kategori:</label>
+                    <select id="inputKategori">
+                        <option value="">Seçiniz...</option>
+                        <option value="PLC">PLC</option>
+                        <option value="EKRAN">EKRAN</option>
+                        <option value="RÖLE">RÖLE</option>
+                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
+                        <option value="MOTOR">MOTOR</option>
+                    </select>
+                </div>
+                <div class="form-group" id="grupMarka">
+                    <label>Marka:</label>
+                    <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS">
+                </div>
+                <div class="form-group form-grid-tam" id="grupKod">
+                    <label>Malzeme Kodu:</label>
+                    <input type="text" id="inputKod" placeholder="Malzemenin tam kodunu girin...">
+                </div>
+
+                <div class="form-group">
+                    <label>İkinci el Adet:</label>
+                    <div class="sayi-input-grup">
+                        <button type="button" onclick="sayiDegistir('inputIkinciEl', -1)">-</button>
+                        <input type="number" id="inputIkinciEl" value="0">
+                        <button type="button" onclick="sayiDegistir('inputIkinciEl', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Açık Kutu Adet:</label>
+                    <div class="sayi-input-grup">
+                        <button type="button" onclick="sayiDegistir('inputAcikKutu', -1)">-</button>
+                        <input type="number" id="inputAcikKutu" value="0">
+                        <button type="button" onclick="sayiDegistir('inputAcikKutu', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Kapalı Kutu Adet:</label>
+                    <div class="sayi-input-grup">
+                        <button type="button" onclick="sayiDegistir('inputKapaliKutu', -1)">-</button>
+                        <input type="number" id="inputKapaliKutu" value="0">
+                        <button type="button" onclick="sayiDegistir('inputKapaliKutu', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Arızalı Adet:</label>
+                    <div class="sayi-input-grup">
+                        <button type="button" onclick="sayiDegistir('inputArizali', -1)">-</button>
+                        <input type="number" id="inputArizali" value="0">
+                        <button type="button" onclick="sayiDegistir('inputArizali', 1)">+</button>
+                    </div>
+                </div>
+                <div class="form-group form-grid-tam">
+                    <label>Raf No:</label>
+                    <input type="text" id="inputRafNo" placeholder="Örn: A12">
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-kaydet" onclick="veriKaydetPreCheck()">Kaydet</button>
+                <button class="btn-iptal" onclick="document.getElementById('GuncelleModal').style.display='none'">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://ddpzkfefgdsrxwaltrwd.supabase.co';
+        const supabaseKey = 'sb_publishable_rRLHZ89ad1rarH8h9yfw2A_iMq_-TZs';
+        const sbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let aktifKullaniciEmail = null;
+        let aktifRol = 'okuyucu'; 
+        let aramaZamanlayici;
+        let islemTuru = 'guncelle';
+        let aktifDuzenlenenMalzeme = null; 
+
+        function telefonMu() { return window.innerWidth <= 650; }
+
+        function sayiDegistir(inputId, artis) {
+            const input = document.getElementById(inputId);
+            let val = parseInt(input.value) || 0;
+            val += artis;
+            if(val < 0) val = 0; 
+            input.value = val;
+        }
+
+        // ÖZEL UYARI MODALI SİSTEMİ
+        function uyariGoster(mesaj, tip, onTamamCallback) {
+            document.getElementById('CustomModalMesaj').innerHTML = mesaj;
+            const modal = document.getElementById('CustomModal');
+            const baslik = document.getElementById('CustomModalBaslik');
+            const btnTamam = document.getElementById('btnCustomTamam');
+            const btnGeri = document.getElementById('btnCustomGeri');
+
+            const yeniBtnTamam = btnTamam.cloneNode(true);
+            btnTamam.parentNode.replaceChild(yeniBtnTamam, btnTamam);
+            const yeniBtnGeri = btnGeri.cloneNode(true);
+            btnGeri.parentNode.replaceChild(yeniBtnGeri, btnGeri);
+
+            modal.style.display = 'flex';
+
+            if (tip === 'hata') {
+                baslik.style.color = '#f44336';
+                baslik.innerText = "Uyarı";
+                yeniBtnTamam.innerText = "Tamam";
+                yeniBtnGeri.innerText = "Geri Dön";
+                yeniBtnTamam.onclick = () => { modal.style.display = 'none'; };
+                yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
+            } else if (tip === 'onay') {
+                baslik.style.color = '#00bcd4';
+                baslik.innerText = "Onay Gerekli";
+                yeniBtnTamam.innerText = "Tamam";
+                yeniBtnGeri.innerText = "Geri Dön";
+                yeniBtnTamam.onclick = () => {
+                    modal.style.display = 'none';
+                    if(onTamamCallback) onTamamCallback();
+                };
+                yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
+            }
+        }
+
+        // UYGULAMA BAŞLANGICI VE ŞİFRE SIFIRLAMA YAKALAYICISI
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.location.hash && window.location.hash.includes('type=recovery')) {
+                document.getElementById('authEkrani').style.display = 'none';
+                document.getElementById('anaUygulama').style.display = 'none';
+                document.getElementById('SifreSifirlamaEkrani').style.display = 'flex';
+            } else {
+                oturumKontrolu();
+            }
+        });
+
+        // --- AUTH (GİRİŞ/KAYIT/ŞİFRE) İŞLEMLERİ ---
+        async function kayitOl() {
+            const email = document.getElementById('authEmail').value.trim();
+            const sifre = document.getElementById('authSifre').value.trim();
+            const msg = document.getElementById('authMesaj');
+
+            if(!email || !sifre) { msg.innerText = "Lütfen e-posta ve şifre girin."; return; }
+            msg.innerText = "Kayıt yapılıyor...";
+            
+            const { data, error } = await sbClient.auth.signUp({ email: email, password: sifre });
+            if (error) { msg.innerText = error.message; return; }
+
+            const { error: dbError } = await sbClient.from('kullanicilar').insert([{ email: email, rol: 'okuyucu', onayli: false }]);
+            if(dbError) {
+                msg.innerText = "Kayıt başarılı ancak profil oluşturulamadı. Yöneticinize başvurun.";
+            } else {
+                msg.style.color = "#4caf50";
+                msg.innerText = "Kayıt başarılı! Yönetici onayladıktan sonra giriş yapabilirsiniz.";
+            }
+        }
+
+        async function girisYap() {
+            const email = document.getElementById('authEmail').value.trim();
+            const sifre = document.getElementById('authSifre').value.trim();
+            const msg = document.getElementById('authMesaj');
+
+            if(!email || !sifre) { msg.innerText = "Lütfen e-posta ve şifre girin."; return; }
+            msg.style.color = "#f44336";
+            msg.innerText = "Giriş yapılıyor...";
+
+            const { data, error } = await sbClient.auth.signInWithPassword({ email: email, password: sifre });
+            if (error) { msg.innerText = "Hatalı e-posta veya şifre."; return; }
+            
+            oturumKontrolu();
+        }
+
+        async function sifremiUnuttum() {
+            const email = document.getElementById('authEmail').value.trim();
+            const msg = document.getElementById('authMesaj');
+
+            if(!email) { 
+                msg.style.color = "#f44336";
+                msg.innerText = "Lütfen önce e-posta adresinizi yukarıya yazın, ardından 'Şifremi Unuttum'a tıklayın."; 
+                return; 
+            }
+
+            msg.style.color = "#00bcd4";
+            msg.innerText = "Sıfırlama bağlantısı gönderiliyor...";
+
+            const { data, error } = await sbClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin + window.location.pathname
+            });
+
+            if (error) { 
+                msg.style.color = "#f44336";
+                msg.innerText = "Hata: " + error.message; 
+            } else {
+                msg.style.color = "#4caf50";
+                msg.innerText = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi! Lütfen e-postanızı (ve spam/gereksiz kutusunu) kontrol edin.";
+            }
+        }
+
+        async function yeniSifreKaydet() {
+            const yeniSifre = document.getElementById('yeniSifreInput').value.trim();
+            const msg = document.getElementById('sifreSifirlaMesaj');
+            
+            if(!yeniSifre || yeniSifre.length < 6) {
+                msg.innerText = "Şifreniz en az 6 karakter olmalıdır.";
+                return;
+            }
+            
+            msg.style.color = "#00bcd4";
+            msg.innerText = "Şifreniz güncelleniyor...";
+
+            const { data, error } = await sbClient.auth.updateUser({
+                password: yeniSifre
+            });
+
+            if (error) {
+                msg.style.color = "#f44336";
+                msg.innerText = "Hata: " + error.message;
+            } else {
+                msg.style.color = "#4caf50";
+                msg.innerText = "Şifreniz başarıyla güncellendi! Lütfen bekleyin...";
+                setTimeout(() => {
+                    window.location.hash = '';
+                    window.location.reload();
+                }, 2000);
+            }
+        }
+
+        function cikisYap() {
+            uyariGoster("Sistemden güvenli bir şekilde çıkış yapmak istediğinize emin misiniz?", "onay", async () => {
+                await sbClient.auth.signOut();
+                window.location.reload();
+            });
+        }
+
+        async function oturumKontrolu() {
+            const { data: { session } } = await sbClient.auth.getSession();
+            
+            if (session) {
+                aktifKullaniciEmail = session.user.email;
+                const { data: yetkiData } = await sbClient.from('kullanicilar').select('*').eq('email', aktifKullaniciEmail).single();
+                
+                if(!yetkiData || yetkiData.onayli === false) {
+                    await sbClient.auth.signOut();
+                    document.getElementById('authMesaj').innerText = "Hesabınız henüz yönetici tarafından onaylanmadı.";
+                    return;
+                }
+
+                let dbRol = yetkiData.rol ? yetkiData.rol.toLowerCase().trim() : 'okuyucu';
+                if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
+                    aktifRol = 'duzenleyici';
+                    document.getElementById('btnYeniEkle').style.display = 'block';
+                    secenekleriYukle(); 
+                } else {
+                    aktifRol = 'okuyucu';
+                }
+
+                document.getElementById('authEkrani').style.display = 'none';
+                document.getElementById('anaUygulama').style.display = 'block';
+                
+                baslat();
+                
+                setTimeout(() => {
+                    if (!telefonMu()) {
+                        document.getElementById('aramaKutusu').focus();
+                    }
+                }, 300);
+
+            } else {
+                document.getElementById('authEkrani').style.display = 'flex';
+                document.getElementById('anaUygulama').style.display = 'none';
+            }
+        }
+
+        async function secenekleriYukle() {
+            const { data, error } = await sbClient.from('malzemeler').select('marka').limit(5000);
+            if (data) {
+                const markalar = [...new Set(data.map(item => (item.marka || '').toLocaleUpperCase('tr-TR').trim()).filter(Boolean))].sort();
+                
+                document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
+                
+                const markaFiltre = document.getElementById('markaFiltre');
+                const seciliMarka = markaFiltre.value; 
+                markaFiltre.innerHTML = '<option value="">Tüm Markalar</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
+                markaFiltre.value = seciliMarka;
+            }
+        }
+
+        // --- STOK & ARAMA İŞLEMLERİ ---
+        function baslat() {
+            if (!telefonMu()) {
+                stokGetir();
+            } else {
+                document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:#888; padding:30px;">Aradığınız malzemeyi bulmak için yukarıya kod yazın.</div>';
+                genelIstatistikleriGetir();
+            }
+        }
+
+        async function stokGetir() {
+            clearTimeout(aramaZamanlayici);
+            aramaZamanlayici = setTimeout(async () => {
+                const aranan = document.getElementById('aramaKutusu').value.trim();
+                const kategori = document.getElementById('kategoriFiltre').value;
+                const marka = document.getElementById('markaFiltre').value;
+
+                if (telefonMu() && !aranan && !kategori && !marka) {
+                    document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:#888; padding:30px;">Aradığınız malzemeyi bulmak için yukarıya kod yazın.</div>';
+                    genelIstatistikleriGetir();
+                    return;
+                }
+
+                if (!aranan) {
+                    let sorgu = sbClient.from('malzemeler').select('*', { count: 'exact' }).order('marka', { ascending: true }).order('id', { ascending: true });
+                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
+                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
+                    
+                    const { data, count, error } = await sorgu.limit(50);
+                    if (error) return;
+                    
+                    ekranaYazdir(data);
+                    istatistikGuncelle(data, count);
+                } else {
+                    let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
+                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
+                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
+                    
+                    const { data, error } = await sorgu.limit(5000);
+                    if (error) return;
+                    
+                    const temizAranan = aranan.replace(/[-/.\s]/g, '').toLocaleLowerCase('tr-TR');
+                    const filtrelenmis = data.filter(m => {
+                        const temizKod = (m.kod || '').replace(/[-/.\s]/g, '').toLocaleLowerCase('tr-TR');
+                        return temizKod.includes(temizAranan);
+                    });
+                    
+                    ekranaYazdir(filtrelenmis.slice(0, 50));
+                    istatistikGuncelle(filtrelenmis, filtrelenmis.length);
+                }
+            }, 200);
+        }
+
+        async function genelIstatistikleriGetir() {
+            const { data, count } = await sbClient.from('malzemeler').select('toplam', { count: 'exact' });
+            if (data) { istatistikGuncelle(data, count); }
+        }
+
+        function istatistikGuncelle(veriler, toplamCesit) {
+            document.getElementById('cesitSayisi').innerText = toplamCesit ?? veriler.length;
+            let toplamMalzeme = 0;
+            veriler.forEach(m => { toplamMalzeme += (m.toplam || 0); });
+            document.getElementById('toplamMalzemeSayisi').innerText = toplamMalzeme;
+        }
+
+        function ekranaYazdir(veriler) {
+            const liste = document.getElementById('listeGövdesi');
+            liste.innerHTML = '';
+            
+            if(!veriler || veriler.length === 0) {
+                liste.innerHTML = '<div style="text-align:center; color:#888; padding:30px;">Kayıt bulunamadı.</div>';
+                return;
+            }
+
+            veriler.forEach(malzeme => {
+                let islemButonu = '';
+                if(aktifRol === 'duzenleyici') {
+                    const mJson = JSON.stringify(malzeme).replace(/'/g, "&#39;");
+                    islemButonu = `<button class="btn-duzenle" onclick='guncelleModalAc(${mJson})'>Güncelle</button>`;
+                } else {
+                    islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
+                }
+
+                const formatliMarka = (malzeme.marka || '-').toLocaleUpperCase('tr-TR');
+
+                // Mobil ve Masaüstü için Dinamik Başlıklar
+                const ikinciElBaslik = telefonMu() ? "İkinci El" : "İKİNCİ EL";
+                const acikKutuBaslik = telefonMu() ? "A.Kutu" : "AÇIK KUTU";
+                const kapaliKutuBaslik = telefonMu() ? "K.Kutu" : "KAPALI KUTU";
+                const arizaliBaslik = telefonMu() ? "Arızalı" : "ARIZALI";
+                const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
+
+                const satir = `
+                    <div class="stok-satir">
+                        <div class="stok-bilgi">
+                            <div class="stok-ust-satir">
+                                <span class="kategori-etiket">${malzeme.kategori || '-'}</span>
+                                <span class="malzeme-kod" title="${malzeme.kod}">${malzeme.kod}</span>
+                            </div>
+                            <div class="malzeme-detay">
+                                Marka: <strong>${formatliMarka}</strong> | <span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>
+                            </div>
+                        </div>
+
+                        <div class="stok-sayilar">
+                            <div class="sayi-kutusu">${ikinciElBaslik}<div class="sayi-deger">${malzeme.ikinci_el ?? 0}</div></div>
+                            <div class="sayi-kutusu">${acikKutuBaslik}<div class="sayi-deger">${malzeme.acik_kutu ?? 0}</div></div>
+                            <div class="sayi-kutusu">${kapaliKutuBaslik}<div class="sayi-deger">${malzeme.kapali_kutu ?? 0}</div></div>
+                            <div class="sayi-kutusu">${arizaliBaslik}<div class="sayi-arizali">${malzeme.arizali ?? 0}</div></div>
+                            <div class="sayi-kutusu">${toplamBaslik}<div class="sayi-toplam">${malzeme.toplam ?? 0}</div></div>
+                        </div>
+
+                        ${islemButonu}
+                    </div>
+                `;
+                liste.innerHTML += satir;
+            });
+        }
+
+        async function veriKaydetPreCheck() {
+            if(aktifRol !== 'duzenleyici') return;
+
+            const kategori = document.getElementById('inputKategori').value; 
+            let marka = document.getElementById('inputMarka').value.trim();
+            let kod = document.getElementById('inputKod').value.trim(); 
+            const raf_no = document.getElementById('inputRafNo').value.trim().toLocaleUpperCase('tr-TR');
+
+            const eAdet = parseInt(document.getElementById('inputIkinciEl').value) || 0;
+            const aAdet = parseInt(document.getElementById('inputAcikKutu').value) || 0;
+            const kAdet = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
+            const rAdet = parseInt(document.getElementById('inputArizali').value) || 0;
+            const toplamAdetGiris = eAdet + aAdet + kAdet + rAdet;
+
+            if (islemTuru === 'yeni') {
+                let bosAlanlar = [];
+                if (!kategori) bosAlanlar.push("Kategori");
+                if (!marka) bosAlanlar.push("Marka");
+                if (!kod) bosAlanlar.push("Malzeme Kodu");
+
+                if (bosAlanlar.length > 0) {
+                    const mesaj = "Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:#00bcd4;'>" + bosAlanlar.join("<br>") + "</b>";
+                    uyariGoster(mesaj, 'hata');
+                    return;
+                }
+                
+                if (toplamAdetGiris <= 0) {
+                    uyariGoster("Yeni malzeme eklerken İkinci El, Açık Kutu, Kapalı Kutu veya Arızalı adetlerinden <b style='color:#00bcd4;'>en az birini</b> girmelisiniz.<br>Sadece kod eklemenin bir anlamı yok!", 'hata');
+                    return;
+                }
+
+                const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').eq('kod', kod);
+                if (mevcutData && mevcutData.length > 0) {
+                    uyariGoster("Bu koddan daha önce girilmiş!<br>Aynı kodu tekrar ekleyemezsiniz.", 'hata');
+                    return;
+                }
+
+                if (!raf_no) {
+                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => {
+                        gercekVeriKaydet(kategori, marka, kod, raf_no);
+                    });
+                    return;
+                }
+            } else {
+                if (!kod) { uyariGoster("Malzeme kodu boş olamaz!", 'hata'); return; }
+                if (!raf_no) {
+                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => {
+                        gercekVeriKaydet(kategori, marka, kod, raf_no);
+                    });
+                    return;
+                }
+            }
+            
+            gercekVeriKaydet(kategori, marka, kod, raf_no);
+        }
+
+        async function gercekVeriKaydet(kategori, marka, kod, raf_no) {
+            const ikinci_el = parseInt(document.getElementById('inputIkinciEl').value) || 0;
+            const acik_kutu = parseInt(document.getElementById('inputAcikKutu').value) || 0;
+            const kapali_kutu = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
+            const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
+            const toplam = ikinci_el + acik_kutu + kapali_kutu;
+            
+            marka = marka.toLocaleUpperCase('tr-TR');
+            
+            if (islemTuru === 'guncelle') {
+                const id = document.getElementById('duzenlenenId').value;
+                const { error } = await sbClient.from('malzemeler').update({ 
+                    ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no 
+                }).eq('id', id);
+
+                if (!error) {
+                    let e1 = aktifDuzenlenenMalzeme.ikinci_el || 0;
+                    let a1 = aktifDuzenlenenMalzeme.acik_kutu || 0;
+                    let k1 = aktifDuzenlenenMalzeme.kapali_kutu || 0;
+                    let r1 = aktifDuzenlenenMalzeme.arizali || 0;
+
+                    let logMetni = `GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - Açık Kutu (${a1} → ${acik_kutu})<br>Kapalı Kutu (${k1} → ${kapali_kutu}) - Arızalı (${r1} → ${arizali})`;
+                    await logKaydet(logMetni, kod);
+                    basariSonrasi();
+                }
+
+            } else {
+                const { error } = await sbClient.from('malzemeler').insert([{ 
+                    kategori, marka, kod, ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no 
+                }]);
+
+                if (!error) {
+                    let vE = ikinci_el === 0 ? '' : ikinci_el;
+                    let vA = acik_kutu === 0 ? '' : acik_kutu;
+                    let vK = kapali_kutu === 0 ? '' : kapali_kutu;
+                    let vR = arizali === 0 ? '' : arizali;
+
+                    let logMetni = `YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
+                    await logKaydet(logMetni, kod);
+                    secenekleriYukle(); 
+                    basariSonrasi();
+                }
+            }
+        }
+
+        function basariSonrasi() {
+            document.getElementById('GuncelleModal').style.display = 'none';
+            stokGetir(); 
+        }
+
+        async function logKaydet(islemTipiVeDetay, parcaKodu) {
+            await sbClient.from('log_kayitlari').insert([{
+                kullanici: aktifKullaniciEmail,
+                islem: islemTipiVeDetay,
+                kod: parcaKodu
+            }]);
+        }
+
+        async function logModalAc() {
+            document.getElementById('LogModal').style.display = 'flex';
+            const logGövdesi = document.getElementById('logGövdesi');
+            logGövdesi.innerHTML = '<tr><td colspan="4">Loglar çekiliyor...</td></tr>';
+
+            const { data, error } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(50);
+
+            if (error || !data) { logGövdesi.innerHTML = '<tr><td colspan="4">Loglar alınamadı!</td></tr>'; return; }
+
+            logGövdesi.innerHTML = '';
+            data.forEach(log => {
+                const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const islemRengi = log.islem.includes('YENİ') ? '#4caf50' : '#00bcd4';
+                
+                let hamIslem = log.islem;
+                if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>");
+                else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
+
+                if (hamIslem.includes(", Kapalı") && !hamIslem.includes("<br>Kapalı")) {
+                    hamIslem = hamIslem.replace(", Kapalı", "<br>Kapalı");
+                }
+
+                hamIslem = hamIslem.replace(/->/g, "→");
+
+                let islemParcalari = hamIslem.split('<br>');
+                let formatliIslem = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
+                if(islemParcalari.length > 1) {
+                    formatliIslem += `<span style="color:#e0e0e0; display:block; line-height:1.6; white-space:nowrap;">${islemParcalari.slice(1).join('<br>')}</span>`;
+                }
+
+                logGövdesi.innerHTML += `
+                    <tr>
+                        <td style="color:#aaa;">${tarih}</td>
+                        <td><strong>${log.kullanici.split('@')[0]}</strong></td>
+                        <td style="font-size:13px;">${formatliIslem}</td>
+                        <td style="font-weight:bold; word-break:break-word;">${log.kod}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function guncelleModalAc(malzeme) {
+            islemTuru = 'guncelle';
+            aktifDuzenlenenMalzeme = malzeme;
+            
+            document.getElementById('duzenlenenId').value = malzeme.id;
+            document.getElementById('modalBaslik').innerText = `${malzeme.kod} Güncelle`;
+            
+            document.getElementById('grupKategori').style.display = 'none';
+            document.getElementById('grupMarka').style.display = 'none';
+            document.getElementById('grupKod').style.display = 'none';
+            document.getElementById('inputKod').value = malzeme.kod; 
+
+            document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
+            document.getElementById('inputAcikKutu').value = malzeme.acik_kutu || 0;
+            document.getElementById('inputKapaliKutu').value = malzeme.kapali_kutu || 0;
+            document.getElementById('inputArizali').value = malzeme.arizali || 0;
+            document.getElementById('inputRafNo').value = malzeme.raf_no || '';
+            
+            document.getElementById('GuncelleModal').style.display = 'flex';
+        }
+
+        function yeniKayitModalAc() {
+            islemTuru = 'yeni';
+            aktifDuzenlenenMalzeme = null;
+
+            document.getElementById('modalBaslik').innerText = 'Yeni Malzeme Ekle';
+            
+            document.getElementById('grupKategori').style.display = 'block';
+            document.getElementById('grupMarka').style.display = 'block';
+            document.getElementById('grupKod').style.display = 'block';
+
+            document.getElementById('inputKategori').value = '';
+            document.getElementById('inputMarka').value = '';
+            document.getElementById('inputKod').value = '';
+            document.getElementById('inputIkinciEl').value = 0;
+            document.getElementById('inputAcikKutu').value = 0;
+            document.getElementById('inputKapaliKutu').value = 0;
+            document.getElementById('inputArizali').value = 0;
+            document.getElementById('inputRafNo').value = '';
+            
+            document.getElementById('GuncelleModal').style.display = 'flex';
+        }
+
+        function excelDokumuAl() {
+            uyariGoster("Şu anki görünen tabloyu (filtrelerinize göre) indirmek istiyor musunuz?", "onay", async () => {
+                const aranan = document.getElementById('aramaKutusu').value.trim();
+                const kategori = document.getElementById('kategoriFiltre').value;
+                const marka = document.getElementById('markaFiltre').value;
+                let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true });
+                
+                if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
+                if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
+                if (aranan) sorgu = sorgu.ilike('kod', `%${aranan}%`);
+                
+                const { data, error } = await sorgu.limit(5000);
+                if (error || !data || data.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
+
+                let htmlTablo = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><meta charset="utf-8"></head>
+                <body>
+                    <table border="1" style="border-collapse:collapse; text-align:center; vertical-align:middle; font-family:Arial, sans-serif;">
+                        <thead>
+                            <tr style="background-color:#d9d9d9; font-weight:bold; height:30px;">
+                                <th>Kategori</th>
+                                <th>Marka</th>
+                                <th>Malzeme Kodu</th>
+                                <th>İkinci el</th>
+                                <th>Açık Kutu</th>
+                                <th>Kapalı Kutu</th>
+                                <th>Arızalı</th>
+                                <th>Toplam</th>
+                                <th>Raf No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                data.forEach(m => {
+                    const formatliMarka = (m.marka || '').toLocaleUpperCase('tr-TR');
+                    htmlTablo += `
+                            <tr style="height:25px;">
+                                <td>${m.kategori || ''}</td>
+                                <td>${formatliMarka}</td>
+                                <td style="font-weight:bold;">${m.kod || ''}</td>
+                                <td>${m.ikinci_el ?? 0}</td>
+                                <td>${m.acik_kutu ?? 0}</td>
+                                <td>${m.kapali_kutu ?? 0}</td>
+                                <td>${m.arizali ?? 0}</td>
+                                <td style="font-weight:bold; color:green;">${m.toplam ?? 0}</td>
+                                <td>${m.raf_no || ''}</td>
+                            </tr>`;
+                });
+
+                htmlTablo += `</tbody></table></body></html>`;
+
+                const blob = new Blob([htmlTablo], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "stok_dokumu.xls";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+    </script>
+</body>
+</html>
