@@ -417,7 +417,7 @@
         let aramaZamanlayici;
         let islemTuru = 'guncelle';
         let aktifDuzenlenenMalzeme = null; 
-        let tumLoglar = []; // Log arama için global değişken
+        let tumLoglar = []; 
 
         function telefonMu() { return window.innerWidth <= 650; }
 
@@ -429,7 +429,6 @@
             input.value = val;
         }
 
-        // Kategori Değişince Raf/Kasa Yazısını Günceller
         function kategoriDegisti() {
             const secilen = document.getElementById('inputKategori').value;
             const rafLabel = document.getElementById('labelRafKasa');
@@ -623,7 +622,6 @@
             }
         }
 
-        // --- STOK & ARAMA İŞLEMLERİ ---
         function baslat() {
             document.getElementById('listeGövdesi').innerHTML = `
                 <div style="text-align:center; color:#888; padding:40px 20px; font-size: 16px; border: 1px dashed #333; border-radius: 8px; margin: 20px auto; width: 100%; box-sizing: border-box;">
@@ -702,7 +700,6 @@
                 const arizaliBaslik = telefonMu() ? "Arızalı" : "ARIZALI";
                 const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
 
-                // KASALAR İÇİN ÖZEL DEĞİŞKENLER
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
@@ -763,9 +760,7 @@
                     return;
                 }
 
-                // SADECE NORMAL KATEGORİLER İÇİN MÜKERRER KONTROLÜ (KASALAR İSE GEÇ)
                 if (kategori !== 'KASALAR') {
-                    // Veritabanında Kasalar HARİÇ bu koddan daha önce girilmiş mi diye bakıyoruz
                     const { data: mevcutData } = await sbClient.from('malzemeler')
                         .select('kod')
                         .ilike('kod', kod)
@@ -816,6 +811,8 @@
                     let logMetni = `GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - Açık Kutu (${a1} → ${acik_kutu})<br>Kapalı Kutu (${k1} → ${kapali_kutu}) - Arızalı (${r1} → ${arizali})`;
                     await logKaydet(logMetni, kod);
                     basariSonrasi();
+                } else {
+                    uyariGoster("<b>Veritabanı Kayıt Hatası:</b><br>" + error.message, 'hata');
                 }
 
             } else {
@@ -833,6 +830,13 @@
                     await logKaydet(logMetni, kod);
                     secenekleriYukle(); 
                     basariSonrasi();
+                } else {
+                    // DİKKAT: HATA EKRANA BASILIYOR!
+                    if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
+                        uyariGoster("<b>Veritabanı Engelledi!</b><br><br>Supabase veritabanınızda 'kod' sütunu hala <b>'Is Unique' (Benzersiz)</b> olarak işaretli. Bu yüzden aynı kodu kasalara tekrar eklemenize veritabanı izin vermiyor.<br><br><b>Çözüm:</b> Lütfen Supabase'den 'Table Editor'e girin, malzemeler tablosunda 'kod' sütununu düzenleyip 'Is Unique' tikini kaldırın.", 'hata');
+                    } else {
+                        uyariGoster("<b>Kayıt sırasında hata oluştu:</b><br>" + error.message, 'hata');
+                    }
                 }
             }
         }
@@ -925,7 +929,6 @@
             document.getElementById('grupMarka').style.display = 'none';
             document.getElementById('grupKod').style.display = 'none';
             
-            // Güncellemede Kategori bilgisine göre etiketi güncelle
             document.getElementById('inputKategori').value = malzeme.kategori || '';
             kategoriDegisti();
             
@@ -951,7 +954,7 @@
             document.getElementById('grupKod').style.display = 'block';
 
             document.getElementById('inputKategori').value = '';
-            kategoriDegisti(); // Etiketi Raf No olarak sıfırla
+            kategoriDegisti(); 
 
             document.getElementById('inputMarka').value = '';
             document.getElementById('inputKod').value = '';
