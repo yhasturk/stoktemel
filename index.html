@@ -81,7 +81,9 @@
             width: 100%;
         }
         
+        /* BİLGİSAYARDA LİSTE YAZILARINI KÜÇÜLTME */
         .header select { font-size: 12px; }
+
         .header input::placeholder { text-transform: none; }
         .header input:focus, .header select:focus { border-color: #00bcd4; }
         
@@ -116,15 +118,29 @@
         
         .liste-alani { display: flex; flex-direction: column; gap: 10px; padding-top: 15px; padding-bottom: 30px; width: 100%; }
 
-        .stok-satir { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 25px; width: 100%; }
+        .stok-satir { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 25px; width: 100%; transition: all 0.3s ease; }
         .stok-satir:hover { background-color: #222; border-color: #444; }
+        
+        /* ÖZEL KASALAR TASARIMI VE ANİMASYON */
+        .kasa-satir { background-color: #2e1a12 !important; border: 2px solid #ff5722 !important; box-shadow: 0 0 12px rgba(255, 87, 34, 0.2); }
+        .kasa-satir:hover { background-color: #3d2318 !important; border-color: #ff7043 !important; }
+        
+        @keyframes blink {
+            0% { opacity: 1; box-shadow: 0 0 10px #ff5722; }
+            50% { opacity: 0.5; box-shadow: none; }
+            100% { opacity: 1; box-shadow: 0 0 10px #ff5722; }
+        }
+        
         .stok-bilgi { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
         .stok-ust-satir { display: flex; align-items: center; gap: 10px; }
+        
         .kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .kasa-etiket { background-color: #ff5722 !important; color: #fff !important; font-size: 13px !important; letter-spacing: 1px; animation: blink 1.5s infinite; border-radius: 6px; padding: 4px 10px; }
         
         .malzeme-kod { font-size: 16px; font-weight: bold; color: #fff; text-transform: uppercase; }
         .malzeme-detay { font-size: 13px; color: #aaa; text-transform: uppercase; }
         .raf-no-vurgu { color: #f44336; font-weight: bold; }
+        .kasa-no-vurgu { color: #ff9800 !important; font-weight: 900 !important; font-size: 14px; }
 
         /* Masaüstü için tam isimli başlıklar */
         .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 6px; text-align: center; }
@@ -148,7 +164,8 @@
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 12px; }
         .form-grid-tam { grid-column: span 2; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #aaa; font-weight: 500; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #aaa; font-weight: 500; transition: color 0.3s; }
+        .label-kasa-vurgu { color: #ff9800 !important; font-weight: bold !important; }
         
         .modal-content input[type="text"], .modal-content select { width: 100%; padding: 10px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; text-transform: uppercase; }
         .modal-content input[type="text"]::placeholder { text-transform: none; }
@@ -207,10 +224,7 @@
                 padding: 10px !important; 
             }
             
-            #aramaKutusu::placeholder { 
-                font-size: 15px !important; 
-                font-weight: normal; 
-            }
+            #aramaKutusu::placeholder { font-size: 15px !important; font-weight: normal; }
             
             .stok-satir { grid-template-columns: 1fr; gap: 12px; width: 100%; }
             
@@ -271,6 +285,7 @@
                         <option value="RÖLE">RÖLE</option>
                         <option value="SÜRÜCÜ">SÜRÜCÜ</option>
                         <option value="MOTOR">MOTOR</option>
+                        <option value="KASALAR">KASALAR</option>
                     </select>
 
                     <select id="markaFiltre" onchange="stokGetir()">
@@ -328,13 +343,14 @@
             <div class="form-grid">
                 <div class="form-group" id="grupKategori">
                     <label>Kategori:</label>
-                    <select id="inputKategori">
+                    <select id="inputKategori" onchange="kategoriDegisti()">
                         <option value="">Seçiniz...</option>
                         <option value="PLC">PLC</option>
                         <option value="EKRAN">EKRAN</option>
                         <option value="RÖLE">RÖLE</option>
                         <option value="SÜRÜCÜ">SÜRÜCÜ</option>
                         <option value="MOTOR">MOTOR</option>
+                        <option value="KASALAR">KASALAR</option>
                     </select>
                 </div>
                 <div class="form-group" id="grupMarka">
@@ -379,7 +395,7 @@
                     </div>
                 </div>
                 <div class="form-group form-grid-tam">
-                    <label>Raf No:</label>
+                    <label id="labelRafKasa">Raf No:</label>
                     <input type="text" id="inputRafNo" placeholder="Örn: A12" oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
                 </div>
             </div>
@@ -411,6 +427,19 @@
             val += artis;
             if(val < 0) val = 0; 
             input.value = val;
+        }
+
+        // Kategori Değişince Raf/Kasa Yazısını Günceller
+        function kategoriDegisti() {
+            const secilen = document.getElementById('inputKategori').value;
+            const rafLabel = document.getElementById('labelRafKasa');
+            if (secilen === 'KASALAR') {
+                rafLabel.innerText = 'Kasa No:';
+                rafLabel.className = 'label-kasa-vurgu';
+            } else {
+                rafLabel.innerText = 'Raf No:';
+                rafLabel.className = '';
+            }
         }
 
         function uyariGoster(mesaj, tip, onTamamCallback) {
@@ -662,6 +691,8 @@
                     islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
                 }
 
+                const isKasa = malzeme.kategori === 'KASALAR';
+                
                 const formatliMarka = (malzeme.marka || '-').toLocaleUpperCase('tr-TR');
                 const formatliKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
 
@@ -671,15 +702,20 @@
                 const arizaliBaslik = telefonMu() ? "Arızalı" : "ARIZALI";
                 const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
 
+                // KASALAR İÇİN ÖZEL DEĞİŞKENLER
+                const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
+                const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
+                const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
+
                 const satir = `
-                    <div class="stok-satir">
+                    <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
-                                <span class="kategori-etiket">${malzeme.kategori || '-'}</span>
+                                <span class="${etiketClass}">${malzeme.kategori || '-'}</span>
                                 <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
                             </div>
                             <div class="malzeme-detay">
-                                Marka: <strong>${formatliMarka}</strong> | <span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>
+                                Marka: <strong>${formatliMarka}</strong> | ${rafMetni}
                             </div>
                         </div>
 
@@ -727,20 +763,30 @@
                     return;
                 }
 
-                const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod);
-                if (mevcutData && mevcutData.length > 0) {
-                    uyariGoster("Bu kod sisteme zaten daha önceden kayıt edilmiş!<br>Aynı kodu (büyük/küçük harf fark etmez) tekrar ekleyemezsiniz.", 'hata');
-                    return;
+                // SADECE NORMAL KATEGORİLER İÇİN MÜKERRER KONTROLÜ (KASALAR İSE GEÇ)
+                if (kategori !== 'KASALAR') {
+                    // Veritabanında Kasalar HARİÇ bu koddan daha önce girilmiş mi diye bakıyoruz
+                    const { data: mevcutData } = await sbClient.from('malzemeler')
+                        .select('kod')
+                        .ilike('kod', kod)
+                        .neq('kategori', 'KASALAR');
+
+                    if (mevcutData && mevcutData.length > 0) {
+                        uyariGoster("Bu kod sisteme zaten normal rafta daha önceden kayıt edilmiş!<br>Aynı kodu normal kategorilerde tekrar ekleyemezsiniz.", 'hata');
+                        return;
+                    }
                 }
 
                 if (!raf_no) {
-                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
+                    const msgRaf = kategori === 'KASALAR' ? "Kasa" : "Raf";
+                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
                     return;
                 }
             } else {
                 if (!kod) { uyariGoster("Malzeme kodu boş olamaz!", 'hata'); return; }
                 if (!raf_no) {
-                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
+                    const msgRaf = kategori === 'KASALAR' ? "Kasa" : "Raf";
+                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
                     return;
                 }
             }
@@ -878,6 +924,11 @@
             document.getElementById('grupKategori').style.display = 'none';
             document.getElementById('grupMarka').style.display = 'none';
             document.getElementById('grupKod').style.display = 'none';
+            
+            // Güncellemede Kategori bilgisine göre etiketi güncelle
+            document.getElementById('inputKategori').value = malzeme.kategori || '';
+            kategoriDegisti();
+            
             document.getElementById('inputKod').value = malzeme.kod; 
 
             document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
@@ -900,6 +951,8 @@
             document.getElementById('grupKod').style.display = 'block';
 
             document.getElementById('inputKategori').value = '';
+            kategoriDegisti(); // Etiketi Raf No olarak sıfırla
+
             document.getElementById('inputMarka').value = '';
             document.getElementById('inputKod').value = '';
             document.getElementById('inputIkinciEl').value = 0;
@@ -940,7 +993,7 @@
                                 <th>Kapalı Kutu</th>
                                 <th>Arızalı</th>
                                 <th>Toplam</th>
-                                <th>Raf No</th>
+                                <th>Raf / Kasa No</th>
                             </tr>
                         </thead>
                         <tbody>
