@@ -2,19 +2,21 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
     <!-- GÖMÜLÜ SVG LOGO -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23121212'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%23f44336' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        * { box-sizing: border-box; }
         body {
             background-color: #121212;
             color: #e0e0e0;
             font-family: 'Segoe UI', system-ui, sans-serif;
             padding: 0;
             margin: 0;
+            overflow-x: hidden;
         }
         
         .container {
@@ -27,7 +29,7 @@
         #authEkrani, #SifreSifirlamaEkrani { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #121212; }
         .auth-kutu { background-color: #1e1e1e; padding: 40px; border-radius: 10px; border: 1px solid #333; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .auth-kutu h2 { color: #00bcd4; margin-top: 0; margin-bottom: 25px; }
-        .auth-kutu input { width: 100%; box-sizing: border-box; margin-bottom: 15px; padding: 12px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
+        .auth-kutu input { width: 100%; margin-bottom: 15px; padding: 12px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
         .auth-kutu input:focus { border-color: #00bcd4; }
         .btn-auth { width: 100%; padding: 12px; background-color: #00bcd4; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         .btn-auth:hover { background-color: #008ba3; }
@@ -48,21 +50,16 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         
-        .ust-bosluklu-container { padding-top: 10px; padding-bottom: 10px; }
+        .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
-        .istatistik-seridi {
-            background: linear-gradient(135deg, #2c2512, #1e1b12);
-            border: 1px solid #ffd700;
-            border-radius: 8px;
-            padding: 6px 20px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+        .ana-baslik {
+            text-align: center;
+            color: #ffd700;
+            margin: 0 0 15px 0;
+            font-size: 22px;
+            letter-spacing: 1px;
+            font-weight: 800;
         }
-        .istatistik-item { text-align: center; }
-        .istatistik-baslik { font-size: 12px; color: #ffd700; font-weight: bold; text-transform: uppercase; }
-        .istatistik-deger { font-size: 18px; font-weight: bold; color: #fff; margin-top: 2px; }
 
         /* Arama ve Kontrol Paneli */
         .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between;}
@@ -76,15 +73,16 @@
             border-radius: 6px; 
             font-size: 14px; 
             outline: none; 
-            box-sizing: border-box;
+            text-transform: uppercase;
         }
+        .header input::placeholder { text-transform: none; }
         .header input:focus, .header select:focus { border-color: #00bcd4; }
         
         #aramaKutusu { flex: 2; min-width: 140px; }
         #kategoriFiltre { flex: 1; min-width: 110px; }
         #markaFiltre { flex: 1; min-width: 110px; }
         
-        /* EŞİT GENİŞLİKLİ BUTON GRUBU */
+        /* EŞİT GENİŞLİKLİ BUTON GRUBU - SIRA DEĞİŞTİ */
         .buton-grup { display: flex; gap: 8px; flex: 2; min-width: 310px;}
         .buton-grup button { 
             flex: 1; 
@@ -99,14 +97,13 @@
             align-items: center; 
             justify-content: center;
             white-space: nowrap;
-            box-sizing: border-box;
         }
-        .btn-log { background-color: #9c27b0; color: #fff; }
-        .btn-log:hover { background-color: #7b1fa2; }
-        .btn-excel { background-color: #ff9800; color: #000; }
-        .btn-excel:hover { background-color: #f57c00; }
         .btn-yeni { background-color: #4caf50; color: #fff; }
         .btn-yeni:hover { background-color: #388e3c; }
+        .btn-excel { background-color: #ff9800; color: #000; }
+        .btn-excel:hover { background-color: #f57c00; }
+        .btn-log { background-color: #9c27b0; color: #fff; }
+        .btn-log:hover { background-color: #7b1fa2; }
         .btn-cikis { background-color: #f44336; color: #fff; }
         .btn-cikis:hover { background-color: #d32f2f; }
         
@@ -118,9 +115,9 @@
         .stok-ust-satir { display: flex; align-items: center; gap: 10px; }
         .kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         
-        .malzeme-kod { font-size: 16px; font-weight: bold; color: #fff; }
+        .malzeme-kod { font-size: 16px; font-weight: bold; color: #fff; text-transform: uppercase; }
         
-        .malzeme-detay { font-size: 13px; color: #aaa; }
+        .malzeme-detay { font-size: 13px; color: #aaa; text-transform: uppercase; }
         .raf-no-vurgu { color: #f44336; font-weight: bold; }
 
         /* Masaüstü için tam isimli başlıklar */
@@ -138,9 +135,8 @@
         /* MODAL TASARIMLARI */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background-color: #1e1e1e; padding: 25px 30px; border-radius: 12px; width: 90%; max-width: 420px; border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
-        .modal-content h3 { margin-top: 0; color: #00bcd4; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; text-align: center; }
+        .modal-content h3 { margin-top: 0; color: #00bcd4; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; text-align: center; text-transform: uppercase; }
 
-        /* Özel Uyarı Modalı */
         #CustomModal .modal-content { max-width: 380px; text-align: center; }
         #CustomModalMesaj { font-size: 15px; line-height: 1.5; color: #e0e0e0; margin-bottom: 25px; }
         
@@ -148,10 +144,10 @@
         .form-grid-tam { grid-column: span 2; }
         .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #aaa; font-weight: 500; }
         
-        .modal-content input[type="text"], .modal-content select { width: 100%; box-sizing: border-box; padding: 10px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .modal-content input[type="text"], .modal-content select { width: 100%; padding: 10px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; text-transform: uppercase; }
+        .modal-content input[type="text"]::placeholder { text-transform: none; }
         .modal-content input[type="text"]:focus, .modal-content select:focus { border-color: #00bcd4; }
 
-        /* ŞIK SAYI ARTIRMA / AZALTMA BUTONLARI */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
@@ -168,79 +164,42 @@
         .btn-iptal { background-color: #f44336; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px;}
         .btn-iptal:hover { background-color: #d32f2f; }
 
-        /* LOG MODALI SABİT BAŞLIK YAPISI */
-        #LogModal .modal-content { 
-            max-width: 650px; 
-            max-height: 90vh; 
-            display: flex; 
-            flex-direction: column; 
-            padding-bottom: 20px;
-        }
-        
-        .log-tablo { width: 100%; border-collapse: collapse; font-size: 13px; text-align: center; }
-        .log-tablo th, .log-tablo td { 
-            padding: 12px 8px; 
-            border-bottom: 1px solid #333; 
-            text-align: center; 
-            vertical-align: middle; 
-        }
-        .log-tablo th { 
-            position: sticky; 
-            top: 0; 
-            background-color: #1e1e1e; 
-            z-index: 10; 
-            color: #9c27b0; 
-            font-weight: bold; 
-            border-bottom: 2px solid #444;
-        }
+        /* YENİ ŞIK LOG LİSTESİ TASARIMI */
+        #LogModal .modal-content { max-width: 550px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px 20px; background-color: #121212; border: 1px solid #333;}
+        .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .log-kart { background-color: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .log-tarih { font-size: 12px; color: #888; }
+        .log-kullanici { font-size: 12px; font-weight: bold; color: #00bcd4; background: #222; padding: 3px 8px; border-radius: 12px; }
+        .log-kod-alani { text-align: center; margin: 4px 0; }
+        .log-kod-span { font-size: 16px; font-weight: bold; color: #fff; letter-spacing: 1px; }
+        .log-islem-detay { font-size: 13.5px; line-height: 1.5; color: #ccc; background-color: #222; padding: 10px; border-radius: 6px; border-left: 3px solid; }
 
         /* MOBİL UYARLAMA KISMI */
         @media screen and (max-width: 650px) {
             .header { flex-direction: column; align-items: stretch; }
             
-            .buton-grup { 
-                flex-wrap: wrap; 
-                order: -1; 
-            }
+            .buton-grup { flex-wrap: wrap; order: -1; }
             
-            /* ARAMA SATIRI YÜKSEKLİĞİ 60px'E ÇIKARILDI */
-            #aramaKutusu { 
-                width: 100%; 
-                flex: 1; 
-                height: 60px; 
-                font-size: 15px; 
-            }
-            #aramaKutusu::placeholder {
-                font-size: 14px; 
-            }
-
-            #kategoriFiltre, #markaFiltre { 
-                width: 100%; 
-                flex: 1; 
-                height: 52px; 
-                font-size: 13.5px; 
-            }
+            .ana-baslik { font-size: 18px; margin-bottom: 10px; }
+            
+            /* ARAMA VE FİLTRE SATIRLARI DEVASA BOYUTTA - YÜKSEKLİKLERİ YAKLAŞIK 2 KATINA ÇIKTI */
+            #aramaKutusu { height: 90px; font-size: 18px; font-weight: bold; text-align: center; border-radius: 8px; }
+            #aramaKutusu::placeholder { font-size: 16px; font-weight: normal; }
+            #kategoriFiltre, #markaFiltre { height: 80px; font-size: 16px; font-weight: bold; text-align: center; border-radius: 8px; }
             
             .stok-satir { grid-template-columns: 1fr; gap: 12px; }
             
-            /* MOBİLDE SAYI BAŞLIKLARI KESİN OLARAK TEK SATIRA KİLİTLENDİ */
             .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 3px; }
-            .sayi-kutusu { 
-                font-size: 8.5px; 
-                padding: 4px 0; 
-                text-transform: none !important; 
-                font-weight: 700;
-                white-space: nowrap; 
-                letter-spacing: -0.2px; 
-            } 
+            .sayi-kutusu { font-size: 8.5px; padding: 4px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
             .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 13px; margin-top: 3px; }
             
             .btn-duzenle, .btn-pasif { width: 100%; }
             .modal-content { padding: 20px; }
             
             #LogModal .modal-content { padding: 15px 10px; width: 95%; }
-            .log-tablo th, .log-tablo td { padding: 8px 4px; font-size: 11px; }
-            .log-tablo th { font-size: 12px; }
+            .log-kart { padding: 10px; }
+            .log-islem-detay { font-size: 12px; padding: 8px; }
         }
     </style>
 </head>
@@ -255,17 +214,13 @@
                 <input type="password" id="authSifre" name="password" autocomplete="current-password" placeholder="Şifreniz" required>
                 <button type="submit" class="btn-auth">Giriş Yap</button>
                 <button type="button" class="btn-auth btn-kayitol" onclick="kayitOl()">Hesap Oluştur</button>
-                
-                <!-- ŞİFREMİ UNUTTUM LİNKİ -->
-                <div style="margin-top: 15px;">
-                    <span class="link-unuttum" onclick="sifremiUnuttum()">Şifremi Unuttum</span>
-                </div>
+                <div style="margin-top: 15px;"><span class="link-unuttum" onclick="sifremiUnuttum()">Şifremi Unuttum</span></div>
             </form>
             <div id="authMesaj" style="margin-top: 15px; font-size: 13px; color: #f44336;"></div>
         </div>
     </div>
 
-    <!-- ŞİFRE SIFIRLAMA (YENİ ŞİFRE BELİRLEME) EKRANI -->
+    <!-- ŞİFRE SIFIRLAMA EKRANI -->
     <div id="SifreSifirlamaEkrani" style="display: none;">
         <div class="auth-kutu">
             <h2>Yeni Şifre Belirle</h2>
@@ -280,19 +235,10 @@
     <div id="anaUygulama">
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
-                <div class="istatistik-seridi">
-                    <div class="istatistik-item">
-                        <div class="istatistik-baslik">Toplam Çeşit Sayısı</div>
-                        <div id="cesitSayisi" class="istatistik-deger">0</div>
-                    </div>
-                    <div class="istatistik-item">
-                        <div class="istatistik-baslik">TOPLAM MALZEME SAYISI</div>
-                        <div id="toplamMalzemeSayisi" class="istatistik-deger">0</div>
-                    </div>
-                </div>
+                <h1 class="ana-baslik">TEMEL OTOMASYON - STOK LİSTESİ</h1>
 
                 <div class="header">
-                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
+                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = this.value.toLocaleUpperCase('tr-TR'); stokGetir()">
                     
                     <select id="kategoriFiltre" onchange="stokGetir()">
                         <option value="">Tüm Kategoriler</option>
@@ -308,9 +254,9 @@
                     </select>
                     
                     <div class="buton-grup">
-                        <button class="btn-log" onclick="logModalAc()">Log</button>
-                        <button class="btn-excel" onclick="excelDokumuAl()">Excel'e Aktar</button>
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+ Yeni Ekle</button>
+                        <button class="btn-excel" onclick="excelDokumuAl()">Excel'e Aktar</button>
+                        <button class="btn-log" onclick="logModalAc()">Log</button>
                         <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
                     </div>
                 </div>
@@ -322,7 +268,7 @@
         </div>
     </div>
 
-    <!-- ÖZEL UYARI MODALI (TAMAM / GERİ DÖN) -->
+    <!-- ÖZEL UYARI MODALI -->
     <div id="CustomModal" class="modal" style="z-index: 3000;">
         <div class="modal-content">
             <h3 id="CustomModalBaslik" style="color: #ff9800;">Sistem Mesajı</h3>
@@ -334,24 +280,12 @@
         </div>
     </div>
 
-    <!-- LOG MODALI -->
+    <!-- YENİ ŞIK KARTLI LOG MODALI -->
     <div id="LogModal" class="modal">
-        <div class="modal-content" style="padding: 25px 20px;">
-            <h3 style="color:#9c27b0; margin-top:0; text-align:center; flex-shrink: 0;">Son İşlem Kayıtları (Log)</h3>
-            <div style="flex: 1; overflow-y: auto; position: relative;">
-                <table class="log-tablo">
-                    <thead>
-                        <tr>
-                            <th>Tarih / Saat</th>
-                            <th>Kullanıcı</th>
-                            <th>İşlem Detayı</th>
-                            <th>Malzeme Kodu</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logGövdesi">
-                        <tr><td colspan="4">Yükleniyor...</td></tr>
-                    </tbody>
-                </table>
+        <div class="modal-content">
+            <h3 style="color:#9c27b0; margin-top:0; flex-shrink: 0;">SİSTEM HAREKETLERİ</h3>
+            <div class="log-liste-alani" id="logGövdesi">
+                <div style="text-align:center; color:#888; padding:20px;">Yükleniyor...</div>
             </div>
             <button class="btn-iptal" style="width:100%; margin-top:15px; flex-shrink: 0;" onclick="document.getElementById('LogModal').style.display='none'">Kapat</button>
         </div>
@@ -362,7 +296,6 @@
         <div class="modal-content">
             <h3 id="modalBaslik">Miktar Güncelle</h3>
             <input type="hidden" id="duzenlenenId">
-            
             <datalist id="markaListesi"></datalist>
 
             <div class="form-grid">
@@ -379,11 +312,11 @@
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
-                    <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS">
+                    <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS" oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
                 </div>
                 <div class="form-group form-grid-tam" id="grupKod">
                     <label>Malzeme Kodu:</label>
-                    <input type="text" id="inputKod" placeholder="Malzemenin tam kodunu girin...">
+                    <input type="text" id="inputKod" placeholder="Tam kodunu girin..." oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
                 </div>
 
                 <div class="form-group">
@@ -420,7 +353,7 @@
                 </div>
                 <div class="form-group form-grid-tam">
                     <label>Raf No:</label>
-                    <input type="text" id="inputRafNo" placeholder="Örn: A12">
+                    <input type="text" id="inputRafNo" placeholder="Örn: A12" oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
                 </div>
             </div>
 
@@ -452,7 +385,6 @@
             input.value = val;
         }
 
-        // ÖZEL UYARI MODALI SİSTEMİ
         function uyariGoster(mesaj, tip, onTamamCallback) {
             document.getElementById('CustomModalMesaj').innerHTML = mesaj;
             const modal = document.getElementById('CustomModal');
@@ -487,7 +419,6 @@
             }
         }
 
-        // UYGULAMA BAŞLANGICI VE ŞİFRE SIFIRLAMA YAKALAYICISI
         document.addEventListener('DOMContentLoaded', async () => {
             if (window.location.hash && window.location.hash.includes('type=recovery')) {
                 document.getElementById('authEkrani').style.display = 'none';
@@ -498,7 +429,6 @@
             }
         });
 
-        // --- AUTH (GİRİŞ/KAYIT/ŞİFRE) İŞLEMLERİ ---
         async function kayitOl() {
             const email = document.getElementById('authEmail').value.trim();
             const sifre = document.getElementById('authSifre').value.trim();
@@ -546,17 +476,14 @@
 
             msg.style.color = "#00bcd4";
             msg.innerText = "Sıfırlama bağlantısı gönderiliyor...";
-
-            const { data, error } = await sbClient.auth.resetPasswordForEmail(email, {
-                redirectTo: window.location.origin + window.location.pathname
-            });
+            const { data, error } = await sbClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
 
             if (error) { 
                 msg.style.color = "#f44336";
                 msg.innerText = "Hata: " + error.message; 
             } else {
                 msg.style.color = "#4caf50";
-                msg.innerText = "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi! Lütfen e-postanızı (ve spam/gereksiz kutusunu) kontrol edin.";
+                msg.innerText = "Şifre sıfırlama bağlantısı e-postanıza gönderildi!";
             }
         }
 
@@ -564,28 +491,20 @@
             const yeniSifre = document.getElementById('yeniSifreInput').value.trim();
             const msg = document.getElementById('sifreSifirlaMesaj');
             
-            if(!yeniSifre || yeniSifre.length < 6) {
-                msg.innerText = "Şifreniz en az 6 karakter olmalıdır.";
-                return;
-            }
+            if(!yeniSifre || yeniSifre.length < 6) { msg.innerText = "Şifreniz en az 6 karakter olmalıdır."; return; }
             
             msg.style.color = "#00bcd4";
             msg.innerText = "Şifreniz güncelleniyor...";
 
-            const { data, error } = await sbClient.auth.updateUser({
-                password: yeniSifre
-            });
+            const { data, error } = await sbClient.auth.updateUser({ password: yeniSifre });
 
             if (error) {
                 msg.style.color = "#f44336";
                 msg.innerText = "Hata: " + error.message;
             } else {
                 msg.style.color = "#4caf50";
-                msg.innerText = "Şifreniz başarıyla güncellendi! Lütfen bekleyin...";
-                setTimeout(() => {
-                    window.location.hash = '';
-                    window.location.reload();
-                }, 2000);
+                msg.innerText = "Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...";
+                setTimeout(() => { window.location.hash = ''; window.location.reload(); }, 2000);
             }
         }
 
@@ -623,7 +542,6 @@
                 
                 baslat();
                 
-                // HEM MASAÜSTÜNDE HEM TELEFONDA ARAMA KUTUSUNA OTOMATİK ODAKLAN
                 setTimeout(() => {
                     const arama = document.getElementById('aramaKutusu');
                     if (arama) arama.focus();
@@ -639,7 +557,6 @@
             const { data, error } = await sbClient.from('malzemeler').select('marka').limit(5000);
             if (data) {
                 const markalar = [...new Set(data.map(item => (item.marka || '').toLocaleUpperCase('tr-TR').trim()).filter(Boolean))].sort();
-                
                 document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
                 
                 const markaFiltre = document.getElementById('markaFiltre');
@@ -651,7 +568,12 @@
 
         // --- STOK & ARAMA İŞLEMLERİ ---
         function baslat() {
-            stokGetir();
+            // İLK AÇILIŞTA EKRANI BOŞ BIRAK VE MESAJ VER
+            document.getElementById('listeGövdesi').innerHTML = `
+                <div style="text-align:center; color:#888; padding:40px 20px; font-size: 16px; border: 1px dashed #333; border-radius: 8px; margin-top:20px;">
+                    <span style="font-size: 30px; display: block; margin-bottom: 15px;">🔍</span>
+                    Sistem hazır.<br><br>Lütfen aramak istediğiniz malzeme kodunu yukarıya yazın veya filtreleri seçin.
+                </div>`;
         }
 
         async function stokGetir() {
@@ -661,16 +583,22 @@
                 const kategori = document.getElementById('kategoriFiltre').value;
                 const marka = document.getElementById('markaFiltre').value;
 
+                // HER ŞEY BOŞSA YİNE BEKLEME EKRANINI GÖSTER (LİSTEYİ ŞİŞİRME)
+                if (!aranan && !kategori && !marka) {
+                    baslat();
+                    return;
+                }
+
+                document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:#00bcd4; padding:30px;">Aranıyor...</div>';
+
                 if (!aranan) {
-                    let sorgu = sbClient.from('malzemeler').select('*', { count: 'exact' }).order('marka', { ascending: true }).order('id', { ascending: true });
+                    let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
                     if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                     if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                     
-                    const { data, count, error } = await sorgu.limit(50);
+                    const { data, error } = await sorgu.limit(100);
                     if (error) return;
-                    
                     ekranaYazdir(data);
-                    istatistikGuncelle(data, count);
                 } else {
                     let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
                     if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
@@ -685,22 +613,9 @@
                         return temizKod.includes(temizAranan);
                     });
                     
-                    ekranaYazdir(filtrelenmis.slice(0, 50));
-                    istatistikGuncelle(filtrelenmis, filtrelenmis.length);
+                    ekranaYazdir(filtrelenmis.slice(0, 100));
                 }
-            }, 200);
-        }
-
-        async function genelIstatistikleriGetir() {
-            const { data, count } = await sbClient.from('malzemeler').select('toplam', { count: 'exact' });
-            if (data) { istatistikGuncelle(data, count); }
-        }
-
-        function istatistikGuncelle(veriler, toplamCesit) {
-            document.getElementById('cesitSayisi').innerText = toplamCesit ?? veriler.length;
-            let toplamMalzeme = 0;
-            veriler.forEach(m => { toplamMalzeme += (m.toplam || 0); });
-            document.getElementById('toplamMalzemeSayisi').innerText = toplamMalzeme;
+            }, 300);
         }
 
         function ekranaYazdir(veriler) {
@@ -708,7 +623,7 @@
             liste.innerHTML = '';
             
             if(!veriler || veriler.length === 0) {
-                liste.innerHTML = '<div style="text-align:center; color:#888; padding:30px;">Kayıt bulunamadı.</div>';
+                liste.innerHTML = '<div style="text-align:center; color:#f44336; padding:30px;">Kayıt bulunamadı.</div>';
                 return;
             }
 
@@ -722,8 +637,8 @@
                 }
 
                 const formatliMarka = (malzeme.marka || '-').toLocaleUpperCase('tr-TR');
+                const formatliKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
 
-                // Mobil ve Masaüstü için Dinamik Başlıklar
                 const ikinciElBaslik = telefonMu() ? "İkinci El" : "İKİNCİ EL";
                 const acikKutuBaslik = telefonMu() ? "A.Kutu" : "AÇIK KUTU";
                 const kapaliKutuBaslik = telefonMu() ? "K.Kutu" : "KAPALI KUTU";
@@ -735,7 +650,7 @@
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
                                 <span class="kategori-etiket">${malzeme.kategori || '-'}</span>
-                                <span class="malzeme-kod" title="${malzeme.kod}">${malzeme.kod}</span>
+                                <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
                             </div>
                             <div class="malzeme-detay">
                                 Marka: <strong>${formatliMarka}</strong> | <span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>
@@ -749,7 +664,6 @@
                             <div class="sayi-kutusu">${arizaliBaslik}<div class="sayi-arizali">${malzeme.arizali ?? 0}</div></div>
                             <div class="sayi-kutusu">${toplamBaslik}<div class="sayi-toplam">${malzeme.toplam ?? 0}</div></div>
                         </div>
-
                         ${islemButonu}
                     </div>
                 `;
@@ -761,8 +675,8 @@
             if(aktifRol !== 'duzenleyici') return;
 
             const kategori = document.getElementById('inputKategori').value; 
-            let marka = document.getElementById('inputMarka').value.trim();
-            let kod = document.getElementById('inputKod').value.trim(); 
+            let marka = document.getElementById('inputMarka').value.trim().toLocaleUpperCase('tr-TR');
+            let kod = document.getElementById('inputKod').value.trim().toLocaleUpperCase('tr-TR'); 
             const raf_no = document.getElementById('inputRafNo').value.trim().toLocaleUpperCase('tr-TR');
 
             const eAdet = parseInt(document.getElementById('inputIkinciEl').value) || 0;
@@ -778,8 +692,7 @@
                 if (!kod) bosAlanlar.push("Malzeme Kodu");
 
                 if (bosAlanlar.length > 0) {
-                    const mesaj = "Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:#00bcd4;'>" + bosAlanlar.join("<br>") + "</b>";
-                    uyariGoster(mesaj, 'hata');
+                    uyariGoster("Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:#00bcd4;'>" + bosAlanlar.join("<br>") + "</b>", 'hata');
                     return;
                 }
                 
@@ -788,24 +701,21 @@
                     return;
                 }
 
-                const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').eq('kod', kod);
+                // ILIKE SORGUSU İLE BÜYÜK/KÜÇÜK HARF FARK ETMEKSİZİN MÜKERRER KONTROLÜ
+                const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod);
                 if (mevcutData && mevcutData.length > 0) {
-                    uyariGoster("Bu koddan daha önce girilmiş!<br>Aynı kodu tekrar ekleyemezsiniz.", 'hata');
+                    uyariGoster("Bu kod sisteme zaten daha önceden kayıt edilmiş!<br>Aynı kodu (büyük/küçük harf fark etmez) tekrar ekleyemezsiniz.", 'hata');
                     return;
                 }
 
                 if (!raf_no) {
-                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => {
-                        gercekVeriKaydet(kategori, marka, kod, raf_no);
-                    });
+                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
                     return;
                 }
             } else {
                 if (!kod) { uyariGoster("Malzeme kodu boş olamaz!", 'hata'); return; }
                 if (!raf_no) {
-                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => {
-                        gercekVeriKaydet(kategori, marka, kod, raf_no);
-                    });
+                    uyariGoster("Raf numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?", 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
                     return;
                 }
             }
@@ -819,8 +729,6 @@
             const kapali_kutu = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
             const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
             const toplam = ikinci_el + acik_kutu + kapali_kutu;
-            
-            marka = marka.toLocaleUpperCase('tr-TR');
             
             if (islemTuru === 'guncelle') {
                 const id = document.getElementById('duzenlenenId').value;
@@ -864,21 +772,17 @@
         }
 
         async function logKaydet(islemTipiVeDetay, parcaKodu) {
-            await sbClient.from('log_kayitlari').insert([{
-                kullanici: aktifKullaniciEmail,
-                islem: islemTipiVeDetay,
-                kod: parcaKodu
-            }]);
+            await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: islemTipiVeDetay, kod: parcaKodu }]);
         }
 
         async function logModalAc() {
             document.getElementById('LogModal').style.display = 'flex';
             const logGövdesi = document.getElementById('logGövdesi');
-            logGövdesi.innerHTML = '<tr><td colspan="4">Loglar çekiliyor...</td></tr>';
+            logGövdesi.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Kayıtlar çekiliyor...</div>';
 
             const { data, error } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(50);
 
-            if (error || !data) { logGövdesi.innerHTML = '<tr><td colspan="4">Loglar alınamadı!</td></tr>'; return; }
+            if (error || !data) { logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Kayıtlar alınamadı!</div>'; return; }
 
             logGövdesi.innerHTML = '';
             data.forEach(log => {
@@ -894,20 +798,24 @@
                 }
 
                 hamIslem = hamIslem.replace(/->/g, "→");
-
                 let islemParcalari = hamIslem.split('<br>');
-                let formatliIslem = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
-                if(islemParcalari.length > 1) {
-                    formatliIslem += `<span style="color:#e0e0e0; display:block; line-height:1.6; white-space:nowrap;">${islemParcalari.slice(1).join('<br>')}</span>`;
-                }
+                let islemBaslik = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
+                let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
 
                 logGövdesi.innerHTML += `
-                    <tr>
-                        <td style="color:#aaa;">${tarih}</td>
-                        <td><strong>${log.kullanici.split('@')[0]}</strong></td>
-                        <td style="font-size:13px;">${formatliIslem}</td>
-                        <td style="font-weight:bold; word-break:break-word;">${log.kod}</td>
-                    </tr>
+                    <div class="log-kart">
+                        <div class="log-kart-ust">
+                            <span class="log-tarih">${tarih}</span>
+                            <span class="log-kullanici">@${log.kullanici.split('@')[0]}</span>
+                        </div>
+                        <div class="log-kod-alani">
+                            <span class="log-kod-span">${log.kod}</span>
+                        </div>
+                        <div class="log-islem-detay" style="border-left-color: ${islemRengi}">
+                            ${islemBaslik}
+                            ${islemAltYazi}
+                        </div>
+                    </div>
                 `;
             });
         }
@@ -917,7 +825,7 @@
             aktifDuzenlenenMalzeme = malzeme;
             
             document.getElementById('duzenlenenId').value = malzeme.id;
-            document.getElementById('modalBaslik').innerText = `${malzeme.kod} Güncelle`;
+            document.getElementById('modalBaslik').innerText = `${malzeme.kod} GÜNCELLE`;
             
             document.getElementById('grupKategori').style.display = 'none';
             document.getElementById('grupMarka').style.display = 'none';
@@ -937,7 +845,7 @@
             islemTuru = 'yeni';
             aktifDuzenlenenMalzeme = null;
 
-            document.getElementById('modalBaslik').innerText = 'Yeni Malzeme Ekle';
+            document.getElementById('modalBaslik').innerText = 'YENİ MALZEME EKLE';
             
             document.getElementById('grupKategori').style.display = 'block';
             document.getElementById('grupMarka').style.display = 'block';
@@ -956,7 +864,7 @@
         }
 
         function excelDokumuAl() {
-            uyariGoster("Şu anki görünen tabloyu (filtrelerinize göre) indirmek istiyor musunuz?", "onay", async () => {
+            uyariGoster("Şu anki görünen tabloyu indirmek istiyor musunuz?", "onay", async () => {
                 const aranan = document.getElementById('aramaKutusu').value.trim();
                 const kategori = document.getElementById('kategoriFiltre').value;
                 const marka = document.getElementById('markaFiltre').value;
@@ -992,11 +900,12 @@
 
                 data.forEach(m => {
                     const formatliMarka = (m.marka || '').toLocaleUpperCase('tr-TR');
+                    const formatliKod = (m.kod || '').toLocaleUpperCase('tr-TR');
                     htmlTablo += `
                             <tr style="height:25px;">
                                 <td>${m.kategori || ''}</td>
                                 <td>${formatliMarka}</td>
-                                <td style="font-weight:bold;">${m.kod || ''}</td>
+                                <td style="font-weight:bold;">${formatliKod}</td>
                                 <td>${m.ikinci_el ?? 0}</td>
                                 <td>${m.acik_kutu ?? 0}</td>
                                 <td>${m.kapali_kutu ?? 0}</td>
