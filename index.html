@@ -199,8 +199,15 @@
         .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; }
         .log-tarih { font-size: 12px; color: #888; }
         .log-kullanici { font-size: 12px; font-weight: bold; color: #00bcd4; background: #222; padding: 3px 8px; border-radius: 12px; }
-        .log-kod-alani { text-align: center; margin: 4px 0; }
-        .log-kod-span { font-size: 16px; font-weight: bold; color: #fff; letter-spacing: 1px; }
+        
+        /* LOG KOD VE KATEGORİ ALANI YENİDEN TASARLANDI */
+        .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px 0; background-color: #222; padding: 8px 10px; border-radius: 6px; }
+        .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .log-kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .log-kasa-etiket { background-color: #ff5722 !important; color: #fff !important; }
+        .log-marka { font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase; }
+        .log-kod-span { font-size: 15px; font-weight: bold; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-align: right; }
+        
         .log-islem-detay { font-size: 13.5px; line-height: 1.5; color: #ccc; background-color: #222; padding: 10px; border-radius: 6px; border-left: 3px solid; }
 
         /* MOBİL UYARLAMA KISMI */
@@ -238,6 +245,8 @@
             #LogModal .modal-content { padding: 15px 10px; width: 95%; }
             .log-kart { padding: 10px; }
             .log-islem-detay { font-size: 12px; padding: 8px; }
+            .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .log-kod-span { text-align: left; width: 100%; border-top: 1px dashed #444; padding-top: 8px; }
         }
     </style>
 </head>
@@ -831,7 +840,6 @@
                     secenekleriYukle(); 
                     basariSonrasi();
                 } else {
-                    // DİKKAT: HATA EKRANA BASILIYOR!
                     if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
                         uyariGoster("<b>Veritabanı Engelledi!</b><br><br>Supabase veritabanınızda 'kod' sütunu hala <b>'Is Unique' (Benzersiz)</b> olarak işaretli. Bu yüzden aynı kodu kasalara tekrar eklemenize veritabanı izin vermiyor.<br><br><b>Çözüm:</b> Lütfen Supabase'den 'Table Editor'e girin, malzemeler tablosunda 'kod' sütununu düzenleyip 'Is Unique' tikini kaldırın.", 'hata');
                     } else {
@@ -856,11 +864,31 @@
             const logGövdesi = document.getElementById('logGövdesi');
             logGövdesi.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Kayıtlar çekiliyor...</div>';
 
-            const { data, error } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(200);
+            // 1. Log tablosundan en son 200 kaydı çek
+            const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(200);
 
-            if (error || !data) { logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Kayıtlar alınamadı!</div>'; return; }
+            if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Kayıtlar alınamadı!</div>'; return; }
 
-            tumLoglar = data;
+            // 2. Malzemeler tablosundan tüm kodların Kategori ve Marka bilgilerini çek
+            const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
+            
+            // Kodları hızlı eşleştirebilmek için bir sözlük (map) oluşturuyoruz
+            const malzemeMap = {};
+            if (malzemeData) {
+                malzemeData.forEach(m => {
+                    malzemeMap[(m.kod || '').toLocaleUpperCase('tr-TR')] = {
+                        kategori: m.kategori || '-',
+                        marka: (m.marka || '-').toLocaleUpperCase('tr-TR')
+                    };
+                });
+            }
+
+            // 3. Logları bu bilgilerle birleştiriyoruz
+            tumLoglar = logData.map(log => {
+                const mapInfo = malzemeMap[(log.kod || '').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' };
+                return { ...log, kategori: mapInfo.kategori, marka: mapInfo.marka };
+            });
+
             loglariCiz(tumLoglar);
         }
 
@@ -890,15 +918,24 @@
                 let islemBaslik = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
                 let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
 
+                // KASALAR için özel renk kontrolü
+                const etiketClass = log.kategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
+
                 logGövdesi.innerHTML += `
                     <div class="log-kart">
                         <div class="log-kart-ust">
                             <span class="log-tarih">${tarih}</span>
                             <span class="log-kullanici">@${log.kullanici.split('@')[0]}</span>
                         </div>
+                        
                         <div class="log-kod-alani">
+                            <div class="log-sol-bilgi">
+                                <span class="${etiketClass}">${log.kategori}</span>
+                                <span class="log-marka">${log.marka}</span>
+                            </div>
                             <span class="log-kod-span">${log.kod}</span>
                         </div>
+
                         <div class="log-islem-detay" style="border-left-color: ${islemRengi}">
                             ${islemBaslik}
                             ${islemAltYazi}
