@@ -5,20 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
     <!-- GÖMÜLÜ SVG LOGO -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23121212'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%23f44336' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%23f59e0b' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* MODERN VE PREMIUM CSS BAŞLANGICI */
+        :root {
+            --bg-dark: #0f172a;       /* Slate 900 */
+            --bg-card: #1e293b;       /* Slate 800 */
+            --border-color: #334155;  /* Slate 700 */
+            --text-main: #f8fafc;     /* Slate 50 */
+            --text-muted: #94a3b8;    /* Slate 400 */
+            --accent-blue: #3b82f6;   /* Blue 500 */
+            --accent-green: #10b981;  /* Emerald 500 */
+            --accent-orange: #f59e0b; /* Amber 500 */
+            --accent-red: #ef4444;    /* Red 500 */
+            --accent-purple: #8b5cf6; /* Violet 500 */
+        }
+
         * { box-sizing: border-box; }
+        
         body {
-            background-color: #121212;
-            color: #e0e0e0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             padding: 0;
             margin: 0;
             overflow-x: hidden;
             width: 100%;
+            -webkit-font-smoothing: antialiased;
         }
+
+        /* Özel modern kaydırma çubuğu (Scrollbar) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
         
         .container {
             max-width: 950px;
@@ -27,225 +49,276 @@
             width: 100%;
         }
 
-        /* Giriş, Kayıt ve Şifre Sıfırlama Ekranları */
-        #authEkrani, #SifreSifirlamaEkrani { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #121212; width: 100%; }
-        .auth-kutu { background-color: #1e1e1e; padding: 40px; border-radius: 10px; border: 1px solid #333; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin: 0 auto; }
-        .auth-kutu h2 { color: #00bcd4; margin-top: 0; margin-bottom: 25px; }
-        .auth-kutu input { width: 100%; margin-bottom: 15px; padding: 12px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; }
-        .auth-kutu input:focus { border-color: #00bcd4; }
-        .btn-auth { width: 100%; padding: 12px; background-color: #00bcd4; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .btn-auth:hover { background-color: #008ba3; }
-        .btn-kayitol { background-color: transparent; color: #00bcd4; border: 1px solid #00bcd4; }
-        .btn-kayitol:hover { background-color: rgba(0, 188, 212, 0.1); }
-        .link-unuttum { color: #aaa; font-size: 13px; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
-        .link-unuttum:hover { color: #00bcd4; }
+        /* GİRİŞ VE YETKİ EKRANLARI */
+        #authEkrani, #SifreSifirlamaEkrani { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--bg-dark); width: 100%; }
+        .auth-kutu { background-color: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); margin: 0 auto; }
+        .auth-kutu h2 { color: var(--accent-blue); margin-top: 0; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px;}
+        .auth-kutu input { width: 100%; margin-bottom: 15px; padding: 14px; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.3s ease; }
+        .auth-kutu input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .btn-auth { width: 100%; padding: 14px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 12px; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .btn-kayitol { background: transparent; color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .btn-kayitol:hover { background-color: rgba(59, 130, 246, 0.1); transform: none; box-shadow: none; }
+        .link-unuttum { color: var(--text-muted); font-size: 13px; text-decoration: none; cursor: pointer; transition: color 0.2s; border-bottom: 1px dashed var(--text-muted); padding-bottom: 2px;}
+        .link-unuttum:hover { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
 
         #anaUygulama { display: none; width: 100%; }
 
-        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK */
+        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK - YARI ŞEFFAF DEĞİL, MAT VE ŞIK */
         .sabit-ust-alan {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background-color: #121212;
-            border-bottom: 1px solid #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5);
             width: 100%;
         }
         
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
+        /* ANA BAŞLIK - ALTIN GRADİENT */
         .ana-baslik {
             text-align: center;
-            color: #ffd700;
             margin: 0 auto 15px auto;
-            font-size: 22px;
-            letter-spacing: 1px;
-            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: 0.5px;
+            font-weight: 900;
             width: 100%;
+            background: linear-gradient(to right, #fcd34d, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
         }
 
         /* Arama ve Kontrol Paneli */
-        .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%;}
+        .header { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%;}
         
         .header input, .header select { 
-            background-color: #1e1e1e; 
-            color: #fff; 
-            border: 1px solid #444; 
-            height: 38px; 
-            padding: 0 12px; 
-            border-radius: 6px; 
+            background-color: var(--bg-card); 
+            color: var(--text-main); 
+            border: 1px solid var(--border-color); 
+            height: 42px; 
+            padding: 0 14px; 
+            border-radius: 10px; 
             font-size: 14px; 
             outline: none; 
             text-transform: uppercase;
             width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .header select { font-size: 12px; }
-
-        .header input::placeholder { text-transform: none; }
-        .header input:focus, .header select:focus { border-color: #00bcd4; }
+        .header select { font-size: 13px; cursor: pointer; }
+        .header input::placeholder { text-transform: none; color: #64748b; }
+        .header input:focus, .header select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         
-        #aramaKutusu { flex: 2; min-width: 140px; }
-        #kategoriFiltre { flex: 1; min-width: 110px; }
-        #markaFiltre { flex: 1; min-width: 110px; }
+        #aramaKutusu { flex: 2; min-width: 150px; }
+        #kategoriFiltre { flex: 1; min-width: 120px; }
+        #markaFiltre { flex: 1; min-width: 120px; }
         
-        /* EŞİT GENİŞLİKLİ BUTON GRUBU */
-        .buton-grup { display: flex; gap: 8px; flex: 2; min-width: 310px;}
+        /* ŞIK GRADIENT BUTONLAR */
+        .buton-grup { display: flex; gap: 10px; flex: 2; min-width: 320px;}
         .buton-grup button { 
             flex: 1; 
-            height: 38px; 
-            padding: 0 4px; 
+            height: 42px; 
+            padding: 0 6px; 
             border: none; 
-            border-radius: 6px; 
+            border-radius: 10px; 
             cursor: pointer; 
-            font-weight: bold; 
-            font-size: 11.5px;
+            font-weight: 700; 
+            font-size: 12px;
             display: flex; 
             align-items: center; 
             justify-content: center;
             white-space: nowrap;
+            color: #fff;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
         }
-        .btn-yeni { background-color: #4caf50; color: #fff; }
-        .btn-yeni:hover { background-color: #388e3c; }
-        .btn-excel { background-color: #ff9800; color: #fff; }
-        .btn-excel:hover { background-color: #f57c00; }
-        .btn-log { background-color: #9c27b0; color: #fff; }
-        .btn-log:hover { background-color: #7b1fa2; }
-        .btn-cikis { background-color: #f44336; color: #fff; }
-        .btn-cikis:hover { background-color: #d32f2f; }
+        @media (hover: hover) {
+            .buton-grup button:hover { transform: translateY(-2px); }
+        }
         
-        .liste-alani { display: flex; flex-direction: column; gap: 10px; padding-top: 15px; padding-bottom: 30px; width: 100%; }
+        .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .btn-excel { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
+        .btn-log { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2); }
+        .btn-cikis { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        
+        .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
 
-        .stok-satir { background-color: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 18px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 25px; width: 100%; transition: all 0.3s ease; }
-        .stok-satir:hover { background-color: #222; border-color: #444; }
-        
-        .kasa-satir { background-color: #2e1a12 !important; border: 2px solid #ff5722 !important; box-shadow: 0 0 12px rgba(255, 87, 34, 0.2); }
-        .kasa-satir:hover { background-color: #3d2318 !important; border-color: #ff7043 !important; }
-        
-        @keyframes blink {
-            0% { opacity: 1; box-shadow: 0 0 10px #ff5722; }
-            50% { opacity: 0.5; box-shadow: none; }
-            100% { opacity: 1; box-shadow: 0 0 10px #ff5722; }
+        /* KART TASARIMI - YUMUŞAK GÖLGELER VE HOVER */
+        .stok-satir { 
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 14px; 
+            padding: 16px 20px; 
+            display: grid; 
+            grid-template-columns: 1fr auto auto; 
+            align-items: center; 
+            gap: 25px; 
+            width: 100%; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        @media (hover: hover) and (min-width: 651px) {
+            .stok-satir:hover { 
+                transform: translateY(-3px); 
+                border-color: #475569;
+                box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.5); 
+            }
         }
         
-        .stok-bilgi { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        /* KASALAR İÇİN ÖZEL "NEON PULSE" TASARIM */
+        .kasa-satir { 
+            background: linear-gradient(145deg, #2a1508 0%, #1a0d05 100%) !important; 
+            border: 1px solid #c2410c !important; 
+            box-shadow: 0 4px 15px rgba(194, 65, 12, 0.15) !important; 
+        }
+        @media (hover: hover) and (min-width: 651px) {
+            .kasa-satir:hover { 
+                border-color: #ea580c !important; 
+                box-shadow: 0 12px 25px rgba(234, 88, 12, 0.25) !important; 
+            }
+        }
+        
+        /* Cihazı yormayan şık nefes alma efekti (opacity) */
+        @keyframes pulse-kasa {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+        
+        .stok-bilgi { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
         .stok-ust-satir { display: flex; align-items: center; gap: 10px; }
         
-        .kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .kasa-etiket { background-color: #ff5722 !important; color: #fff !important; font-size: 13px !important; letter-spacing: 1px; animation: blink 1.5s infinite; border-radius: 6px; padding: 4px 10px; }
+        .kategori-etiket { background-color: var(--bg-dark); color: var(--accent-blue); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color);}
+        .kasa-etiket { 
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; 
+            color: #fff !important; 
+            font-size: 12px !important; 
+            letter-spacing: 1px; 
+            border: none !important;
+            animation: pulse-kasa 2s infinite ease-in-out; 
+            box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+        }
         
-        .malzeme-kod { font-size: 16px; font-weight: bold; color: #fff; text-transform: uppercase; }
-        .malzeme-detay { font-size: 13px; color: #aaa; text-transform: uppercase; }
-        .raf-no-vurgu { color: #f44336; font-weight: bold; }
-        .kasa-no-vurgu { color: #ff9800 !important; font-weight: 900 !important; font-size: 14px; }
+        .malzeme-kod { font-size: 17px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;}
+        .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
+        .raf-no-vurgu { color: var(--accent-red); font-weight: 700; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;}
+        .kasa-no-vurgu { color: var(--accent-orange) !important; font-weight: 900 !important; font-size: 14px; background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;}
 
-        .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 6px; text-align: center; }
-        .sayi-kutusu { font-size: 10px; color: #aaa; background-color: #222; padding: 4px 2px; border-radius: 4px; border: 1px solid #2a2a2a; font-weight: bold; }
-        .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; font-weight: bold; margin-top: 2px; }
-        .sayi-deger { color: #fff; }
-        .sayi-toplam { color: #4caf50; }
-        .sayi-arizali { color: #f44336; }
+        /* Sayılar Alanı */
+        .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 8px; text-align: center; }
+        .sayi-kutusu { font-size: 10.5px; color: var(--text-muted); background-color: var(--bg-dark); padding: 6px 2px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 600; }
+        .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 15px; font-weight: 800; margin-top: 4px; }
+        .sayi-deger { color: var(--text-main); }
+        .sayi-toplam { color: var(--accent-green); }
+        .sayi-arizali { color: var(--accent-red); }
         
-        .btn-duzenle { background-color: #00bcd4; color: #000; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; justify-self: end; }
-        .btn-duzenle:hover { background-color: #008ba3; }
-        .btn-pasif { background-color: #333; color: #666; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; justify-self: end; cursor: not-allowed; }
+        .btn-duzenle { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 700; justify-self: end; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s; }
+        @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
+        .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background-color: #1e1e1e; padding: 25px 30px; border-radius: 12px; width: 90%; max-width: 420px; border: 1px solid #444; box-shadow: 0 10px 30px rgba(0,0,0,0.7); margin: 0 auto; }
-        .modal-content h3 { margin-top: 0; color: #00bcd4; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 20px; font-size: 18px; text-align: center; text-transform: uppercase; }
+        /* MODAL (AÇILIR PENCERE) TASARIMLARI */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background-color: var(--bg-card); padding: 30px; border-radius: 16px; width: 90%; max-width: 440px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); margin: 0 auto; }
+        .modal-content h3 { margin-top: 0; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px; font-size: 18px; text-align: center; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
 
         #CustomModal .modal-content { max-width: 380px; text-align: center; }
-        #CustomModalMesaj { font-size: 15px; line-height: 1.5; color: #e0e0e0; margin-bottom: 25px; }
+        #CustomModalMesaj { font-size: 15px; line-height: 1.6; color: var(--text-main); margin-bottom: 30px; }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 12px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
         .form-grid-tam { grid-column: span 2; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 13px; color: #aaa; font-weight: 500; transition: color 0.3s; }
-        .label-kasa-vurgu { color: #ff9800 !important; font-weight: bold !important; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; transition: color 0.3s; }
+        .label-kasa-vurgu { color: var(--accent-orange) !important; font-weight: 800 !important; }
         
-        .modal-content input[type="text"], .modal-content select { width: 100%; padding: 10px; background-color: #121212; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.2s; text-transform: uppercase; }
-        .modal-content input[type="text"]::placeholder { text-transform: none; }
-        .modal-content input[type="text"]:focus, .modal-content select:focus { border-color: #00bcd4; }
+        .modal-content input[type="text"], .modal-content select { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; text-transform: uppercase; }
+        .modal-content input[type="text"]::placeholder { text-transform: none; color: #64748b; }
+        .modal-content input[type="text"]:focus, .modal-content select:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
 
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
-        .sayi-input-grup { display: flex; align-items: center; background-color: #121212; border: 1px solid #444; border-radius: 6px; overflow: hidden; transition: border-color 0.2s; }
-        .sayi-input-grup:focus-within { border-color: #00bcd4; }
-        .sayi-input-grup button { background-color: #2a2a2a; color: #00bcd4; border: none; padding: 10px 14px; font-size: 16px; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
-        .sayi-input-grup button:hover { background-color: #3d3d3d; color: #fff; }
-        .sayi-input-grup input { flex: 1; width: 100%; border: none; background: transparent; text-align: center; font-size: 15px; font-weight: bold; color: #fff; padding: 10px 0; outline: none; }
+        /* Sayı Artır/Azalt Kutuları */
+        .sayi-input-grup { display: flex; align-items: center; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }
+        .sayi-input-grup:focus-within { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .sayi-input-grup button { background-color: var(--bg-card); color: var(--text-main); border: none; padding: 12px 16px; font-size: 18px; cursor: pointer; transition: background 0.2s; font-weight: bold; }
+        .sayi-input-grup button:hover { background-color: #334155; color: #fff; }
+        .sayi-input-grup input { flex: 1; width: 100%; border: none; background: transparent; text-align: center; font-size: 16px; font-weight: 800; color: #fff; padding: 12px 0; outline: none; }
 
-        .modal-buttons { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; justify-content: center; }
+        .modal-buttons { display: flex; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); justify-content: center; }
         
-        .btn-kaydet { background-color: #4caf50; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px; transition: all 0.3s; }
-        .btn-kaydet:hover:not(:disabled) { background-color: #388e3c; }
-        .btn-kaydet:disabled { background-color: #2e7031; color: #999; cursor: not-allowed; }
+        .btn-kaydet { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: 700; font-size:15px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .btn-kaydet:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); }
+        .btn-kaydet:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .btn-iptal { background-color: #f44336; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px;}
-        .btn-iptal:hover { background-color: #d32f2f; }
+        .btn-iptal { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: 700; font-size:15px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); transition: transform 0.2s;}
+        .btn-iptal:hover { transform: translateY(-2px); }
 
-        #LogModal .modal-content { max-width: 550px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px 20px; background-color: #121212; border: 1px solid #333;}
+        /* YENİ ŞIK LOG LİSTESİ TASARIMI VE LOG ARAMA KUTULARI */
+        #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
+        #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         
-        #logAramaKriteri, #logAramaKutusu { width: 100%; padding: 12px; background-color: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; text-transform: uppercase;}
-        #logAramaKriteri { margin-bottom: 10px; cursor: pointer; }
-        #logAramaKutusu { margin-bottom: 15px; }
-        #logAramaKriteri:focus, #logAramaKutusu:focus { border-color: #9c27b0; }
-        #logAramaKutusu::placeholder { text-transform: none; }
+        #logAramaKriteri, #logAramaKutusu { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
+        #logAramaKriteri { margin-bottom: 12px; cursor: pointer; font-weight: 600; }
+        #logAramaKutusu { margin-bottom: 20px; text-transform: uppercase; }
+        #logAramaKriteri:focus, #logAramaKutusu:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        #logAramaKutusu::placeholder { text-transform: none; color: #64748b; }
 
-        .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 5px; }
-        .log-kart { background-color: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        .log-tarih { font-size: 12px; color: #888; }
-        .log-kullanici { font-size: 12px; font-weight: bold; color: #00bcd4; background: #222; padding: 3px 8px; border-radius: 12px; }
+        .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 8px; }
         
-        .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px 0; background-color: #222; padding: 8px 10px; border-radius: 6px; }
+        .log-kart { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+        .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .log-tarih { font-size: 12px; color: var(--text-muted); font-weight: 500;}
+        .log-kullanici { font-size: 12px; font-weight: 700; color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); padding: 4px 10px; border-radius: 12px; }
+        
+        .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 6px 0; background-color: var(--bg-dark); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .log-kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .log-kasa-etiket { background-color: #ff5722 !important; color: #fff !important; animation: blink 1.5s infinite; }
-        .log-marka { font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase; }
-        .log-kod-span { font-size: 15px; font-weight: bold; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-align: right; }
+        .log-kategori-etiket { background-color: var(--bg-card); color: var(--accent-blue); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color); }
+        .log-kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; animation: pulse-kasa 2s infinite ease-in-out; border: none; box-shadow: 0 0 10px rgba(234,88,12,0.3);}
+        .log-marka { font-size: 12.5px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
+        .log-kod-span { font-size: 15.5px; font-weight: 800; color: #fff; letter-spacing: 1px; text-transform: uppercase; text-align: right; }
         
-        .log-islem-detay { font-size: 13.5px; line-height: 1.5; color: #ccc; background-color: #222; padding: 10px; border-radius: 6px; border-left: 3px solid; }
+        .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: #cbd5e1; background-color: var(--bg-dark); padding: 12px 14px; border-radius: 8px; border-left: 4px solid; }
 
+        /* MOBİL UYARLAMA KISMI - PERFORMANS ODAKLI */
         @media screen and (max-width: 650px) {
             .header { flex-direction: column; align-items: stretch; width: 100%; }
-            
             .buton-grup { flex-wrap: wrap; order: -1; width: 100%; }
             
-            .ana-baslik { font-size: 20px; margin-bottom: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+            .ana-baslik { font-size: 22px; margin-bottom: 12px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
             .baslik-ayrac { display: none; }
-            .baslik-alt { display: block; margin-top: 5px; font-size: 18px; color: #ffd700; }
+            .baslik-alt { display: block; margin-top: 5px; font-size: 18px; background: linear-gradient(to right, #60a5fa, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
             
+            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF YAZI BÜYÜKLÜĞÜ (16px) */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
                 font-size: 16px !important; 
-                font-weight: bold; 
+                font-weight: 700; 
                 text-align: center; 
-                border-radius: 12px; 
+                border-radius: 16px; 
                 padding: 10px !important; 
             }
             
             #aramaKutusu::placeholder { font-size: 15px !important; font-weight: normal; }
             
-            .stok-satir { grid-template-columns: 1fr; gap: 12px; width: 100%; }
+            .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
             
-            .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 3px; }
-            .sayi-kutusu { font-size: 8.5px; padding: 4px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
-            .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 13px; margin-top: 3px; }
+            .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+            .sayi-kutusu { font-size: 8.5px; padding: 6px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
+            .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; margin-top: 4px; }
             
-            .btn-duzenle, .btn-pasif { width: 100%; }
-            .modal-content { padding: 20px; width: 90%; }
+            .btn-duzenle, .btn-pasif { width: 100%; padding: 14px;}
+            .modal-content { padding: 22px 18px; width: 92%; }
             
-            #LogModal .modal-content { padding: 15px 10px; width: 95%; }
-            .log-kart { padding: 10px; }
-            .log-islem-detay { font-size: 12px; padding: 8px; }
-            .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 8px; }
-            .log-kod-span { text-align: left; width: 100%; border-top: 1px dashed #444; padding-top: 8px; }
+            #LogModal .modal-content { padding: 20px 12px; width: 96%; }
+            .log-kart { padding: 12px; }
+            .log-islem-detay { font-size: 12.5px; padding: 10px; }
+            .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .log-kod-span { text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; font-size: 14.5px;}
             
-            #logAramaKriteri, #logAramaKutusu { font-size: 15px; padding: 10px; }
+            #logAramaKriteri, #logAramaKutusu { font-size: 15px; padding: 12px; }
         }
     </style>
 </head>
@@ -261,17 +334,17 @@
                 <button type="button" class="btn-auth btn-kayitol" onclick="kayitOl()">Hesap Oluştur</button>
                 <div style="margin-top: 15px;"><span class="link-unuttum" onclick="sifremiUnuttum()">Şifremi Unuttum</span></div>
             </form>
-            <div id="authMesaj" style="margin-top: 15px; font-size: 13px; color: #f44336;"></div>
+            <div id="authMesaj" style="margin-top: 15px; font-size: 13px; color: var(--accent-red);"></div>
         </div>
     </div>
 
     <div id="SifreSifirlamaEkrani" style="display: none;">
         <div class="auth-kutu">
             <h2>Yeni Şifre Belirle</h2>
-            <p style="font-size: 13px; color: #aaa; margin-bottom: 20px;">Lütfen yeni şifrenizi girin.</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Lütfen yeni şifrenizi girin.</p>
             <input type="password" id="yeniSifreInput" placeholder="Yeni Şifreniz" required>
             <button type="button" class="btn-auth" onclick="yeniSifreKaydet()">Şifreyi Güncelle</button>
-            <div id="sifreSifirlaMesaj" style="margin-top: 15px; font-size: 13px; color: #f44336;"></div>
+            <div id="sifreSifirlaMesaj" style="margin-top: 15px; font-size: 13px; color: var(--accent-red);"></div>
         </div>
     </div>
 
@@ -314,7 +387,7 @@
 
     <div id="CustomModal" class="modal" style="z-index: 3000;">
         <div class="modal-content">
-            <h3 id="CustomModalBaslik" style="color: #ff9800;">Sistem Mesajı</h3>
+            <h3 id="CustomModalBaslik" style="color: var(--accent-orange);">Sistem Mesajı</h3>
             <p id="CustomModalMesaj"></p>
             <div class="modal-buttons" style="border-top: none; padding-top: 0; margin-top: 0;">
                 <button id="btnCustomTamam" class="btn-kaydet">Tamam</button>
@@ -326,7 +399,7 @@
     <!-- LOG MODALI - ÖNERİ HAVUZU EKLENDİ -->
     <div id="LogModal" class="modal">
         <div class="modal-content">
-            <h3 style="color:#9c27b0; margin-top:0; margin-bottom: 15px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
+            <h3 style="color:var(--accent-purple); margin-top:0; margin-bottom: 18px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
             
             <select id="logAramaKriteri" onchange="logIciAra(); logAramaOnerileriniGuncelle();">
                 <option value="kod">Malzeme Koduna Göre</option>
@@ -339,7 +412,7 @@
             <datalist id="logOneriListesi"></datalist>
             
             <div class="log-liste-alani" id="logGövdesi">
-                <div style="text-align:center; color:#888; padding:20px;">Yükleniyor...</div>
+                <div style="text-align:center; color:var(--text-muted); padding:30px;">Yükleniyor...</div>
             </div>
             <button class="btn-iptal" style="width:100%; margin-top:15px; flex-shrink: 0;" onclick="document.getElementById('LogModal').style.display='none'">Kapat</button>
         </div>
@@ -470,14 +543,14 @@
             modal.style.display = 'flex';
 
             if (tip === 'hata') {
-                baslik.style.color = '#f44336';
+                baslik.style.color = 'var(--accent-red)';
                 baslik.innerText = "Uyarı";
                 yeniBtnTamam.innerText = "Tamam";
                 yeniBtnGeri.innerText = "Geri Dön";
                 yeniBtnTamam.onclick = () => { modal.style.display = 'none'; };
                 yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
             } else if (tip === 'onay') {
-                baslik.style.color = '#00bcd4';
+                baslik.style.color = 'var(--accent-blue)';
                 baslik.innerText = "Onay Gerekli";
                 yeniBtnTamam.innerText = "Tamam";
                 yeniBtnGeri.innerText = "Geri Dön";
@@ -505,16 +578,18 @@
             const msg = document.getElementById('authMesaj');
 
             if(!email || !sifre) { msg.innerText = "Lütfen e-posta ve şifre girin."; return; }
+            msg.style.color = "var(--text-muted)";
             msg.innerText = "Kayıt yapılıyor...";
             
             const { data, error } = await sbClient.auth.signUp({ email: email, password: sifre });
-            if (error) { msg.innerText = error.message; return; }
+            if (error) { msg.style.color = "var(--accent-red)"; msg.innerText = error.message; return; }
 
             const { error: dbError } = await sbClient.from('kullanicilar').insert([{ email: email, rol: 'okuyucu', onayli: false }]);
             if(dbError) {
+                msg.style.color = "var(--accent-red)";
                 msg.innerText = "Kayıt başarılı ancak profil oluşturulamadı. Yöneticinize başvurun.";
             } else {
-                msg.style.color = "#4caf50";
+                msg.style.color = "var(--accent-green)";
                 msg.innerText = "Kayıt başarılı! Yönetici onayladıktan sonra giriş yapabilirsiniz.";
             }
         }
@@ -525,11 +600,11 @@
             const msg = document.getElementById('authMesaj');
 
             if(!email || !sifre) { msg.innerText = "Lütfen e-posta ve şifre girin."; return; }
-            msg.style.color = "#f44336";
+            msg.style.color = "var(--text-muted)";
             msg.innerText = "Giriş yapılıyor...";
 
             const { data, error } = await sbClient.auth.signInWithPassword({ email: email, password: sifre });
-            if (error) { msg.innerText = "Hatalı e-posta veya şifre."; return; }
+            if (error) { msg.style.color = "var(--accent-red)"; msg.innerText = "Hatalı e-posta veya şifre."; return; }
             
             oturumKontrolu();
         }
@@ -539,20 +614,20 @@
             const msg = document.getElementById('authMesaj');
 
             if(!email) { 
-                msg.style.color = "#f44336";
+                msg.style.color = "var(--accent-red)";
                 msg.innerText = "Lütfen önce e-posta adresinizi yukarıya yazın, ardından 'Şifremi Unuttum'a tıklayın."; 
                 return; 
             }
 
-            msg.style.color = "#00bcd4";
+            msg.style.color = "var(--accent-blue)";
             msg.innerText = "Sıfırlama bağlantısı gönderiliyor...";
             const { data, error } = await sbClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
 
             if (error) { 
-                msg.style.color = "#f44336";
+                msg.style.color = "var(--accent-red)";
                 msg.innerText = "Hata: " + error.message; 
             } else {
-                msg.style.color = "#4caf50";
+                msg.style.color = "var(--accent-green)";
                 msg.innerText = "Şifre sıfırlama bağlantısı e-postanıza gönderildi!";
             }
         }
@@ -563,16 +638,16 @@
             
             if(!yeniSifre || yeniSifre.length < 6) { msg.innerText = "Şifreniz en az 6 karakter olmalıdır."; return; }
             
-            msg.style.color = "#00bcd4";
+            msg.style.color = "var(--accent-blue)";
             msg.innerText = "Şifreniz güncelleniyor...";
 
             const { data, error } = await sbClient.auth.updateUser({ password: yeniSifre });
 
             if (error) {
-                msg.style.color = "#f44336";
+                msg.style.color = "var(--accent-red)";
                 msg.innerText = "Hata: " + error.message;
             } else {
-                msg.style.color = "#4caf50";
+                msg.style.color = "var(--accent-green)";
                 msg.innerText = "Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...";
                 setTimeout(() => { window.location.hash = ''; window.location.reload(); }, 2000);
             }
@@ -638,9 +713,9 @@
 
         function baslat() {
             document.getElementById('listeGövdesi').innerHTML = `
-                <div style="text-align:center; color:#888; padding:40px 20px; font-size: 16px; border: 1px dashed #333; border-radius: 8px; margin: 20px auto; width: 100%; box-sizing: border-box;">
-                    <span style="font-size: 30px; display: block; margin-bottom: 15px;">🔍</span>
-                    Sistem hazır.<br><br>Lütfen aramak istediğiniz malzeme kodunu yukarıya yazın veya filtreleri seçin.
+                <div style="text-align:center; color:var(--text-muted); padding:40px 20px; font-size: 16px; border: 2px dashed var(--border-color); border-radius: 16px; margin: 20px auto; width: 100%; box-sizing: border-box; background: rgba(30, 41, 59, 0.5);">
+                    <span style="font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7;">🔍</span>
+                    <strong style="color:#fff;">Sistem hazır.</strong><br><br>Lütfen aramak istediğiniz malzeme kodunu yukarıya yazın veya filtreleri seçin.
                 </div>`;
         }
 
@@ -656,7 +731,7 @@
                     return;
                 }
 
-                document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:#00bcd4; padding:30px;">Aranıyor...</div>';
+                document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
                 if (!aranan) {
                     let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
@@ -690,7 +765,7 @@
             liste.innerHTML = '';
             
             if(!veriler || veriler.length === 0) {
-                liste.innerHTML = '<div style="text-align:center; color:#f44336; padding:30px;">Kayıt bulunamadı.</div>';
+                liste.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Kayıt bulunamadı.</div>';
                 return;
             }
 
@@ -765,12 +840,12 @@
                 if (!kod) bosAlanlar.push("Malzeme Kodu");
 
                 if (bosAlanlar.length > 0) {
-                    uyariGoster("Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:#00bcd4;'>" + bosAlanlar.join("<br>") + "</b>", 'hata');
+                    uyariGoster("Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:var(--accent-blue);'>" + bosAlanlar.join("<br>") + "</b>", 'hata');
                     return;
                 }
                 
                 if (toplamAdetGiris <= 0) {
-                    uyariGoster("Yeni malzeme eklerken İkinci El, Açık Kutu, Kapalı Kutu veya Arızalı adetlerinden <b style='color:#00bcd4;'>en az birini</b> girmelisiniz.<br>Sadece kod eklemenin bir anlamı yok!", 'hata');
+                    uyariGoster("Yeni malzeme eklerken İkinci El, Açık Kutu, Kapalı Kutu veya Arızalı adetlerinden <b style='color:var(--accent-blue);'>en az birini</b> girmelisiniz.<br>Sadece kod eklemenin bir anlamı yok!", 'hata');
                     return;
                 }
 
@@ -883,7 +958,6 @@
             await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: islemTipiVeDetay, kod: parcaKodu }]);
         }
 
-        // YENİ GÜNCELLEME: ÖNERİ HAVUZU GÜNCELLEME FONKSİYONU
         function logAramaOnerileriniGuncelle() {
             const kriter = document.getElementById('logAramaKriteri').value;
             const datalist = document.getElementById('logOneriListesi');
@@ -907,11 +981,11 @@
             document.getElementById('LogModal').style.display = 'flex';
             
             const logGövdesi = document.getElementById('logGövdesi');
-            logGövdesi.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Kayıtlar çekiliyor...</div>';
+            logGövdesi.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Kayıtlar çekiliyor...</div>';
 
             const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(200);
 
-            if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Kayıtlar alınamadı!</div>'; return; }
+            if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px;">Kayıtlar alınamadı!</div>'; return; }
 
             const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
             
@@ -957,7 +1031,7 @@
             logGövdesi.innerHTML = '';
             
             if(logDizisi.length === 0) {
-                logGövdesi.innerHTML = '<div style="text-align:center; color:#f44336; padding:20px;">Arama kriterine uygun log bulunamadı.</div>';
+                logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>';
                 return;
             }
 
@@ -981,7 +1055,7 @@
                 log._gosterilenKategori = kayitKategori;
                 log._gosterilenMarka = kayitMarka;
 
-                const islemRengi = hamIslem.includes('YENİ') ? '#4caf50' : '#00bcd4';
+                const islemRengi = hamIslem.includes('YENİ') ? 'var(--accent-green)' : 'var(--accent-blue)';
                 
                 if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>");
                 else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
@@ -992,7 +1066,7 @@
 
                 hamIslem = hamIslem.replace(/->/g, "→");
                 let islemParcalari = hamIslem.split('<br>');
-                let islemBaslik = `<span style="color:${islemRengi}; font-weight:bold; font-size:14px; display:block; margin-bottom:4px;">${islemParcalari[0]}</span>`;
+                let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`;
                 let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
 
                 const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
