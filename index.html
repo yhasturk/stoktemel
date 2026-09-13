@@ -300,6 +300,7 @@
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
             
+            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF YAZI BÜYÜKLÜĞÜ (16px) */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
@@ -803,7 +804,6 @@
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
 
-                /* SAĞ-SOL YASLI KOMPAKT TASARIM */
                 const satir = `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
@@ -1176,11 +1176,19 @@
             document.getElementById('GuncelleModal').style.display = 'flex';
         }
 
+        /* YENİ NESİL EXCEL İNDİRME FONKSİYONU */
         function excelDokumuAl() {
-            uyariGoster("Şu anki görünen tabloyu indirmek istiyor musunuz?", "onay", async () => {
-                const aranan = document.getElementById('aramaKutusu').value.trim();
-                const kategori = document.getElementById('kategoriFiltre').value;
-                const marka = document.getElementById('markaFiltre').value;
+            const aranan = document.getElementById('aramaKutusu').value.trim();
+            const kategori = document.getElementById('kategoriFiltre').value;
+            const marka = document.getElementById('markaFiltre').value;
+
+            // AKILLI UYARI KONTROLÜ
+            let uyariMesaji = "Şu anki görünen tabloyu indirmek istiyor musunuz?";
+            if (!aranan && !kategori && !marka) {
+                uyariMesaji = "Herhangi bir kategori veya marka seçilmediği için tüm liste indirilecektir onaylıyor musunuz?";
+            }
+
+            uyariGoster(uyariMesaji, "onay", async () => {
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true });
                 
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
@@ -1217,23 +1225,22 @@
                     <style>
                         table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; }
                         th, td { border: 1px solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
-                        th { background-color: #FFFF00; color: #000000; font-weight: bold; height: 35px; }
                         tr { height: 28px; }
                     </style>
                 </head>
                 <body>
                     <table>
                         <thead>
-                            <tr>
-                                <th width="120">Kategori</th>
-                                <th width="150">Marka</th>
-                                <th width="250">Malzeme Kodu</th>
-                                <th width="80">İkinci el</th>
-                                <th width="80">Açık Kutu</th>
-                                <th width="80">Kapalı Kutu</th>
-                                <th width="80">Arızalı</th>
-                                <th width="80">Toplam</th>
-                                <th width="120">Raf / Kasa No</th>
+                            <tr style="height: 35px;">
+                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Kategori</th>
+                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Marka</th>
+                                <th width="250" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Malzeme Kodu</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İkinci el</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Açık Kutu</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Kapalı Kutu</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Arızalı</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Toplam</th>
+                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Raf / Kasa No</th>
                             </tr>
                         </thead>
                         <tbody>
