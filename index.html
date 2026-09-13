@@ -396,7 +396,6 @@
         </div>
     </div>
 
-    <!-- LOG MODALI - ÖNERİ HAVUZU EKLENDİ -->
     <div id="LogModal" class="modal">
         <div class="modal-content">
             <h3 style="color:var(--accent-purple); margin-top:0; margin-bottom: 18px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
@@ -408,7 +407,6 @@
             </select>
             
             <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="logIciAra()">
-            <!-- CANLI ÖNERİ HAVUZU -->
             <datalist id="logOneriListesi"></datalist>
             
             <div class="log-liste-alani" id="logGövdesi">
@@ -1179,13 +1177,22 @@
                 const { data, error } = await sorgu.limit(5000);
                 if (error || !data || data.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
 
+                // HTML TABLOSUNU ŞIK EXCEL FORMATIYLA OLUŞTURMA
                 let htmlTablo = `
                 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
-                <head><meta charset="utf-8"></head>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        table { border-collapse: collapse; width: 100%; font-family: 'Segoe UI', Arial, sans-serif; }
+                        th, td { border: 1px solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
+                        th { background-color: #1e293b; color: #ffffff; font-weight: bold; height: 35px; }
+                        tr { height: 28px; }
+                    </style>
+                </head>
                 <body>
-                    <table border="1" style="border-collapse:collapse; text-align:center; vertical-align:middle; font-family:Arial, sans-serif;">
+                    <table>
                         <thead>
-                            <tr style="background-color:#d9d9d9; font-weight:bold; height:30px;">
+                            <tr>
                                 <th>Kategori</th>
                                 <th>Marka</th>
                                 <th>Malzeme Kodu</th>
@@ -1204,7 +1211,7 @@
                     const formatliMarka = (m.marka || '').toLocaleUpperCase('tr-TR');
                     const formatliKod = (m.kod || '').toLocaleUpperCase('tr-TR');
                     htmlTablo += `
-                            <tr style="height:25px;">
+                            <tr>
                                 <td>${m.kategori || ''}</td>
                                 <td>${formatliMarka}</td>
                                 <td style="font-weight:bold;">${formatliKod}</td>
@@ -1212,7 +1219,7 @@
                                 <td>${m.acik_kutu ?? 0}</td>
                                 <td>${m.kapali_kutu ?? 0}</td>
                                 <td>${m.arizali ?? 0}</td>
-                                <td style="font-weight:bold; color:green;">${m.toplam ?? 0}</td>
+                                <td style="font-weight:bold; color:#059669;">${m.toplam ?? 0}</td>
                                 <td>${m.raf_no || ''}</td>
                             </tr>`;
                 });
