@@ -109,8 +109,11 @@
         }
         .btn-yeni { background-color: #4caf50; color: #fff; }
         .btn-yeni:hover { background-color: #388e3c; }
-        .btn-excel { background-color: #ff9800; color: #000; }
+        
+        /* EXCEL BUTONU BEYAZ YAZI RENGİNE DÜZELTİLDİ */
+        .btn-excel { background-color: #ff9800; color: #fff; }
         .btn-excel:hover { background-color: #f57c00; }
+        
         .btn-log { background-color: #9c27b0; color: #fff; }
         .btn-log:hover { background-color: #7b1fa2; }
         .btn-cikis { background-color: #f44336; color: #fff; }
@@ -182,16 +185,22 @@
         .sayi-input-grup input { flex: 1; width: 100%; border: none; background: transparent; text-align: center; font-size: 15px; font-weight: bold; color: #fff; padding: 10px 0; outline: none; }
 
         .modal-buttons { display: flex; gap: 10px; margin-top: 25px; padding-top: 15px; border-top: 1px solid #333; justify-content: center; }
-        .btn-kaydet { background-color: #4caf50; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px; }
-        .btn-kaydet:hover { background-color: #388e3c; }
+        
+        /* KAYDET BUTONU KİLİTLİ (DISABLED) HALİ İÇİN STİL */
+        .btn-kaydet { background-color: #4caf50; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px; transition: all 0.3s; }
+        .btn-kaydet:hover:not(:disabled) { background-color: #388e3c; }
+        .btn-kaydet:disabled { background-color: #2e7031; color: #999; cursor: not-allowed; }
+        
         .btn-iptal { background-color: #f44336; color: #fff; border: none; padding: 12px; border-radius: 6px; cursor: pointer; flex: 1; font-weight: bold; font-size:15px;}
         .btn-iptal:hover { background-color: #d32f2f; }
 
-        /* YENİ ŞIK LOG LİSTESİ TASARIMI VE LOG ARAMA KUTUSU */
+        /* YENİ ŞIK LOG LİSTESİ TASARIMI VE LOG ARAMA KUTULARI */
         #LogModal .modal-content { max-width: 550px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px 20px; background-color: #121212; border: 1px solid #333;}
         
-        #logAramaKutusu { width: 100%; padding: 12px; margin-bottom: 15px; background-color: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; text-transform: uppercase;}
-        #logAramaKutusu:focus { border-color: #9c27b0; }
+        #logAramaKriteri, #logAramaKutusu { width: 100%; padding: 12px; background-color: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 14px; outline: none; text-transform: uppercase;}
+        #logAramaKriteri { margin-bottom: 10px; cursor: pointer; }
+        #logAramaKutusu { margin-bottom: 15px; }
+        #logAramaKriteri:focus, #logAramaKutusu:focus { border-color: #9c27b0; }
         #logAramaKutusu::placeholder { text-transform: none; }
 
         .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 5px; }
@@ -200,7 +209,6 @@
         .log-tarih { font-size: 12px; color: #888; }
         .log-kullanici { font-size: 12px; font-weight: bold; color: #00bcd4; background: #222; padding: 3px 8px; border-radius: 12px; }
         
-        /* LOG KOD VE KATEGORİ ALANI YENİDEN TASARLANDI */
         .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 8px 0; background-color: #222; padding: 8px 10px; border-radius: 6px; }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .log-kategori-etiket { background-color: #2a2a2a; color: #00bcd4; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
@@ -220,7 +228,6 @@
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; color: #ffd700; }
             
-            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF KÜÇÜK YAZI, BOL BOŞLUK */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
@@ -247,6 +254,8 @@
             .log-islem-detay { font-size: 12px; padding: 8px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 8px; }
             .log-kod-span { text-align: left; width: 100%; border-top: 1px dashed #444; padding-top: 8px; }
+            
+            #logAramaKriteri, #logAramaKutusu { font-size: 15px; padding: 10px; }
         }
     </style>
 </head>
@@ -328,12 +337,17 @@
         </div>
     </div>
 
-    <!-- YENİ ŞIK KARTLI LOG MODALI VE ARAMA -->
+    <!-- YENİ ŞIK KARTLI LOG MODALI VE DETAYLI ARAMA -->
     <div id="LogModal" class="modal">
         <div class="modal-content">
             <h3 style="color:#9c27b0; margin-top:0; margin-bottom: 15px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
             
-            <input type="text" id="logAramaKutusu" placeholder="Malzeme Koduna Göre Log Ara..." oninput="logIciAra()">
+            <select id="logAramaKriteri" onchange="logIciAra()">
+                <option value="kod">Malzeme Koduna Göre</option>
+                <option value="marka">Markaya Göre</option>
+                <option value="kategori">Kategoriye Göre</option>
+            </select>
+            <input type="text" id="logAramaKutusu" placeholder="Arama yap..." oninput="logIciAra()">
             
             <div class="log-liste-alani" id="logGövdesi">
                 <div style="text-align:center; color:#888; padding:20px;">Yükleniyor...</div>
@@ -410,7 +424,6 @@
             </div>
 
             <div class="modal-buttons">
-                <!-- KAYDET BUTONUNA ID EKLENDİ -->
                 <button id="btnModalKaydet" class="btn-kaydet" onclick="veriKaydetPreCheck()">Kaydet</button>
                 <button class="btn-iptal" onclick="document.getElementById('GuncelleModal').style.display='none'">İptal</button>
             </div>
@@ -800,12 +813,14 @@
         }
 
         async function gercekVeriKaydet(kategori, marka, kod, raf_no) {
-            // MÜKERRER KAYIT BUTON KİLİDİ
             const btn = document.getElementById('btnModalKaydet');
             if(btn) {
                 btn.disabled = true;
                 btn.innerHTML = 'Kaydediliyor...';
             }
+            
+            // İŞLEM BAŞLANGIÇ ZAMANI (1.5 saniye kilidi için)
+            const islemZamani = Date.now();
 
             const ikinci_el = parseInt(document.getElementById('inputIkinciEl').value) || 0;
             const acik_kutu = parseInt(document.getElementById('inputAcikKutu').value) || 0;
@@ -813,7 +828,6 @@
             const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
             const toplam = ikinci_el + acik_kutu + kapali_kutu;
             
-            // LOG İÇİNE KATEGORİ VE MARKA MÜHÜRLEME
             let logPrefix = `[CAT:${kategori}|MRK:${marka}] `;
 
             if (islemTuru === 'guncelle') {
@@ -859,11 +873,16 @@
                 }
             }
 
-            // İŞLEM BİTİNCE BUTONU GERİ AÇ
-            if(btn) {
-                btn.disabled = false;
-                btn.innerHTML = 'Kaydet';
-            }
+            // GÜVENLİK KİLİDİNİ 1.5 SANİYE SONRA AÇMA
+            const gecenSure = Date.now() - islemZamani;
+            const bekleme = gecenSure < 1500 ? 1500 - gecenSure : 0;
+            
+            setTimeout(() => {
+                if(btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Kaydet';
+                }
+            }, bekleme);
         }
 
         function basariSonrasi() {
@@ -877,6 +896,7 @@
 
         async function logModalAc() {
             document.getElementById('logAramaKutusu').value = '';
+            document.getElementById('logAramaKriteri').value = 'kod';
             document.getElementById('LogModal').style.display = 'flex';
             const logGövdesi = document.getElementById('logGövdesi');
             logGövdesi.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Kayıtlar çekiliyor...</div>';
@@ -888,7 +908,6 @@
             const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
             const malzemeMap = {};
             if (malzemeData) {
-                // Akıllı Ayıklama: Eski logların KASALAR olarak görünmemesi için öncelik normal kategorilerin.
                 malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
                     malzemeMap[(m.kod || '').toLocaleUpperCase('tr-TR')] = { kategori: m.kategori || '-', marka: (m.marka || '-').toLocaleUpperCase('tr-TR') };
                 });
@@ -922,16 +941,19 @@
                 let kayitKategori = log._mapKategori;
                 let kayitMarka = log._mapMarka;
 
-                // GÖMÜLÜ MÜHÜRÜ ÇIKART
                 if (hamIslem.startsWith('[CAT:')) {
                     let bitisIndex = hamIslem.indexOf('] ');
                     if (bitisIndex !== -1) {
                         let icerik = hamIslem.substring(5, bitisIndex).split('|MRK:');
                         kayitKategori = icerik[0] || '-';
                         kayitMarka = icerik[1] || '-';
-                        hamIslem = hamIslem.substring(bitisIndex + 2); // mühürü metinden sil
+                        hamIslem = hamIslem.substring(bitisIndex + 2); 
                     }
                 }
+
+                // ARAMADA KULLANMAK İÇİN GÜNCEL KATEGORİ VE MARKAYI OBJEYE YAZ
+                log._gosterilenKategori = kayitKategori;
+                log._gosterilenMarka = kayitMarka;
 
                 const islemRengi = hamIslem.includes('YENİ') ? '#4caf50' : '#00bcd4';
                 
@@ -971,13 +993,27 @@
             });
         }
 
+        // YENİ SEÇENEKLİ ARAMA FONKSİYONU
         function logIciAra() {
             const aranan = document.getElementById('logAramaKutusu').value.trim().toLocaleUpperCase('tr-TR');
+            const kriter = document.getElementById('logAramaKriteri').value;
+            
             if (!aranan) {
                 loglariCiz(tumLoglar);
                 return;
             }
-            const filtrelenmis = tumLoglar.filter(log => (log.kod || '').toLocaleUpperCase('tr-TR').includes(aranan));
+            
+            const filtrelenmis = tumLoglar.filter(log => {
+                if (kriter === 'kod') {
+                    return (log.kod || '').toLocaleUpperCase('tr-TR').includes(aranan);
+                } else if (kriter === 'marka') {
+                    return (log._gosterilenMarka || '').toLocaleUpperCase('tr-TR').includes(aranan);
+                } else if (kriter === 'kategori') {
+                    return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR').includes(aranan);
+                }
+                return false;
+            });
+            
             loglariCiz(filtrelenmis);
         }
 
