@@ -590,8 +590,9 @@
         let suankiLoglar = []; 
         let sistemMarkalari = [];
         let sistemKategorileri = [];
+        let sistemKullanicilari = []; // YENİ DİNAMİK KULLANICI LİSTESİ
 
-        /* SİSTEM KULLANICI SÖZLÜĞÜ */
+        /* SİSTEM KULLANICI SÖZLÜĞÜ (ÖZEL İSİMLER İÇİN) */
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET TARIK SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ KARADENİZ',
@@ -604,11 +605,18 @@
             'ylmzsukru1998@gmail.com': 'ŞÜKRÜ YILMAZ'
         };
 
+        /* DİNAMİK İSİM FORMATLAYICI */
         function kullaniciAdiGetir(email) {
             if(!email) return 'BİLİNMEYEN';
             const lowerEmail = email.toLowerCase().trim();
-            const ad = kullaniciSozlugu[lowerEmail] || email.split('@')[0].toLocaleUpperCase('tr-TR');
-            return temizKarakter(ad);
+            if(kullaniciSozlugu[lowerEmail]) {
+                return temizKarakter(kullaniciSozlugu[lowerEmail]);
+            }
+            
+            // Eğer sözlükte yoksa yeni kayıtları "ali.veli -> ALI VELI" yapar
+            let isimKismi = lowerEmail.split('@')[0];
+            isimKismi = isimKismi.replace(/\./g, ' ');
+            return temizKarakter(isimKismi);
         }
 
         /* TÜRKÇE KARAKTER (i, İ, ı, I) TEMİZLEME VE TEKİLLEŞTİRME MOTORU */
@@ -1105,8 +1113,7 @@
             if (kriter === 'kullanici') {
                 aramaKutusu.style.display = 'none';
                 kullaniciSecici.style.display = 'block';
-                const benzersizKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))].sort();
-                benzersizKullanicilar.forEach(u => { kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; });
+                sistemKullanicilari.forEach(u => { kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; });
             } else {
                 aramaKutusu.style.display = 'block';
                 kullaniciSecici.style.display = 'none';
@@ -1161,7 +1168,19 @@
                 });
             }
 
+            // DİNAMİK KULLANICI HAVUZU SORGUSU
+            const { data: userDbData } = await sbClient.from('kullanicilar').select('email');
+            let tumEmailler = [];
+            if (userDbData) {
+                tumEmailler = userDbData.map(u => u.email);
+            }
+            
             tumLoglar = logData.map(log => {
+                // Logda olup da veritabanından silinmiş kişiler varsa onları da listeye dahil et
+                if(log.kullanici && !tumEmailler.includes(log.kullanici)) {
+                    tumEmailler.push(log.kullanici);
+                }
+
                 let logIciKat = '';
                 let logIciMarka = '';
                 if (log.islem.startsWith('[CAT:')) {
@@ -1182,18 +1201,25 @@
 
             sistemMarkalari = [...geciciMarkalar].sort();
             sistemKategorileri = [...geciciKategoriler].sort();
+            
+            let formatliKullanicilar = tumEmailler.map(e => kullaniciAdiGetir(e));
+            sistemKullanicilari = [...new Set(formatliKullanicilar)].sort();
 
             logAramaOnerileriniGuncelle();
             loglariCiz(tumLoglar);
         }
 
-        function loglariCiz(logDizisi) {
+        function loglariCiz(logDizisi, ozelMesajIsmi = '') {
             suankiLoglar = logDizisi; 
             const logGövdesi = document.getElementById('logGövdesi');
             logGövdesi.innerHTML = '';
             
             if(logDizisi.length === 0) {
-                logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>';
+                if (ozelMesajIsmi) {
+                    logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi bir işlem bulunmamaktadır.</div>`;
+                } else {
+                    logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>';
+                }
                 return;
             }
 
@@ -1258,14 +1284,19 @@
         function logIciAra() {
             const kriter = document.getElementById('logAramaKriteri').value;
             let aranan = '';
+            let arananKullaniciAd = '';
             
             if (kriter === 'kullanici') {
                 aranan = document.getElementById('logKullaniciSecici').value;
+                if(aranan) arananKullaniciAd = aranan;
             } else {
                 aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
             }
             
-            if (!aranan) {
+            if (!aranan && kriter !== 'kullanici') {
+                loglariCiz(tumLoglar);
+                return;
+            } else if (!aranan && kriter === 'kullanici') {
                 loglariCiz(tumLoglar);
                 return;
             }
@@ -1278,12 +1309,12 @@
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR').includes(aranan);
                 } else if (kriter === 'kullanici') {
-                    return temizKarakter(kullaniciAdiGetir(log.kullanici)).includes(aranan);
+                    return kullaniciAdiGetir(log.kullanici).includes(aranan);
                 }
                 return false;
             });
             
-            loglariCiz(filtrelenmis);
+            loglariCiz(filtrelenmis, arananKullaniciAd);
         }
 
         // TÜM HÜCRELERİ ORTALANMIŞ LOG EXCEL DÖKÜM FONKSİYONU
