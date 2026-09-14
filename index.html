@@ -187,18 +187,29 @@
             50% { opacity: 0.75; }
         }
         
-        /* SOLA YASLI KLASİK ÇİFT SATIR STOK BİLGİ ALANI (UZUN KOD KORUMALI) */
+        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI */
         .stok-bilgi { 
             display: flex; 
             flex-direction: column; 
-            align-items: flex-start; 
-            text-align: left; 
-            gap: 6px; 
+            gap: 10px; 
             min-width: 0; 
             width: 100%; 
         }
-        .stok-ust-satir { display: flex; align-items: center; justify-content: flex-start; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .stok-alt-satir { display: flex; align-items: center; justify-content: flex-start; gap: 8px; flex-wrap: wrap; width: 100%; }
+        .stok-ust-satir { 
+            display: flex; 
+            justify-content: center; 
+            width: 100%; 
+        }
+        .stok-alt-satir { 
+            display: grid; 
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center; 
+            width: 100%; 
+            gap: 5px;
+        }
+        .alt-sol { text-align: left; }
+        .alt-orta { text-align: center; }
+        .alt-sag { text-align: right; }
         
         .kategori-etiket { background-color: var(--bg-dark); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color);}
         .kasa-etiket { 
@@ -803,15 +814,17 @@
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
 
+                /* YENİ 3'LÜ IZGARA (GRID) TASARIM */
                 const satir = `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
-                                <span class="${etiketClass}">${malzeme.kategori || '-'}</span>
                                 <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
                             </div>
                             <div class="stok-alt-satir malzeme-detay">
-                                <strong>${formatliMarka}</strong> <span style="opacity:0.5;">|</span> <span>${rafMetni}</span>
+                                <div class="alt-sol"><span class="${etiketClass}">${malzeme.kategori || '-'}</span></div>
+                                <div class="alt-orta"><strong>${formatliMarka}</strong></div>
+                                <div class="alt-sag">${rafMetni}</div>
                             </div>
                         </div>
 
