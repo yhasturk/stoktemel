@@ -189,7 +189,7 @@
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
         
-        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI - BOZULMAYAN SİMETRİK YAPI */
+        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI */
         .stok-bilgi { 
             display: flex; 
             flex-direction: column; 
@@ -214,13 +214,9 @@
         .alt-orta { text-align: center; }
         .alt-sag { text-align: right; }
         
-        .kategori-etiket { display: inline-block; background-color: var(--bg-dark); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color);}
-        
-        /* YENİ MARKA ETİKETİ (KUTUCUK) TASARIMI */
-        .marka-etiket {
+        /* %100 ORTAK KUTUCUK (ETİKET) TASARIM DİLİ */
+        .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket {
             display: inline-block;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
             padding: 3px 8px;
             border-radius: 6px;
             font-size: 11.5px;
@@ -229,13 +225,41 @@
             border: 1px solid var(--border-color);
             letter-spacing: 0.5px;
         }
+
+        /* ÖZEL İÇ DOLGU (BACKGROUND) VE YAZI RENKLERİ */
+        .kategori-etiket, .log-kategori-etiket {
+            background-color: rgba(6, 182, 212, 0.08); /* Turkuaz/Mavi saydam dolgu */
+            color: var(--accent-cyan);
+        }
         
+        .marka-etiket, .log-marka {
+            background-color: var(--bg-dark); /* Koyu mat gri dolgu */
+            color: var(--text-main);
+        }
+
+        .raf-no-vurgu {
+            background-color: rgba(239, 68, 68, 0.08); /* Kırmızı saydam dolgu */
+            color: var(--accent-red);
+        }
+
+        .kasa-no-vurgu {
+            background-color: rgba(245, 158, 11, 0.08) !important; /* Turuncu saydam dolgu */
+            color: var(--accent-orange) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        /* KASALAR İÇİN ÖZEL ANİMASYONLU ETİKET */
         .kasa-etiket { 
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
             background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; 
             color: #fff !important; 
             font-size: 11.5px !important; 
+            font-weight: 800;
             letter-spacing: 1px; 
-            border: none !important;
+            border: 1px solid var(--border-color) !important;
             animation: pulse-etiket 1.5s infinite ease-in-out; 
             box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
@@ -243,8 +267,6 @@
         /* MALZEME KODU PUNTOSU GÜNCELLENDİ (Masaüstü: 17px, Normal Kalınlık: 500) */
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
-        .raf-no-vurgu { color: var(--accent-red); font-weight: 700; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;}
-        .kasa-no-vurgu { color: var(--accent-orange) !important; font-weight: 900 !important; font-size: 13.5px; background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;}
 
         /* Sayılar Alanı */
         .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 8px; text-align: center; }
@@ -314,12 +336,6 @@
         
         .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 6px 0; background-color: var(--bg-dark); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        
-        /* LOG EKRANINDAKİ MARKA ETİKETİ DE ANA EKRAN İLE AYNI STİLDE */
-        .log-marka { display: inline-block; background-color: var(--bg-dark); color: var(--text-main); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px; }
-        
-        .log-kategori-etiket { background-color: var(--bg-card); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color); }
-        .log-kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; animation: pulse-etiket 1.5s infinite ease-in-out; border: none; box-shadow: 0 0 10px rgba(234,88,12,0.3);}
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: #fff; letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
         
         .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: #cbd5e1; background-color: var(--bg-dark); padding: 12px 14px; border-radius: 8px; border-left: 4px solid; }
