@@ -189,18 +189,30 @@
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
         
-        /* SOLA YASLI KLASİK ÇİFT SATIR STOK BİLGİ ALANI */
+        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI */
         .stok-bilgi { 
             display: flex; 
             flex-direction: column; 
-            align-items: flex-start; 
-            text-align: left; 
-            gap: 6px; 
+            gap: 10px; 
             min-width: 0; 
             width: 100%; 
         }
-        .stok-ust-satir { display: flex; align-items: center; justify-content: flex-start; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .stok-alt-satir { display: flex; align-items: center; justify-content: flex-start; gap: 8px; flex-wrap: wrap; width: 100%; }
+        .stok-ust-satir { 
+            display: flex; 
+            justify-content: center; 
+            text-align: center;
+            width: 100%; 
+        }
+        .stok-alt-satir { 
+            display: grid; 
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center; 
+            width: 100%; 
+            gap: 5px;
+        }
+        .alt-sol { text-align: left; }
+        .alt-orta { text-align: center; }
+        .alt-sag { text-align: right; }
         
         /* DISPLAY INLINE-BLOCK SCALING İÇİN ÖNEMLİDİR */
         .kategori-etiket { display: inline-block; background-color: var(--bg-dark); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color);}
@@ -290,7 +302,7 @@
         
         .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 6px 0; background-color: var(--bg-dark); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .log-kategori-etiket { background-color: var(--bg-card); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color); display: inline-block; }
+        .log-kategori-etiket { background-color: var(--bg-card); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color); }
         .log-kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; animation: pulse-etiket 1.5s infinite ease-in-out; border: none; box-shadow: 0 0 10px rgba(234,88,12,0.3);}
         .log-marka { font-size: 12.5px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: #fff; letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
@@ -810,16 +822,17 @@
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
 
-                /* SOLA YASLI KLASİK TASARIM - BÜYÜK PUNTOLU KOD İLE */
+                /* YENİ 3'LÜ IZGARA (GRID) TASARIM - MERKEZE HİZALI KOD İLE */
                 const satir = `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
-                                <span class="${etiketClass}">${malzeme.kategori || '-'}</span>
                                 <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
                             </div>
                             <div class="stok-alt-satir malzeme-detay">
-                                <strong>${formatliMarka}</strong> <span style="opacity:0.5;">|</span> <span>${rafMetni}</span>
+                                <div class="alt-sol"><span class="${etiketClass}">${malzeme.kategori || '-'}</span></div>
+                                <div class="alt-orta"><strong>${formatliMarka}</strong></div>
+                                <div class="alt-sag">${rafMetni}</div>
                             </div>
                         </div>
 
