@@ -426,7 +426,14 @@
                     
                     <select id="kategoriFiltre" onchange="stokGetir()">
                         <option value="">KATEGORİLER</option>
-                        <!-- Otomatik Yüklenecek -->
+                        <option value="PLC">PLC</option>
+                        <option value="EKRAN">EKRAN</option>
+                        <option value="G.RÖLE">G.RÖLE</option>
+                        <option value="KABLO">KABLO</option>
+                        <option value="MMC KART">MMC KART</option>
+                        <option value="KASALAR">KASALAR</option>
+                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
+                        <option value="MOTOR">MOTOR</option>
                     </select>
 
                     <select id="markaFiltre" onchange="stokGetir()">
@@ -484,12 +491,21 @@
             <h3 id="modalBaslik">Miktar Güncelle</h3>
             <input type="hidden" id="duzenlenenId">
             <datalist id="markaListesi"></datalist>
-            <datalist id="kategoriListesi"></datalist>
 
             <div class="form-grid">
                 <div class="form-group" id="grupKategori">
                     <label>Kategori:</label>
-                    <input type="text" id="inputKategori" list="kategoriListesi" autocomplete="off" placeholder="Örn: RÖLE" oninput="this.value = temizKarakter(this.value); kategoriDegisti()">
+                    <select id="inputKategori" onchange="kategoriDegisti()">
+                        <option value="">Seçiniz...</option>
+                        <option value="PLC">PLC</option>
+                        <option value="EKRAN">EKRAN</option>
+                        <option value="G.RÖLE">G.RÖLE</option>
+                        <option value="KABLO">KABLO</option>
+                        <option value="MMC KART">MMC KART</option>
+                        <option value="KASALAR">KASALAR</option>
+                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
+                        <option value="MOTOR">MOTOR</option>
+                    </select>
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
@@ -763,8 +779,8 @@
         }
 
         async function secenekleriYukle() {
-            // Gelecekteki 80K kayıt için limit yüksek tutuldu
-            const { data, error } = await sbClient.from('malzemeler').select('marka, kategori').limit(10000);
+            // Sadece markalar veritabanından dinamik çekilir. Kategoriler HTML içine statik kilitlenmiştir.
+            const { data, error } = await sbClient.from('malzemeler').select('marka').limit(10000);
             if (data) {
                 const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
                 document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
@@ -773,14 +789,6 @@
                 const seciliMarka = markaFiltre.value; 
                 markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
                 markaFiltre.value = seciliMarka;
-
-                const kategoriler = [...new Set(data.map(item => temizKarakter(item.kategori).trim()).filter(Boolean))].sort();
-                document.getElementById('kategoriListesi').innerHTML = kategoriler.map(k => `<option value="${k}">`).join('');
-
-                const kategoriFiltre = document.getElementById('kategoriFiltre');
-                const seciliKategori = kategoriFiltre.value;
-                kategoriFiltre.innerHTML = '<option value="">KATEGORİLER</option>' + kategoriler.map(k => `<option value="${k}">${k}</option>`).join('');
-                kategoriFiltre.value = seciliKategori;
             }
         }
 
@@ -1121,7 +1129,6 @@
                     let bitisIndex = hamIslem.indexOf('] ');
                     if (bitisIndex !== -1) {
                         let icerik = hamIslem.substring(5, bitisIndex).split('|MRK:');
-                        // BOŞ GELEN ESKİ HATALI KAYITLARDA YEDEK VERİ KULLANIMI
                         let damgaKategori = icerik[0];
                         let damgaMarka = icerik[1];
                         
