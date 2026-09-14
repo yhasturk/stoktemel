@@ -583,7 +583,7 @@
         let aktifDuzenlenenMalzeme = null; 
         
         let tumLoglar = []; 
-        let suankiLoglar = []; // Excel indirme için o anki filtreli logları tutar
+        let suankiLoglar = []; 
         let sistemMarkalari = [];
         let sistemKategorileri = [];
 
@@ -603,7 +603,8 @@
         function kullaniciAdiGetir(email) {
             if(!email) return 'BİLİNMEYEN';
             const lowerEmail = email.toLowerCase().trim();
-            return kullaniciSozlugu[lowerEmail] || email.split('@')[0].toLocaleUpperCase('tr-TR');
+            const ad = kullaniciSozlugu[lowerEmail] || email.split('@')[0].toLocaleUpperCase('tr-TR');
+            return temizKarakter(ad);
         }
 
         /* TÜRKÇE KARAKTER (i, İ, ı, I) TEMİZLEME VE TEKİLLEŞTİRME MOTORU */
@@ -650,9 +651,7 @@
             const yeniBtnGeri = btnGeri.cloneNode(true);
             btnGeri.parentNode.replaceChild(yeniBtnGeri, btnGeri);
 
-            // Butonları fabrika ayarına döndür
             yeniBtnGeri.style.display = '';
-
             modal.style.display = 'flex';
 
             if (tip === 'hata') {
@@ -676,7 +675,7 @@
                 baslik.style.color = 'var(--accent-green)';
                 baslik.innerText = "İşlem Başarılı";
                 yeniBtnTamam.innerText = "Tamam";
-                yeniBtnGeri.style.display = 'none'; // Başarı ekranında Geri Dön butonunu gizle
+                yeniBtnGeri.style.display = 'none'; 
                 yeniBtnTamam.onclick = () => {
                     modal.style.display = 'none';
                     if(onTamamCallback) onTamamCallback();
@@ -821,7 +820,6 @@
         }
 
         async function secenekleriYukle() {
-            // Sadece markalar veritabanından dinamik çekilir.
             const { data, error } = await sbClient.from('malzemeler').select('marka').limit(10000);
             if (data) {
                 const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
@@ -860,7 +858,6 @@
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
                 if (marka) {
-                    // Marka "SIEMENS" olarak geliyor, DB'deki "SİEMENS" ile de eşleştirmek için çift arama.
                     let altMarka = marka.replace(/I/g, 'İ');
                     if (marka !== altMarka) {
                         sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
@@ -1055,7 +1052,6 @@
                     await logKaydet(logMetni, kod);
                     secenekleriYukle(); 
                     
-                    // YENİ KAYIT BAŞARI MESAJI EKLENDİ
                     document.getElementById('GuncelleModal').style.display = 'none';
                     uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => {
                         stokGetir();
@@ -1081,7 +1077,6 @@
         }
 
         function basariSonrasi() {
-            // Sadece güncellemede direkt kapatıp yeniliyoruz, yeni kayıtta uyarı çıkar.
             if (islemTuru === 'guncelle') {
                 document.getElementById('GuncelleModal').style.display = 'none';
                 stokGetir(); 
@@ -1105,7 +1100,7 @@
             } else if (kriter === 'kategori') {
                 sistemKategorileri.forEach(k => { datalist.innerHTML += `<option value="${k}">`; });
             } else if (kriter === 'kullanici') {
-                const benzersizKullanicilar = [...new Set(tumLoglar.map(l => kullaniciAdiGetir(l.kullanici)))].sort();
+                const benzersizKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))].sort();
                 benzersizKullanicilar.forEach(u => { datalist.innerHTML += `<option value="${u}">`; });
             }
             
@@ -1151,7 +1146,6 @@
                 });
             }
 
-            // LOGLARDAKİ EKSİK KATEGORİ VE MARKALARI ÖĞRENME MOTORU
             tumLoglar = logData.map(log => {
                 let logIciKat = '';
                 let logIciMarka = '';
@@ -1179,7 +1173,7 @@
         }
 
         function loglariCiz(logDizisi) {
-            suankiLoglar = logDizisi; // Excel çıktısı için ekrandaki veriyi kaydet
+            suankiLoglar = logDizisi; 
             const logGövdesi = document.getElementById('logGövdesi');
             logGövdesi.innerHTML = '';
             
@@ -1263,7 +1257,7 @@
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR').includes(aranan);
                 } else if (kriter === 'kullanici') {
-                    return kullaniciAdiGetir(log.kullanici).includes(aranan);
+                    return temizKarakter(kullaniciAdiGetir(log.kullanici)).includes(aranan);
                 }
                 return false;
             });
@@ -1271,9 +1265,9 @@
             loglariCiz(filtrelenmis);
         }
 
-        // YENİ LOG EXCEL DÖKÜM FONKSİYONU
+        // TÜM HÜCRELERİ ORTALANMIŞ LOG EXCEL DÖKÜM FONKSİYONU
         function logExcelDokumuAl() {
-            uyariGoster("Şu an ekranda listelenen log kayıtlarını indirmek istiyor musunuz?", "onay", () => {
+            uyariGoster("Şu an ekranda listelenen log kayıtlarını Excel'e aktarmak istiyor musunuz?", "onay", () => {
                 if (!suankiLoglar || suankiLoglar.length === 0) { 
                     alert("Döküm alınacak kayıt bulunamadı!"); return; 
                 }
@@ -1286,8 +1280,7 @@
                     <meta charset="utf-8">
                     <style>
                         table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
-                        th, td { border: .5pt solid #000000; text-align: left; vertical-align: middle; padding: 6px; }
-                        th { text-align: center; }
+                        th, td { border: .5pt solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
                         tr { height: 28px; }
                     </style>
                 </head>
@@ -1322,10 +1315,10 @@
 
                     htmlTablo += `
                             <tr>
-                                <td style="text-align:center;">${tarih}</td>
-                                <td style="text-align:center; font-weight:bold; color:#06b6d4;">${user}</td>
-                                <td style="text-align:center;">${log._gosterilenKategori || '-'}</td>
-                                <td style="text-align:center;">${log._gosterilenMarka || '-'}</td>
+                                <td>${tarih}</td>
+                                <td style="font-weight:bold;">${user}</td>
+                                <td>${log._gosterilenKategori || '-'}</td>
+                                <td>${log._gosterilenMarka || '-'}</td>
                                 <td style="font-weight:bold;">${temizKarakter(log.kod)}</td>
                                 <td>${islemMetni}</td>
                             </tr>`;
@@ -1350,7 +1343,6 @@
             document.getElementById('duzenlenenId').value = malzeme.id;
             document.getElementById('modalBaslik').innerText = `${temizKarakter(malzeme.kod)} GÜNCELLE`;
             
-            // GÜNCELLEMEDE DE BİLGİLERİ DÜZENLEMEYE AÇTIK
             document.getElementById('grupKategori').style.display = 'block';
             document.getElementById('grupMarka').style.display = 'block';
             document.getElementById('grupKod').style.display = 'block';
