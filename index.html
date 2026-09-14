@@ -269,7 +269,7 @@
             box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
         
-        /* MALZEME KODU PUNTOSU GÜNCELLENDİ (Masaüstü: 17px, Normal Kalınlık: 500) */
+        /* MALZEME KODU PUNTOSU */
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
 
@@ -370,7 +370,7 @@
             
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
             
-            /* MOBİLDE KOD BÜYÜKLÜĞÜ 15px OLARAK KÜÇÜLTÜLDÜ */
+            /* MOBİLDE KOD BÜYÜKLÜĞÜ 15px */
             .malzeme-kod { font-size: 15px; }
             .log-kod-span { font-size: 14px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
 
@@ -426,12 +426,7 @@
                     
                     <select id="kategoriFiltre" onchange="stokGetir()">
                         <option value="">KATEGORİLER</option>
-                        <option value="PLC">PLC</option>
-                        <option value="EKRAN">EKRAN</option>
-                        <option value="RÖLE">RÖLE</option>
-                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
-                        <option value="MOTOR">MOTOR</option>
-                        <option value="KASALAR">KASALAR</option>
+                        <!-- Otomatik Yüklenecek -->
                     </select>
 
                     <select id="markaFiltre" onchange="stokGetir()">
@@ -489,19 +484,12 @@
             <h3 id="modalBaslik">Miktar Güncelle</h3>
             <input type="hidden" id="duzenlenenId">
             <datalist id="markaListesi"></datalist>
+            <datalist id="kategoriListesi"></datalist>
 
             <div class="form-grid">
                 <div class="form-group" id="grupKategori">
                     <label>Kategori:</label>
-                    <select id="inputKategori" onchange="kategoriDegisti()">
-                        <option value="">Seçiniz...</option>
-                        <option value="PLC">PLC</option>
-                        <option value="EKRAN">EKRAN</option>
-                        <option value="RÖLE">RÖLE</option>
-                        <option value="SÜRÜCÜ">SÜRÜCÜ</option>
-                        <option value="MOTOR">MOTOR</option>
-                        <option value="KASALAR">KASALAR</option>
-                    </select>
+                    <input type="text" id="inputKategori" list="kategoriListesi" autocomplete="off" placeholder="Örn: RÖLE" oninput="this.value = temizKarakter(this.value); kategoriDegisti()">
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
@@ -775,9 +763,9 @@
         }
 
         async function secenekleriYukle() {
-            const { data, error } = await sbClient.from('malzemeler').select('marka').limit(5000);
+            // Gelecekteki 80K kayıt için limit yüksek tutuldu
+            const { data, error } = await sbClient.from('malzemeler').select('marka, kategori').limit(10000);
             if (data) {
-                // Temizleme motoru sayesinde SİEMENS ve SIEMENS tekilleştirilir.
                 const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
                 document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
                 
@@ -785,6 +773,14 @@
                 const seciliMarka = markaFiltre.value; 
                 markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
                 markaFiltre.value = seciliMarka;
+
+                const kategoriler = [...new Set(data.map(item => temizKarakter(item.kategori).trim()).filter(Boolean))].sort();
+                document.getElementById('kategoriListesi').innerHTML = kategoriler.map(k => `<option value="${k}">`).join('');
+
+                const kategoriFiltre = document.getElementById('kategoriFiltre');
+                const seciliKategori = kategoriFiltre.value;
+                kategoriFiltre.innerHTML = '<option value="">KATEGORİLER</option>' + kategoriler.map(k => `<option value="${k}">${k}</option>`).join('');
+                kategoriFiltre.value = seciliKategori;
             }
         }
 
@@ -814,7 +810,6 @@
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
                 if (marka) {
-                    // Marka "SIEMENS" olarak geliyor, DB'deki "SİEMENS" ile de eşleştirmek için çift arama.
                     let altMarka = marka.replace(/I/g, 'İ');
                     if (marka !== altMarka) {
                         sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
@@ -857,9 +852,8 @@
                     islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
                 }
 
-                const isKasa = malzeme.kategori === 'KASALAR';
+                const isKasa = temizKarakter(malzeme.kategori) === 'KASALAR';
                 
-                // Temizleme motorundan geçerek ekrana standart basılıyor
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
                 const formatliKod = temizKarakter(malzeme.kod || '');
 
@@ -873,7 +867,6 @@
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
 
-                /* YENİ 3'LÜ IZGARA (GRID) TASARIM - MERKEZE HİZALI KOD VE SARI ETİKETLİ MARKA İLE */
                 const satir = `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
@@ -881,7 +874,7 @@
                                 <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
                             </div>
                             <div class="stok-alt-satir malzeme-detay">
-                                <div class="alt-sol"><span class="${etiketClass}">${malzeme.kategori || '-'}</span></div>
+                                <div class="alt-sol"><span class="${etiketClass}">${temizKarakter(malzeme.kategori) || '-'}</span></div>
                                 <div class="alt-orta"><span class="marka-etiket">${formatliMarka}</span></div>
                                 <div class="alt-sag">${rafMetni}</div>
                             </div>
@@ -904,7 +897,7 @@
         async function veriKaydetPreCheck() {
             if(aktifRol !== 'duzenleyici') return;
 
-            const kategori = document.getElementById('inputKategori').value; 
+            const kategori = temizKarakter(document.getElementById('inputKategori').value.trim()); 
             let marka = temizKarakter(document.getElementById('inputMarka').value.trim());
             let kod = temizKarakter(document.getElementById('inputKod').value.trim()); 
             const raf_no = temizKarakter(document.getElementById('inputRafNo').value.trim());
@@ -980,7 +973,7 @@
             if (islemTuru === 'guncelle') {
                 const id = document.getElementById('duzenlenenId').value;
                 const { error } = await sbClient.from('malzemeler').update({ 
-                    ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no 
+                    ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no, marka, kategori 
                 }).eq('id', id);
 
                 if (!error) {
@@ -1078,7 +1071,7 @@
             if (malzemeData) {
                 malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
                     let mark = temizKarakter(m.marka || '-');
-                    let kat = m.kategori || '-';
+                    let kat = temizKarakter(m.kategori || '-');
                     malzemeMap[temizKarakter(m.kod || '')] = { kategori: kat, marka: mark };
                     
                     if(mark !== '-') geciciMarkalar.add(mark);
@@ -1128,8 +1121,13 @@
                     let bitisIndex = hamIslem.indexOf('] ');
                     if (bitisIndex !== -1) {
                         let icerik = hamIslem.substring(5, bitisIndex).split('|MRK:');
-                        kayitKategori = icerik[0] || '-';
-                        kayitMarka = temizKarakter(icerik[1] || '-');
+                        // BOŞ GELEN ESKİ HATALI KAYITLARDA YEDEK VERİ KULLANIMI
+                        let damgaKategori = icerik[0];
+                        let damgaMarka = icerik[1];
+                        
+                        kayitKategori = damgaKategori ? temizKarakter(damgaKategori) : log._mapKategori;
+                        kayitMarka = damgaMarka ? temizKarakter(damgaMarka) : log._mapMarka;
+                        
                         hamIslem = hamIslem.substring(bitisIndex + 2); 
                     }
                 }
@@ -1209,7 +1207,8 @@
             document.getElementById('grupMarka').style.display = 'none';
             document.getElementById('grupKod').style.display = 'none';
             
-            document.getElementById('inputKategori').value = malzeme.kategori || '';
+            document.getElementById('inputKategori').value = temizKarakter(malzeme.kategori || '');
+            document.getElementById('inputMarka').value = temizKarakter(malzeme.marka || '');
             kategoriDegisti();
             
             document.getElementById('inputKod').value = temizKarakter(malzeme.kod); 
@@ -1330,7 +1329,7 @@
                     const formatliKod = temizKarakter(m.kod || '');
                     htmlTablo += `
                             <tr>
-                                <td>${m.kategori || ''}</td>
+                                <td>${temizKarakter(m.kategori) || ''}</td>
                                 <td>${formatliMarka}</td>
                                 <td style="font-weight:bold;">${formatliKod}</td>
                                 <td>${m.ikinci_el ?? 0}</td>
@@ -1338,7 +1337,7 @@
                                 <td>${m.kapali_kutu ?? 0}</td>
                                 <td>${m.arizali ?? 0}</td>
                                 <td style="font-weight:bold; color:#059669;">${m.toplam ?? 0}</td>
-                                <td>${m.raf_no || ''}</td>
+                                <td>${temizKarakter(m.raf_no) || ''}</td>
                             </tr>`;
                 });
 
