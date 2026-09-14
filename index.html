@@ -1261,7 +1261,7 @@
                     </xml>
                     <![endif]-->
                     <style>
-                        table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; }
+                        table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
                         th, td { border: 1px solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
                         tr { height: 28px; }
                     </style>
@@ -1270,22 +1270,21 @@
                     <table>
                         <thead>
                             <tr style="height: 35px;">
-                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Kategori</th>
-                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Marka</th>
-                                <th width="250" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Malzeme Kodu</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İkinci el</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Açık Kutu</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Kapalı Kutu</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Arızalı</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Toplam</th>
-                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">Raf / Kasa No</th>
+                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
+                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
+                                <th width="300" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İKİNCİ EL</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">AÇIK KUTU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KAPALI KUTU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">ARIZALI</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TOPLAM</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">RAF / KASA NO</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
 
                 data.forEach(m => {
-                    // Excel dökümünde de temiz, tekil gösterim
                     const formatliMarka = temizKarakter(m.marka || '-');
                     const formatliKod = temizKarakter(m.kod || '');
                     htmlTablo += `
