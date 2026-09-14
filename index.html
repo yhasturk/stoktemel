@@ -189,7 +189,7 @@
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
         
-        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI */
+        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI - BOZULMAYAN SİMETRİK YAPI */
         .stok-bilgi { 
             display: flex; 
             flex-direction: column; 
@@ -214,7 +214,6 @@
         .alt-orta { text-align: center; }
         .alt-sag { text-align: right; }
         
-        /* DISPLAY INLINE-BLOCK SCALING İÇİN ÖNEMLİDİR */
         .kategori-etiket { display: inline-block; background-color: var(--bg-dark); color: var(--accent-cyan); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; border: 1px solid var(--border-color);}
         
         .kasa-etiket { 
@@ -227,9 +226,7 @@
             box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
         
-        /* MALZEME KODU PUNTOSU 19px'e BÜYÜTÜLDÜ (NORMAL KALINLIK: 500) */
         .malzeme-kod { font-size: 19px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
-        
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
         .raf-no-vurgu { color: var(--accent-red); font-weight: 700; background: rgba(239, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;}
         .kasa-no-vurgu { color: var(--accent-orange) !important; font-weight: 900 !important; font-size: 13.5px; background: rgba(245, 158, 11, 0.1); padding: 2px 6px; border-radius: 4px;}
@@ -333,7 +330,6 @@
             
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
             
-            /* MOBİLDE KOD BÜYÜKLÜĞÜ 17px */
             .malzeme-kod { font-size: 17px; }
             .log-kod-span { font-size: 15px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
 
@@ -385,7 +381,7 @@
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
 
                 <div class="header">
-                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = this.value.toLocaleUpperCase('tr-TR'); stokGetir()">
+                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
                     
                     <select id="kategoriFiltre" onchange="stokGetir()">
                         <option value="">KATEGORİLER</option>
@@ -437,7 +433,7 @@
                 <option value="kategori">Kategoriye Göre</option>
             </select>
             
-            <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="logIciAra()">
+            <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
             <datalist id="logOneriListesi"></datalist>
             
             <div class="log-liste-alani" id="logGövdesi">
@@ -468,11 +464,11 @@
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
-                    <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS" oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
+                    <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS" oninput="this.value = temizKarakter(this.value)">
                 </div>
                 <div class="form-group form-grid-tam" id="grupKod">
                     <label>Malzeme Kodu:</label>
-                    <input type="text" id="inputKod" placeholder="Tam kodunu girin..." oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
+                    <input type="text" id="inputKod" placeholder="Tam kodunu girin..." oninput="this.value = temizKarakter(this.value)">
                 </div>
 
                 <div class="form-group">
@@ -509,7 +505,7 @@
                 </div>
                 <div class="form-group form-grid-tam">
                     <label id="labelRafKasa">Raf No:</label>
-                    <input type="text" id="inputRafNo" placeholder="Örn: A12" oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
+                    <input type="text" id="inputRafNo" placeholder="Örn: A12" oninput="this.value = temizKarakter(this.value)">
                 </div>
             </div>
 
@@ -534,6 +530,16 @@
         let tumLoglar = []; 
         let sistemMarkalari = [];
         let sistemKategorileri = [];
+
+        /* TÜRKÇE KARAKTER (i, İ, ı, I) TEMİZLEME VE TEKİLLEŞTİRME MOTORU */
+        function temizKarakter(str) {
+            if (!str) return '';
+            return str.replace(/i/g, 'I')
+                      .replace(/İ/g, 'I')
+                      .replace(/ı/g, 'I')
+                      .replace(/I/g, 'I')
+                      .toLocaleUpperCase('tr-TR');
+        }
 
         function telefonMu() { return window.innerWidth <= 650; }
 
@@ -730,7 +736,8 @@
         async function secenekleriYukle() {
             const { data, error } = await sbClient.from('malzemeler').select('marka').limit(5000);
             if (data) {
-                const markalar = [...new Set(data.map(item => (item.marka || '').toLocaleUpperCase('tr-TR').trim()).filter(Boolean))].sort();
+                // Temizleme motoru sayesinde SİEMENS ve SIEMENS tekilleştirilir.
+                const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
                 document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
                 
                 const markaFiltre = document.getElementById('markaFiltre');
@@ -762,28 +769,30 @@
 
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
+                let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
+                if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
+                
+                if (marka) {
+                    // Marka "SIEMENS" olarak geliyor, DB'deki "SİEMENS" ile de eşleştirmek için çift arama.
+                    let altMarka = marka.replace(/I/g, 'İ');
+                    if (marka !== altMarka) {
+                        sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
+                    } else {
+                        sorgu = sorgu.ilike('marka', `%${marka}%`);
+                    }
+                }
+                
+                const { data, error } = await sorgu.limit(5000);
+                if (error) return;
+
                 if (!aranan) {
-                    let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
-                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                    
-                    const { data, error } = await sorgu.limit(100);
-                    if (error) return;
-                    ekranaYazdir(data);
+                    ekranaYazdir(data.slice(0, 100));
                 } else {
-                    let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
-                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                    
-                    const { data, error } = await sorgu.limit(5000);
-                    if (error) return;
-                    
-                    const temizAranan = aranan.replace(/[-/.\s]/g, '').toLocaleLowerCase('tr-TR');
+                    const temizAranan = temizKarakter(aranan).replace(/[-/.\s]/g, '');
                     const filtrelenmis = data.filter(m => {
-                        const temizKod = (m.kod || '').replace(/[-/.\s]/g, '').toLocaleLowerCase('tr-TR');
+                        const temizKod = temizKarakter(m.kod).replace(/[-/.\s]/g, '');
                         return temizKod.includes(temizAranan);
                     });
-                    
                     ekranaYazdir(filtrelenmis.slice(0, 100));
                 }
             }, 300);
@@ -809,8 +818,9 @@
 
                 const isKasa = malzeme.kategori === 'KASALAR';
                 
-                const formatliMarka = (malzeme.marka || '-').toLocaleUpperCase('tr-TR');
-                const formatliKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
+                // Temizleme motorundan geçerek ekrana standart basılıyor
+                const formatliMarka = temizKarakter(malzeme.marka || '-');
+                const formatliKod = temizKarakter(malzeme.kod || '');
 
                 const ikinciElBaslik = telefonMu() ? "İkinci El" : "İKİNCİ EL";
                 const acikKutuBaslik = telefonMu() ? "A.Kutu" : "AÇIK KUTU";
@@ -820,7 +830,7 @@
 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
-                const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${malzeme.raf_no || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${malzeme.raf_no || '-'}</span>`;
+                const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
 
                 /* YENİ 3'LÜ IZGARA (GRID) TASARIM - MERKEZE HİZALI KOD İLE */
                 const satir = `
@@ -854,9 +864,9 @@
             if(aktifRol !== 'duzenleyici') return;
 
             const kategori = document.getElementById('inputKategori').value; 
-            let marka = document.getElementById('inputMarka').value.trim().toLocaleUpperCase('tr-TR');
-            let kod = document.getElementById('inputKod').value.trim().toLocaleUpperCase('tr-TR'); 
-            const raf_no = document.getElementById('inputRafNo').value.trim().toLocaleUpperCase('tr-TR');
+            let marka = temizKarakter(document.getElementById('inputMarka').value.trim());
+            let kod = temizKarakter(document.getElementById('inputKod').value.trim()); 
+            const raf_no = temizKarakter(document.getElementById('inputRafNo').value.trim());
 
             const eAdet = parseInt(document.getElementById('inputIkinciEl').value) || 0;
             const aAdet = parseInt(document.getElementById('inputAcikKutu').value) || 0;
@@ -1026,17 +1036,17 @@
 
             if (malzemeData) {
                 malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
-                    let mark = (m.marka || '-').toLocaleUpperCase('tr-TR');
+                    let mark = temizKarakter(m.marka || '-');
                     let kat = m.kategori || '-';
-                    malzemeMap[(m.kod || '').toLocaleUpperCase('tr-TR')] = { kategori: kat, marka: mark };
+                    malzemeMap[temizKarakter(m.kod || '')] = { kategori: kat, marka: mark };
                     
                     if(mark !== '-') geciciMarkalar.add(mark);
                     if(kat !== '-') geciciKategoriler.add(kat);
                 });
                 
                 malzemeData.filter(m => m.kategori === 'KASALAR').forEach(m => {
-                    const k = (m.kod || '').toLocaleUpperCase('tr-TR');
-                    let mark = (m.marka || '-').toLocaleUpperCase('tr-TR');
+                    const k = temizKarakter(m.kod || '');
+                    let mark = temizKarakter(m.marka || '-');
                     if (!malzemeMap[k]) { 
                         malzemeMap[k] = { kategori: 'KASALAR', marka: mark }; 
                     }
@@ -1049,7 +1059,7 @@
             sistemKategorileri = [...geciciKategoriler].sort();
 
             tumLoglar = logData.map(log => {
-                const mapInfo = malzemeMap[(log.kod || '').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' };
+                const mapInfo = malzemeMap[temizKarakter(log.kod || '')] || { kategori: '-', marka: '-' };
                 return { ...log, _mapKategori: mapInfo.kategori, _mapMarka: mapInfo.marka };
             });
 
@@ -1078,7 +1088,7 @@
                     if (bitisIndex !== -1) {
                         let icerik = hamIslem.substring(5, bitisIndex).split('|MRK:');
                         kayitKategori = icerik[0] || '-';
-                        kayitMarka = icerik[1] || '-';
+                        kayitMarka = temizKarakter(icerik[1] || '-');
                         hamIslem = hamIslem.substring(bitisIndex + 2); 
                     }
                 }
@@ -1113,7 +1123,7 @@
                                 <span class="${etiketClass}">${kayitKategori}</span>
                                 <span class="log-marka">${kayitMarka}</span>
                             </div>
-                            <span class="log-kod-span">${log.kod}</span>
+                            <span class="log-kod-span">${temizKarakter(log.kod)}</span>
                         </div>
                         <div class="log-islem-detay" style="border-left-color: ${islemRengi}">
                             ${islemBaslik}
@@ -1125,7 +1135,7 @@
         }
 
         function logIciAra() {
-            const aranan = document.getElementById('logAramaKutusu').value.trim().toLocaleUpperCase('tr-TR');
+            const aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
             const kriter = document.getElementById('logAramaKriteri').value;
             
             if (!aranan) {
@@ -1135,9 +1145,9 @@
             
             const filtrelenmis = tumLoglar.filter(log => {
                 if (kriter === 'kod') {
-                    return (log.kod || '').toLocaleUpperCase('tr-TR').includes(aranan);
+                    return temizKarakter(log.kod || '').includes(aranan);
                 } else if (kriter === 'marka') {
-                    return (log._gosterilenMarka || '').toLocaleUpperCase('tr-TR').includes(aranan);
+                    return temizKarakter(log._gosterilenMarka || '').includes(aranan);
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR').includes(aranan);
                 }
@@ -1152,7 +1162,7 @@
             aktifDuzenlenenMalzeme = malzeme;
             
             document.getElementById('duzenlenenId').value = malzeme.id;
-            document.getElementById('modalBaslik').innerText = `${malzeme.kod} GÜNCELLE`;
+            document.getElementById('modalBaslik').innerText = `${temizKarakter(malzeme.kod)} GÜNCELLE`;
             
             document.getElementById('grupKategori').style.display = 'none';
             document.getElementById('grupMarka').style.display = 'none';
@@ -1161,13 +1171,13 @@
             document.getElementById('inputKategori').value = malzeme.kategori || '';
             kategoriDegisti();
             
-            document.getElementById('inputKod').value = malzeme.kod; 
+            document.getElementById('inputKod').value = temizKarakter(malzeme.kod); 
 
             document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
             document.getElementById('inputAcikKutu').value = malzeme.acik_kutu || 0;
             document.getElementById('inputKapaliKutu').value = malzeme.kapali_kutu || 0;
             document.getElementById('inputArizali').value = malzeme.arizali || 0;
-            document.getElementById('inputRafNo').value = malzeme.raf_no || '';
+            document.getElementById('inputRafNo').value = temizKarakter(malzeme.raf_no || '');
             
             document.getElementById('GuncelleModal').style.display = 'flex';
         }
@@ -1213,8 +1223,15 @@
                     .order('kod', { ascending: true });
                 
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                if (aranan) sorgu = sorgu.ilike('kod', `%${aranan}%`);
+                
+                if (marka) {
+                    let altMarka = marka.replace(/I/g, 'İ');
+                    if (marka !== altMarka) {
+                        sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
+                    } else {
+                        sorgu = sorgu.ilike('marka', `%${marka}%`);
+                    }
+                }
                 
                 const { data, error } = await sorgu.limit(5000);
                 if (error || !data || data.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
@@ -1268,8 +1285,9 @@
                 `;
 
                 data.forEach(m => {
-                    const formatliMarka = (m.marka || '').toLocaleUpperCase('tr-TR');
-                    const formatliKod = (m.kod || '').toLocaleUpperCase('tr-TR');
+                    // Excel dökümünde de temiz, tekil gösterim
+                    const formatliMarka = temizKarakter(m.marka || '-');
+                    const formatliKod = temizKarakter(m.kod || '');
                     htmlTablo += `
                             <tr>
                                 <td>${m.kategori || ''}</td>
