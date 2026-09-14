@@ -328,10 +328,11 @@
         
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
         
-        #logAramaKriteri, #logAramaKutusu { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
+        #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
         #logAramaKriteri { margin-bottom: 12px; cursor: pointer; font-weight: 600; }
-        #logAramaKutusu { text-transform: uppercase; flex: 1; margin-bottom: 0;}
-        #logAramaKriteri:focus, #logAramaKutusu:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        #logAramaKutusu, #logKullaniciSecici { text-transform: uppercase; flex: 1; margin-bottom: 0;}
+        #logKullaniciSecici { cursor: pointer; font-weight: 600; }
+        #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; }
 
         .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 8px; }
@@ -392,7 +393,7 @@
             .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
             
-            #logAramaKriteri, #logAramaKutusu { font-size: 15px; padding: 12px; }
+            #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici { font-size: 15px; padding: 12px; }
         }
     </style>
 </head>
@@ -485,6 +486,9 @@
             
             <div class="log-arama-konteyner">
                 <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
+                <select id="logKullaniciSecici" style="display:none;" onchange="logIciAra()">
+                    <option value="">TÜM KULLANICILAR</option>
+                </select>
                 <datalist id="logOneriListesi"></datalist>
                 <button class="btn-excel" style="padding: 0 16px; border-radius: 10px; border: none; font-weight: 700; color: #fff; cursor: pointer; white-space: nowrap;" onclick="logExcelDokumuAl()">Excel'e Aktar</button>
             </div>
@@ -665,7 +669,7 @@
                 baslik.style.color = 'var(--accent-blue)';
                 baslik.innerText = "Onay Gerekli";
                 yeniBtnTamam.innerText = "Tamam";
-                yeniBtnGeri.innerText = "Geri Dön";
+                yeniBtnGeri.innerText = "İptal";
                 yeniBtnTamam.onclick = () => {
                     modal.style.display = 'none';
                     if(onTamamCallback) onTamamCallback();
@@ -1091,23 +1095,34 @@
             const kriter = document.getElementById('logAramaKriteri').value;
             const datalist = document.getElementById('logOneriListesi');
             const aramaKutusu = document.getElementById('logAramaKutusu');
+            const kullaniciSecici = document.getElementById('logKullaniciSecici');
             
             datalist.innerHTML = ''; 
             aramaKutusu.value = ''; 
+            kullaniciSecici.innerHTML = '<option value="">TÜM KULLANICILAR</option>';
+            kullaniciSecici.value = '';
             
-            if (kriter === 'marka') {
-                sistemMarkalari.forEach(m => { datalist.innerHTML += `<option value="${m}">`; });
-            } else if (kriter === 'kategori') {
-                sistemKategorileri.forEach(k => { datalist.innerHTML += `<option value="${k}">`; });
-            } else if (kriter === 'kullanici') {
+            if (kriter === 'kullanici') {
+                aramaKutusu.style.display = 'none';
+                kullaniciSecici.style.display = 'block';
                 const benzersizKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))].sort();
-                benzersizKullanicilar.forEach(u => { datalist.innerHTML += `<option value="${u}">`; });
+                benzersizKullanicilar.forEach(u => { kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; });
+            } else {
+                aramaKutusu.style.display = 'block';
+                kullaniciSecici.style.display = 'none';
+                if (kriter === 'marka') {
+                    sistemMarkalari.forEach(m => { datalist.innerHTML += `<option value="${m}">`; });
+                } else if (kriter === 'kategori') {
+                    sistemKategorileri.forEach(k => { datalist.innerHTML += `<option value="${k}">`; });
+                }
             }
             
             logIciAra(); 
         }
 
         async function logModalAc() {
+            document.getElementById('logAramaKutusu').style.display = 'block';
+            document.getElementById('logKullaniciSecici').style.display = 'none';
             document.getElementById('logAramaKutusu').value = '';
             document.getElementById('logAramaKriteri').value = 'kod';
             document.getElementById('LogModal').style.display = 'flex';
@@ -1241,8 +1256,14 @@
         }
 
         function logIciAra() {
-            const aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
             const kriter = document.getElementById('logAramaKriteri').value;
+            let aranan = '';
+            
+            if (kriter === 'kullanici') {
+                aranan = document.getElementById('logKullaniciSecici').value;
+            } else {
+                aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
+            }
             
             if (!aranan) {
                 loglariCiz(tumLoglar);
@@ -1293,7 +1314,7 @@
                                 <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
                                 <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
                                 <th width="250" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
-                                <th width="400" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İŞLEM DETAYI</th>
+                                <th width="600" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İŞLEM DETAYI</th>
                             </tr>
                         </thead>
                         <tbody>
