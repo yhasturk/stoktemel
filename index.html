@@ -334,17 +334,19 @@
 
         .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 8px; }
         
-        .log-kart { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
-        .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        /* LOG KARTLARI - TEKİLLEŞTİRİLMİŞ (KUTU İÇİ KUTU KALDIRILDI) */
+        .log-kart { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+        .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px;}
         .log-tarih { font-size: 12px; color: var(--text-muted); font-weight: 500;}
         .log-kullanici { font-size: 12px; font-weight: 700; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.1); padding: 4px 10px; border-radius: 12px; }
         
-        .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin: 2px 0 6px 0; background-color: var(--bg-dark); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
+        /* ARKA PLAN VE ÇERÇEVELER KALDIRILDI, TEK PARÇA OLDU */
+        .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: #fff; letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
         
-        .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: #cbd5e1; background-color: var(--bg-dark); padding: 12px 14px; border-radius: 8px; border-left: 4px solid; }
+        /* SADECE SOL ÇİZGİ VURGUSU KALDI */
+        .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: #cbd5e1; padding: 4px 0 4px 12px; border-left: 4px solid; }
 
         /* MOBİL UYARLAMA KISMI - PERFORMANS ODAKLI */
         @media screen and (max-width: 650px) {
@@ -356,6 +358,7 @@
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
             
+            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF YAZI BÜYÜKLÜĞÜ (16px) */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
@@ -382,8 +385,8 @@
             .modal-content { padding: 22px 18px; width: 92%; }
             
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
-            .log-kart { padding: 12px; }
-            .log-islem-detay { font-size: 12.5px; padding: 10px; }
+            .log-kart { padding: 14px; }
+            .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
             
             #logAramaKriteri, #logAramaKutusu { font-size: 15px; padding: 12px; }
@@ -620,6 +623,9 @@
             const yeniBtnGeri = btnGeri.cloneNode(true);
             btnGeri.parentNode.replaceChild(yeniBtnGeri, btnGeri);
 
+            // Butonları fabrika ayarına döndür
+            yeniBtnGeri.style.display = '';
+
             modal.style.display = 'flex';
 
             if (tip === 'hata') {
@@ -639,6 +645,15 @@
                     if(onTamamCallback) onTamamCallback();
                 };
                 yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
+            } else if (tip === 'basari') {
+                baslik.style.color = 'var(--accent-green)';
+                baslik.innerText = "İşlem Başarılı";
+                yeniBtnTamam.innerText = "Tamam";
+                yeniBtnGeri.style.display = 'none'; // Başarı ekranında Geri Dön butonunu gizle
+                yeniBtnTamam.onclick = () => {
+                    modal.style.display = 'none';
+                    if(onTamamCallback) onTamamCallback();
+                };
             }
         }
 
@@ -818,6 +833,7 @@
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
                 if (marka) {
+                    // Marka "SIEMENS" olarak geliyor, DB'deki "SİEMENS" ile de eşleştirmek için çift arama.
                     let altMarka = marka.replace(/I/g, 'İ');
                     if (marka !== altMarka) {
                         sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
@@ -1011,7 +1027,12 @@
                     let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
                     await logKaydet(logMetni, kod);
                     secenekleriYukle(); 
-                    basariSonrasi();
+                    
+                    // YENİ KAYIT BAŞARI MESAJI EKLENDİ
+                    document.getElementById('GuncelleModal').style.display = 'none';
+                    uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => {
+                        stokGetir();
+                    });
                 } else {
                     if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
                         uyariGoster("<b>Veritabanı Engelledi!</b><br><br>Supabase veritabanınızda 'kod' sütunu hala <b>'Is Unique' (Benzersiz)</b> olarak işaretli. Bu yüzden aynı kodu kasalara tekrar eklemenize veritabanı izin vermiyor.<br><br><b>Çözüm:</b> Lütfen Supabase'den 'Table Editor'e girin, malzemeler tablosunda 'kod' sütununu düzenleyip 'Is Unique' tikini kaldırın.", 'hata');
@@ -1033,8 +1054,11 @@
         }
 
         function basariSonrasi() {
-            document.getElementById('GuncelleModal').style.display = 'none';
-            stokGetir(); 
+            // Sadece güncellemede direkt kapatıp yeniliyoruz, yeni kayıtta uyarı çıkar.
+            if (islemTuru === 'guncelle') {
+                document.getElementById('GuncelleModal').style.display = 'none';
+                stokGetir(); 
+            }
         }
 
         async function logKaydet(islemTipiVeDetay, parcaKodu) {
