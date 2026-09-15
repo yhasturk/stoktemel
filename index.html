@@ -294,27 +294,23 @@
 
         /* MOBİL UYARLAMA KISMI - SADECE MOBİL (MAX 650PX) */
         @media screen and (max-width: 650px) {
-            .header { flex-direction: column; align-items: stretch; width: 100%; }
-            .buton-grup { flex-wrap: wrap; order: -1; width: 100%; }
+            /* HEADER GRID SİSTEMİNE GEÇİRİLDİ (YAN YANA YAPMAK İÇİN) */
+            .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
+            .buton-grup { grid-column: 1 / 3; order: -1; width: 100%; flex-wrap: wrap;}
             
-            /* BUTONLAR KÜÇÜLTÜLDÜ (42px -> 28px) VE FONT ZARİFLEŞTİRİLDİ */
+            #aramaKutusu { grid-column: 1 / 3; width: 100%; height: 42px !important; font-size: 15px !important; text-align: left; padding: 0 14px !important; border-radius: 10px;}
+            
+            /* KATEGORİ VE MARKA YAN YANA, YÜKSEKLİKLERİ %20 (1/5) KÜÇÜLTÜLDÜ (yaklaşık 34px) */
+            #kategoriFiltre, #markaFiltre { height: 34px !important; width: 100%; font-size: 13px !important; font-weight: 700; text-align: center; border-radius: 8px; padding: 0 8px !important; }
+            
+            #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
+            
+            /* BUTONLAR KÜÇÜLTÜLDÜ (ÖNCEKİ İSTEK) */
             .buton-grup button { height: 28px !important; font-size: 11px !important; padding: 0 4px !important; border-radius: 6px !important;}
             
             /* SADE VE TEK SATIR BAŞLIK: "TEMEL OTOMASYON" */
             .ana-baslik { font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .baslik-ayrac, .baslik-alt { display: none !important; }
-            
-            #aramaKutusu, #kategoriFiltre, #markaFiltre { 
-                height: 200px !important; 
-                width: 100%; 
-                font-size: 16px !important; 
-                font-weight: 700; 
-                text-align: center; 
-                border-radius: 16px; 
-                padding: 10px !important; 
-            }
-            
-            #aramaKutusu::placeholder { font-size: 15px !important; font-weight: normal; }
             
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
             .malzeme-kod { font-size: 15px; }
