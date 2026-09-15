@@ -326,7 +326,6 @@
             
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
             
-            /* MOBİLDE ARAMA KUTUSU VE EXCEL BUTONU YAN YANA KİLİTLENDİ */
             .log-arama-konteyner { flex-direction: row; gap: 8px; }
             #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { font-size: 14px; padding: 10px; }
             .log-arama-konteyner .btn-excel { padding: 0 12px !important; font-size: 12px !important; }
@@ -369,9 +368,11 @@
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
 
                 <div class="header">
+                    <!-- KLAVYE İLE YAZARKEN GECİKMELİ (Normal) ARAMA -->
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
                     
-                    <select id="kategoriFiltre" onchange="stokGetir()">
+                    <!-- LİSTEDEN SEÇİLDİĞİNDE SIFIR GECİKME (aninda=true) İLE ARAMA -->
+                    <select id="kategoriFiltre" onchange="stokGetir(true)">
                         <option value="">KATEGORİLER</option>
                         <option value="PLC">PLC</option>
                         <option value="EKRAN">EKRAN</option>
@@ -383,7 +384,8 @@
                         <option value="MOTOR">MOTOR</option>
                     </select>
 
-                    <input type="text" id="markaFiltre" list="anaMarkaListesi" autocomplete="off" placeholder="MARKALAR YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); stokGetir()">
+                    <!-- MARKALAR İÇİN DE SEÇİM YAPILDIĞINDA SIFIR GECİKME (aninda=true) İLE ARAMA -->
+                    <input type="text" id="markaFiltre" list="anaMarkaListesi" autocomplete="off" placeholder="MARKALAR YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); stokGetir()" onchange="stokGetir(true)">
                     <datalist id="anaMarkaListesi"></datalist>
                     
                     <div class="buton-grup">
@@ -540,9 +542,8 @@
         let sistemKullanicilari = []; 
         let mevcutEkranVerileri = []; 
         
-        let tumMarkalarSet = new Set(); // Arka planda markaları toplayan havuz
+        let tumMarkalarSet = new Set(); 
 
-        /* SİSTEM KULLANICI SÖZLÜĞÜ */
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ BULUT',
@@ -561,7 +562,6 @@
             if(kullaniciSozlugu[lowerEmail]) {
                 return temizKarakter(kullaniciSozlugu[lowerEmail]);
             }
-            
             let isimKismi = lowerEmail.split('@')[0];
             isimKismi = isimKismi.replace(/\./g, ' ');
             return temizKarakter(isimKismi);
@@ -753,7 +753,7 @@
                 if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
                     aktifRol = 'duzenleyici';
                     document.getElementById('btnYeniEkle').style.display = 'block';
-                    markalariArkaPlandaCek(); // Arka plan görevini başlat
+                    markalariArkaPlandaCek(); 
                 } else {
                     aktifRol = 'okuyucu';
                 }
@@ -774,7 +774,6 @@
             }
         }
 
-        // MOBİL PERFORMANS İÇİN ASENKRON MARKA ÇEKİMİ (KASMAZ)
         function markalariArkaPlandaCek(baslangic = 0) {
             const limit = 2000;
             sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
@@ -787,7 +786,7 @@
                     document.getElementById('anaMarkaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
                     
                     if (data.length === limit) {
-                        setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); // Telefona nefes aldırmak için ufak bekleme
+                        setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); 
                     } else {
                         document.getElementById('markaFiltre').placeholder = "MARKA ARA VEYA SEÇ...";
                     }
@@ -805,9 +804,11 @@
                 </div>`;
         }
 
-        async function stokGetir() {
+        // V8 MOTORU: LİSTEDEN SEÇİM YAPILDIĞINDA ANINDA SORGULAMA (aninda=true)
+        async function stokGetir(aninda = false) {
             clearTimeout(aramaZamanlayici);
-            // DEBOUNCE 800MS YAPILDI -> KLAVYEDE YAZARKEN TELEFON KASMASI BİTİRİLDİ
+            const beklemeSuresi = aninda ? 0 : 800; // Tıklamada 0 saniye, yazmada 0.8 saniye bekle
+
             aramaZamanlayici = setTimeout(async () => {
                 const aranan = document.getElementById('aramaKutusu').value.trim();
                 const kategori = document.getElementById('kategoriFiltre').value;
@@ -833,7 +834,6 @@
                 }
                 
                 if (aranan) {
-                    // FUZZY SEARCH (ESNEK BULANIK ARAMA) EKLENDİ
                     const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, ''); 
                     if (arananTemiz.length > 0) {
                         const esnekArama = '%' + arananTemiz.split('').join('%') + '%';
@@ -845,18 +845,20 @@
                 if (error) return;
 
                 ekranaYazdir(data);
-            }, 800); 
+            }, beklemeSuresi); 
         }
 
         function ekranaYazdir(veriler) {
             mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
-            liste.innerHTML = '';
             
             if(!veriler || veriler.length === 0) {
                 liste.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Kayıt bulunamadı.</div>';
                 return;
             }
+
+            // V8 MOTORU DOM OPTİMİZASYONU: Döngü içinde innerHTML yapmak yerine tüm metni bellekte birleştiriyoruz (SIFIR KASMA)
+            let tumKartlar = '';
 
             veriler.forEach(malzeme => {
                 let islemButonu = '';
@@ -881,7 +883,7 @@
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
                 const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
 
-                const satir = `
+                tumKartlar += `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
@@ -904,8 +906,10 @@
                         ${islemButonu}
                     </div>
                 `;
-                liste.innerHTML += satir;
             });
+            
+            // Tüm hazırlanan kartları ekrana tek seferde çak (Kilitlenmeyi önler)
+            liste.innerHTML = tumKartlar;
         }
 
         function guncelleModalAcById(id) {
@@ -1024,7 +1028,6 @@
                     let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
                     await logKaydet(logMetni, kod);
                     
-                    // Markayı arka plan setine ekle ki aramada çıksın
                     if(marka) tumMarkalarSet.add(marka);
 
                     document.getElementById('GuncelleModal').style.display = 'none';
@@ -1200,7 +1203,6 @@
         function loglariCiz(logDizisi, ozelMesajIsmi = '', ozelKategoriMesaji = '') {
             suankiLoglar = logDizisi; 
             const logGövdesi = document.getElementById('logGövdesi');
-            logGövdesi.innerHTML = '';
             
             if(logDizisi.length === 0) {
                 if (ozelMesajIsmi) {
@@ -1212,6 +1214,9 @@
                 }
                 return;
             }
+
+            // V8 MOTORU DOM OPTİMİZASYONU: Döngü içinde innerHTML yerine tek seferde atama (SIFIR KASMA)
+            let tumLogKartlari = '';
 
             logDizisi.forEach(log => {
                 const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -1249,7 +1254,7 @@
 
                 const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
 
-                logGövdesi.innerHTML += `
+                tumLogKartlari += `
                     <div class="log-kart">
                         <div class="log-kart-ust">
                             <span class="log-tarih">${tarih}</span>
@@ -1269,6 +1274,8 @@
                     </div>
                 `;
             });
+
+            logGövdesi.innerHTML = tumLogKartlari;
         }
 
         function logIciAra() {
@@ -1297,7 +1304,6 @@
             
             const filtrelenmis = tumLoglar.filter(log => {
                 if (kriter === 'kod') {
-                    // FUZZY ARAMA (LOGLAR İÇİN DE DEVREDE)
                     const arananTemiz = aranan.replace(/[^A-Z0-9]/g, '');
                     const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, '');
                     return temizKod.includes(arananTemiz);
@@ -1314,7 +1320,6 @@
             loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
         }
 
-        // GERÇEK EXCEL ALTYAPISI (EXCELJS) ENTEGRE EDİLDİ
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim();
             const kategori = document.getElementById('kategoriFiltre').value;
@@ -1416,7 +1421,6 @@
                         });
                     });
 
-                    // TÜM EXCEL STİL VE HİZALAMA AYARLARI
                     ws.eachRow((row, rowNumber) => {
                         row.eachCell((cell, colNumber) => {
                             cell.font = { name: 'Segoe UI', size: 10 };
@@ -1455,7 +1459,6 @@
             });
         }
 
-        // LOGLAR İÇİN GERÇEK EXCEL (.XLSX) DÖKÜMÜ
         function logExcelDokumuAl() {
             uyariGoster("Şu an ekranda listelenen log kayıtlarını gerçek Excel (.xlsx) formatında indirmek istiyor musunuz?", "onay", async () => {
                 if (!suankiLoglar || suankiLoglar.length === 0) { 
@@ -1472,7 +1475,7 @@
                         { header: 'KATEGORİ', key: 'kategori', width: 16 },
                         { header: 'MARKA', key: 'marka', width: 18 },
                         { header: 'MALZEME KODU', key: 'kod', width: 35 },
-                        { header: 'İŞLEM DETAYI', key: 'islem', width: 85 } // 600px karşılığı genişlik
+                        { header: 'İŞLEM DETAYI', key: 'islem', width: 85 }
                     ];
 
                     suankiLoglar.forEach(log => {
@@ -1496,7 +1499,6 @@
                         });
                     });
 
-                    // TÜM EXCEL STİL VE HİZALAMA AYARLARI
                     ws.eachRow((row, rowNumber) => {
                         row.eachCell((cell, colNumber) => {
                             cell.font = { name: 'Segoe UI', size: 10 };
@@ -1512,8 +1514,8 @@
                                 cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
                                 cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
                             } else {
-                                if (colNumber === 2) cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF06B6D4' } }; // Kullanıcı
-                                if (colNumber === 5) cell.font = { name: 'Segoe UI', size: 10, bold: true }; // Kod
+                                if (colNumber === 2) cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF06B6D4' } };
+                                if (colNumber === 5) cell.font = { name: 'Segoe UI', size: 10, bold: true };
                             }
                         });
                     });
