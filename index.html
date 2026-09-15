@@ -359,6 +359,7 @@
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
             
+            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF YAZI BÜYÜKLÜĞÜ (16px) */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
@@ -586,8 +587,9 @@
         let suankiLoglar = []; 
         let sistemMarkalari = [];
         let sistemKategorileri = [];
+        let sistemKullanicilari = []; 
 
-        /* GÜNCELLENMİŞ SİSTEM KULLANICI SÖZLÜĞÜ */
+        /* SİSTEM KULLANICI SÖZLÜĞÜ (ÖZEL İSİMLER İÇİN) */
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ BULUT',
@@ -600,6 +602,7 @@
             'ylmzsukru1998@gmail.com': 'ŞÜKRÜ YILMAZ'
         };
 
+        /* DİNAMİK İSİM FORMATLAYICI */
         function kullaniciAdiGetir(email) {
             if(!email) return 'BİLİNMEYEN';
             const lowerEmail = email.toLowerCase().trim();
@@ -825,16 +828,18 @@
         }
 
         async function secenekleriYukle() {
-            const { data, error } = await sbClient.from('malzemeler').select('marka').limit(10000);
-            if (data) {
-                const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
-                document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
-                
-                const markaFiltre = document.getElementById('markaFiltre');
-                const seciliMarka = markaFiltre.value; 
-                markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
-                markaFiltre.value = seciliMarka;
-            }
+            // Arka planda donmayı engellemek için async olarak markaları çekiyoruz (Kasma yapmaz)
+            sbClient.from('malzemeler').select('marka').limit(15000).then(({data, error}) => {
+                if (data) {
+                    const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
+                    document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
+                    
+                    const markaFiltre = document.getElementById('markaFiltre');
+                    const seciliMarka = markaFiltre.value; 
+                    markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
+                    markaFiltre.value = seciliMarka;
+                }
+            });
         }
 
         function baslat() {
@@ -859,7 +864,9 @@
 
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
+                // V8 MOTORU: ARAMA YÜKÜ SUPABASE SUNUCULARINDA (TELEFONU YORMAZ)
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
+                
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
                 if (marka) {
@@ -870,21 +877,19 @@
                         sorgu = sorgu.ilike('marka', `%${marka}%`);
                     }
                 }
+
+                if (aranan) {
+                    // AKILLI JOKER ARAMASI: Boşluk, tire ve taksimleri yoksayar
+                    const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
+                    sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
+                }
                 
-                const { data, error } = await sorgu.limit(5000);
+                // TELEFON KASMASIN DİYE EKRANA EN FAZLA 100 KAYIT GÖNDERİLİR
+                const { data, error } = await sorgu.limit(100);
                 if (error) return;
 
-                if (!aranan) {
-                    ekranaYazdir(data.slice(0, 100));
-                } else {
-                    const temizAranan = temizKarakter(aranan).replace(/[-/.\s]/g, '');
-                    const filtrelenmis = data.filter(m => {
-                        const temizKod = temizKarakter(m.kod).replace(/[-/.\s]/g, '');
-                        return temizKod.includes(temizAranan);
-                    });
-                    ekranaYazdir(filtrelenmis.slice(0, 100));
-                }
-            }, 300);
+                ekranaYazdir(data);
+            }, 400); // Klavyede yazarken çok istek gitmesin diye süre 400ms yapıldı
         }
 
         function ekranaYazdir(veriler) {
@@ -1105,7 +1110,6 @@
                 aramaKutusu.style.display = 'none';
                 kullaniciSecici.style.display = 'block';
                 
-                // SABİT ÖZEL SIRALAMA (SENİN VERDİĞİN LİSTE)
                 const ozelSiralama = [
                     "FAZLI ŞEN",
                     "MUSTAFA TEMEL",
@@ -1122,7 +1126,6 @@
 
                 let gosterilecekKullanicilar = [...ozelSiralama];
                 
-                // Loglarda olan ama senin listende olmayan sinsi bir isim varsa, kilitli listenin en altına eklenir
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
                 logdakiKullanicilar.forEach(u => {
                     if(!gosterilecekKullanicilar.includes(u)) {
@@ -1332,126 +1335,6 @@
             loglariCiz(filtrelenmis, arananKullaniciAd);
         }
 
-        function logExcelDokumuAl() {
-            uyariGoster("Şu an ekranda listelenen log kayıtlarını Excel'e aktarmak istiyor musunuz?", "onay", () => {
-                if (!suankiLoglar || suankiLoglar.length === 0) { 
-                    alert("Döküm alınacak kayıt bulunamadı!"); return; 
-                }
-
-                let htmlTablo = `
-                <html xmlns:o="urn:schemas-microsoft-com:office:office" 
-                      xmlns:x="urn:schemas-microsoft-com:office:excel" 
-                      xmlns="http://www.w3.org/TR/REC-html40">
-                <head>
-                    <meta charset="utf-8">
-                    <style>
-                        table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
-                        th, td { border: .5pt solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
-                        tr { height: 28px; }
-                    </style>
-                </head>
-                <body>
-                    <table>
-                        <thead>
-                            <tr style="height: 35px;">
-                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TARİH</th>
-                                <th width="180" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KULLANICI</th>
-                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
-                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
-                                <th width="250" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
-                                <th width="600" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İŞLEM DETAYI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                suankiLoglar.forEach(log => {
-                    const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    const user = kullaniciAdiGetir(log.kullanici);
-                    
-                    let hamIslem = log.islem;
-                    if (hamIslem.startsWith('[CAT:')) {
-                        let bitisIndex = hamIslem.indexOf('] ');
-                        if (bitisIndex !== -1) {
-                            hamIslem = hamIslem.substring(bitisIndex + 2); 
-                        }
-                    }
-                    
-                    let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/->/g, "→");
-
-                    htmlTablo += `
-                            <tr>
-                                <td>${tarih}</td>
-                                <td style="font-weight:bold;">${user}</td>
-                                <td>${log._gosterilenKategori || '-'}</td>
-                                <td>${log._gosterilenMarka || '-'}</td>
-                                <td style="font-weight:bold;">${temizKarakter(log.kod)}</td>
-                                <td>${islemMetni}</td>
-                            </tr>`;
-                });
-
-                htmlTablo += `</tbody></table></body></html>`;
-
-                const blob = new Blob([htmlTablo], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "sistem_loglari.xls";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        }
-
-        function guncelleModalAc(malzeme) {
-            islemTuru = 'guncelle';
-            aktifDuzenlenenMalzeme = malzeme;
-            
-            document.getElementById('duzenlenenId').value = malzeme.id;
-            document.getElementById('modalBaslik').innerText = `${temizKarakter(malzeme.kod)} GÜNCELLE`;
-            
-            document.getElementById('grupKategori').style.display = 'block';
-            document.getElementById('grupMarka').style.display = 'block';
-            document.getElementById('grupKod').style.display = 'block';
-            
-            document.getElementById('inputKategori').value = temizKarakter(malzeme.kategori || '');
-            document.getElementById('inputMarka').value = temizKarakter(malzeme.marka || '');
-            kategoriDegisti();
-            
-            document.getElementById('inputKod').value = temizKarakter(malzeme.kod); 
-
-            document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
-            document.getElementById('inputAcikKutu').value = malzeme.acik_kutu || 0;
-            document.getElementById('inputKapaliKutu').value = malzeme.kapali_kutu || 0;
-            document.getElementById('inputArizali').value = malzeme.arizali || 0;
-            document.getElementById('inputRafNo').value = temizKarakter(malzeme.raf_no || '');
-            
-            document.getElementById('GuncelleModal').style.display = 'flex';
-        }
-
-        function yeniKayitModalAc() {
-            islemTuru = 'yeni';
-            aktifDuzenlenenMalzeme = null;
-
-            document.getElementById('modalBaslik').innerText = 'YENİ MALZEME EKLE';
-            
-            document.getElementById('grupKategori').style.display = 'block';
-            document.getElementById('grupMarka').style.display = 'block';
-            document.getElementById('grupKod').style.display = 'block';
-
-            document.getElementById('inputKategori').value = '';
-            kategoriDegisti(); 
-
-            document.getElementById('inputMarka').value = '';
-            document.getElementById('inputKod').value = '';
-            document.getElementById('inputIkinciEl').value = 0;
-            document.getElementById('inputAcikKutu').value = 0;
-            document.getElementById('inputKapaliKutu').value = 0;
-            document.getElementById('inputArizali').value = 0;
-            document.getElementById('inputRafNo').value = '';
-            
-            document.getElementById('GuncelleModal').style.display = 'flex';
-        }
-
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim();
             const kategori = document.getElementById('kategoriFiltre').value;
@@ -1478,8 +1361,15 @@
                         sorgu = sorgu.ilike('marka', `%${marka}%`);
                     }
                 }
+
+                if (aranan) {
+                    // Excel alırken de jokerli arama mantığını kullanıyoruz
+                    const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
+                    sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
+                }
                 
-                const { data, error } = await sorgu.limit(5000);
+                // EXCEL LİMİTİ: Tüm stoğunu rahatça çekebilmen için 20.000'e çıkarıldı
+                const { data, error } = await sorgu.limit(20000);
                 if (error || !data || data.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
 
                 let htmlTablo = `
@@ -1557,6 +1447,56 @@
                 link.click();
                 document.body.removeChild(link);
             });
+        }
+
+        function guncelleModalAc(malzeme) {
+            islemTuru = 'guncelle';
+            aktifDuzenlenenMalzeme = malzeme;
+            
+            document.getElementById('duzenlenenId').value = malzeme.id;
+            document.getElementById('modalBaslik').innerText = `${temizKarakter(malzeme.kod)} GÜNCELLE`;
+            
+            document.getElementById('grupKategori').style.display = 'block';
+            document.getElementById('grupMarka').style.display = 'block';
+            document.getElementById('grupKod').style.display = 'block';
+            
+            document.getElementById('inputKategori').value = temizKarakter(malzeme.kategori || '');
+            document.getElementById('inputMarka').value = temizKarakter(malzeme.marka || '');
+            kategoriDegisti();
+            
+            document.getElementById('inputKod').value = temizKarakter(malzeme.kod); 
+
+            document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
+            document.getElementById('inputAcikKutu').value = malzeme.acik_kutu || 0;
+            document.getElementById('inputKapaliKutu').value = malzeme.kapali_kutu || 0;
+            document.getElementById('inputArizali').value = malzeme.arizali || 0;
+            document.getElementById('inputRafNo').value = temizKarakter(malzeme.raf_no || '');
+            
+            document.getElementById('GuncelleModal').style.display = 'flex';
+        }
+
+        function yeniKayitModalAc() {
+            islemTuru = 'yeni';
+            aktifDuzenlenenMalzeme = null;
+
+            document.getElementById('modalBaslik').innerText = 'YENİ MALZEME EKLE';
+            
+            document.getElementById('grupKategori').style.display = 'block';
+            document.getElementById('grupMarka').style.display = 'block';
+            document.getElementById('grupKod').style.display = 'block';
+
+            document.getElementById('inputKategori').value = '';
+            kategoriDegisti(); 
+
+            document.getElementById('inputMarka').value = '';
+            document.getElementById('inputKod').value = '';
+            document.getElementById('inputIkinciEl').value = 0;
+            document.getElementById('inputAcikKutu').value = 0;
+            document.getElementById('inputKapaliKutu').value = 0;
+            document.getElementById('inputArizali').value = 0;
+            document.getElementById('inputRafNo').value = '';
+            
+            document.getElementById('GuncelleModal').style.display = 'flex';
         }
     </script>
 </body>
