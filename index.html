@@ -219,13 +219,13 @@
         .alt-orta { text-align: center; }
         .alt-sag { text-align: right; }
         
-        /* %100 ORTAK KUTUCUK (ETİKET) TASARIM DİLİ */
+        /* İNCELTİLMİŞ KUTUCUK FONT WEIGHT DEĞERİ (600) */
         .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket {
             display: inline-block;
             padding: 3px 8px;
             border-radius: 6px;
             font-size: 11.5px;
-            font-weight: 800;
+            font-weight: 600; /* 800'DEN 600'E İNDİRİLDİ - ZARİFLEŞTİRİLDİ */
             text-transform: uppercase;
             border: 1px solid var(--border-color);
             letter-spacing: 0.5px;
@@ -262,7 +262,7 @@
             background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; 
             color: #fff !important; 
             font-size: 11.5px !important; 
-            font-weight: 800;
+            font-weight: 600; /* ZARİFLEŞTİRİLDİ */
             letter-spacing: 1px; 
             border: 1px solid var(--border-color) !important;
             animation: pulse-etiket 1.5s infinite ease-in-out; 
@@ -273,9 +273,9 @@
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
 
-        /* Sayılar Alanı */
-        .stok-sayilar { display: grid; grid-template-columns: repeat(5, 85px); gap: 8px; text-align: center; }
-        .sayi-kutusu { font-size: 10.5px; color: var(--text-muted); background-color: var(--bg-dark); padding: 6px 2px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 600; }
+        /* Sayılar Alanı - KUTULAR DARALTILDI (85px -> 72px) */
+        .stok-sayilar { display: grid; grid-template-columns: repeat(5, 72px); gap: 8px; text-align: center; }
+        .sayi-kutusu { font-size: 10px; color: var(--text-muted); background-color: var(--bg-dark); padding: 6px 2px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 600; letter-spacing: -0.3px;}
         .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 15px; font-weight: 800; margin-top: 4px; }
         .sayi-deger { color: var(--text-main); }
         .sayi-toplam { color: var(--accent-green); }
@@ -377,6 +377,7 @@
             .malzeme-kod { font-size: 15px; }
             .log-kod-span { font-size: 14px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
 
+            /* MOBİLDE SAYILAR 1FR OLARAK KALIR, BOZULMAZ */
             .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 4px; }
             .sayi-kutusu { font-size: 8.5px; padding: 6px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
             .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; margin-top: 4px; }
@@ -441,7 +442,7 @@
                     </select>
 
                     <select id="markaFiltre" onchange="stokGetir()">
-                        <option value="">MARKALAR</option>
+                        <option value="">MARKALAR YÜKLENİYOR...</option>
                     </select>
                     
                     <div class="buton-grup">
@@ -589,7 +590,7 @@
         let sistemKategorileri = [];
         let sistemKullanicilari = []; 
 
-        /* SİSTEM KULLANICI SÖZLÜĞÜ (ÖZEL İSİMLER İÇİN) */
+        /* SİSTEM KULLANICI SÖZLÜĞÜ */
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ BULUT',
@@ -828,18 +829,32 @@
         }
 
         async function secenekleriYukle() {
-            // Arka planda donmayı engellemek için async olarak markaları çekiyoruz (Kasma yapmaz)
-            sbClient.from('malzemeler').select('marka').limit(15000).then(({data, error}) => {
-                if (data) {
-                    const markalar = [...new Set(data.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
-                    document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
-                    
-                    const markaFiltre = document.getElementById('markaFiltre');
-                    const seciliMarka = markaFiltre.value; 
-                    markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
-                    markaFiltre.value = seciliMarka;
+            // V8 MOTORU: 12 BİN KAYITTAKİ TÜM MARKALARI EKSİKSİZ ÇEKME DÖNGÜSÜ (PAGINATION)
+            let tumMarkalarData = [];
+            let baslangic = 0;
+            const limit = 1000;
+            let devam = true;
+
+            while (devam) {
+                const { data, error } = await sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1);
+                if (data && data.length > 0) {
+                    tumMarkalarData = tumMarkalarData.concat(data);
+                    baslangic += limit;
+                    if (data.length < limit) devam = false;
+                } else {
+                    devam = false;
                 }
-            });
+            }
+
+            if (tumMarkalarData.length > 0) {
+                const markalar = [...new Set(tumMarkalarData.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
+                document.getElementById('markaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
+                
+                const markaFiltre = document.getElementById('markaFiltre');
+                const seciliMarka = markaFiltre.value; 
+                markaFiltre.innerHTML = '<option value="">MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
+                markaFiltre.value = seciliMarka;
+            }
         }
 
         function baslat() {
@@ -864,9 +879,7 @@
 
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
-                // V8 MOTORU: ARAMA YÜKÜ SUPABASE SUNUCULARINDA (TELEFONU YORMAZ)
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
-                
                 if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
                 if (marka) {
@@ -877,19 +890,17 @@
                         sorgu = sorgu.ilike('marka', `%${marka}%`);
                     }
                 }
-
+                
                 if (aranan) {
-                    // AKILLI JOKER ARAMASI: Boşluk, tire ve taksimleri yoksayar
                     const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
                     sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
                 }
-                
-                // TELEFON KASMASIN DİYE EKRANA EN FAZLA 100 KAYIT GÖNDERİLİR
+
                 const { data, error } = await sorgu.limit(100);
                 if (error) return;
 
                 ekranaYazdir(data);
-            }, 400); // Klavyede yazarken çok istek gitmesin diye süre 400ms yapıldı
+            }, 400); 
         }
 
         function ekranaYazdir(veriler) {
@@ -1335,42 +1346,11 @@
             loglariCiz(filtrelenmis, arananKullaniciAd);
         }
 
-        function excelDokumuAl() {
-            const aranan = document.getElementById('aramaKutusu').value.trim();
-            const kategori = document.getElementById('kategoriFiltre').value;
-            const marka = document.getElementById('markaFiltre').value;
-
-            let uyariMesaji = "Şu anki görünen tabloyu indirmek istiyor musunuz?";
-            if (!aranan && !kategori && !marka) {
-                uyariMesaji = "Herhangi bir kategori veya marka seçilmediği için tüm liste indirilecektir onaylıyor musunuz?";
-            }
-
-            uyariGoster(uyariMesaji, "onay", async () => {
-                let sorgu = sbClient.from('malzemeler').select('*')
-                    .order('kategori', { ascending: true })
-                    .order('marka', { ascending: true })
-                    .order('kod', { ascending: true });
-                
-                if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                
-                if (marka) {
-                    let altMarka = marka.replace(/I/g, 'İ');
-                    if (marka !== altMarka) {
-                        sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
-                    } else {
-                        sorgu = sorgu.ilike('marka', `%${marka}%`);
-                    }
+        function logExcelDokumuAl() {
+            uyariGoster("Şu an ekranda listelenen log kayıtlarını Excel'e aktarmak istiyor musunuz?", "onay", () => {
+                if (!suankiLoglar || suankiLoglar.length === 0) { 
+                    alert("Döküm alınacak kayıt bulunamadı!"); return; 
                 }
-
-                if (aranan) {
-                    // Excel alırken de jokerli arama mantığını kullanıyoruz
-                    const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
-                    sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
-                }
-                
-                // EXCEL LİMİTİ: Tüm stoğunu rahatça çekebilmen için 20.000'e çıkarıldı
-                const { data, error } = await sorgu.limit(20000);
-                if (error || !data || data.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
 
                 let htmlTablo = `
                 <html xmlns:o="urn:schemas-microsoft-com:office:office" 
@@ -1378,24 +1358,6 @@
                       xmlns="http://www.w3.org/TR/REC-html40">
                 <head>
                     <meta charset="utf-8">
-                    <!--[if gte mso 9]>
-                    <xml>
-                        <x:ExcelWorkbook>
-                            <x:ExcelWorksheets>
-                                <x:ExcelWorksheet>
-                                    <x:Name>Stok_Listesi</x:Name>
-                                    <x:WorksheetOptions>
-                                        <x:FreezePanes/>
-                                        <x:FrozenNoSplit/>
-                                        <x:SplitHorizontal>1</x:SplitHorizontal>
-                                        <x:TopRowBottomPane>1</x:TopRowBottomPane>
-                                        <x:ActivePane>2</x:ActivePane>
-                                    </x:WorksheetOptions>
-                                </x:ExcelWorksheet>
-                            </x:ExcelWorksheets>
-                        </x:ExcelWorkbook>
-                    </xml>
-                    <![endif]-->
                     <style>
                         table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
                         th, td { border: .5pt solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
@@ -1406,34 +1368,39 @@
                     <table>
                         <thead>
                             <tr style="height: 35px;">
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
-                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
-                                <th width="300" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İKİNCİ EL</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">AÇIK KUTU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KAPALI KUTU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">ARIZALI</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TOPLAM</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">RAF / KASA NO</th>
+                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TARİH</th>
+                                <th width="180" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KULLANICI</th>
+                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
+                                <th width="150" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
+                                <th width="250" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
+                                <th width="600" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İŞLEM DETAYI</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
 
-                data.forEach(m => {
-                    const formatliMarka = temizKarakter(m.marka || '-');
-                    const formatliKod = temizKarakter(m.kod || '');
+                suankiLoglar.forEach(log => {
+                    const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const user = kullaniciAdiGetir(log.kullanici);
+                    
+                    let hamIslem = log.islem;
+                    if (hamIslem.startsWith('[CAT:')) {
+                        let bitisIndex = hamIslem.indexOf('] ');
+                        if (bitisIndex !== -1) {
+                            hamIslem = hamIslem.substring(bitisIndex + 2); 
+                        }
+                    }
+                    
+                    let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/->/g, "→");
+
                     htmlTablo += `
                             <tr>
-                                <td>${temizKarakter(m.kategori) || ''}</td>
-                                <td>${formatliMarka}</td>
-                                <td style="font-weight:bold;">${formatliKod}</td>
-                                <td>${m.ikinci_el ?? 0}</td>
-                                <td>${m.acik_kutu ?? 0}</td>
-                                <td>${m.kapali_kutu ?? 0}</td>
-                                <td>${m.arizali ?? 0}</td>
-                                <td style="font-weight:bold; color:#059669;">${m.toplam ?? 0}</td>
-                                <td>${temizKarakter(m.raf_no) || ''}</td>
+                                <td>${tarih}</td>
+                                <td style="font-weight:bold;">${user}</td>
+                                <td>${log._gosterilenKategori || '-'}</td>
+                                <td>${log._gosterilenMarka || '-'}</td>
+                                <td style="font-weight:bold;">${temizKarakter(log.kod)}</td>
+                                <td>${islemMetni}</td>
                             </tr>`;
                 });
 
@@ -1442,7 +1409,7 @@
                 const blob = new Blob([htmlTablo], { type: 'application/vnd.ms-excel;charset=utf-8;' });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = "stok_dokumu.xls";
+                link.download = "sistem_loglari.xls";
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1497,6 +1464,131 @@
             document.getElementById('inputRafNo').value = '';
             
             document.getElementById('GuncelleModal').style.display = 'flex';
+        }
+
+        function excelDokumuAl() {
+            const aranan = document.getElementById('aramaKutusu').value.trim();
+            const kategori = document.getElementById('kategoriFiltre').value;
+            const marka = document.getElementById('markaFiltre').value;
+
+            let uyariMesaji = "Şu anki görünen tabloyu indirmek istiyor musunuz?";
+            if (!aranan && !kategori && !marka) {
+                uyariMesaji = "Herhangi bir kategori veya marka seçilmediği için tüm liste indirilecektir onaylıyor musunuz?";
+            }
+
+            uyariGoster(uyariMesaji, "onay", async () => {
+                
+                const btn = document.querySelector('.btn-excel');
+                const oldText = btn.innerText;
+                btn.innerText = "İndiriliyor...";
+
+                // V8 MOTORU: TÜM EXCEL'İ EKSİKSİZ İNDİRMEK İÇİN DÖNGÜ EKLENDİ
+                let allData = [];
+                let baslangic = 0;
+                const limit = 1000;
+                let devam = true;
+
+                while (devam) {
+                    let sorgu = sbClient.from('malzemeler').select('*')
+                        .order('kategori', { ascending: true })
+                        .order('marka', { ascending: true })
+                        .order('kod', { ascending: true });
+                    
+                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
+                    
+                    if (marka) {
+                        let altMarka = marka.replace(/I/g, 'İ');
+                        if (marka !== altMarka) {
+                            sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
+                        } else {
+                            sorgu = sorgu.ilike('marka', `%${marka}%`);
+                        }
+                    }
+
+                    if (aranan) {
+                        const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
+                        sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
+                    }
+                    
+                    sorgu = sorgu.range(baslangic, baslangic + limit - 1);
+                    const { data, error } = await sorgu;
+
+                    if (error) { 
+                        alert("İndirme sırasında bir hata oluştu: " + error.message); 
+                        btn.innerText = oldText;
+                        break; 
+                    }
+
+                    if (data && data.length > 0) {
+                        allData = allData.concat(data);
+                        baslangic += limit;
+                        if (data.length < limit) devam = false;
+                    } else {
+                        devam = false;
+                    }
+                }
+
+                btn.innerText = oldText;
+
+                if (allData.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
+
+                let htmlTablo = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+                      xmlns:x="urn:schemas-microsoft-com:office:excel" 
+                      xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
+                        th, td { border: .5pt solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
+                        tr { height: 28px; }
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <thead>
+                            <tr style="height: 35px;">
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
+                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
+                                <th width="300" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İKİNCİ EL</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">AÇIK KUTU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KAPALI KUTU</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">ARIZALI</th>
+                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TOPLAM</th>
+                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">RAF / KASA NO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                allData.forEach(m => {
+                    const formatliMarka = temizKarakter(m.marka || '-');
+                    const formatliKod = temizKarakter(m.kod || '');
+                    htmlTablo += `
+                            <tr>
+                                <td>${temizKarakter(m.kategori) || ''}</td>
+                                <td>${formatliMarka}</td>
+                                <td style="font-weight:bold;">${formatliKod}</td>
+                                <td>${m.ikinci_el ?? 0}</td>
+                                <td>${m.acik_kutu ?? 0}</td>
+                                <td>${m.kapali_kutu ?? 0}</td>
+                                <td>${m.arizali ?? 0}</td>
+                                <td style="font-weight:bold; color:#059669;">${m.toplam ?? 0}</td>
+                                <td>${temizKarakter(m.raf_no) || ''}</td>
+                            </tr>`;
+                });
+
+                htmlTablo += `</tbody></table></body></html>`;
+
+                const blob = new Blob([htmlTablo], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "stok_dokumu.xls";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         }
     </script>
 </body>
