@@ -10,7 +10,10 @@
     <!-- YENİ MODERN BAŞLIK FONTU: MONTSERRAT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     
+    <!-- SUPABASE VE GERÇEK EXCEL (.XLSX) KÜTÜPHANESİ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+
     <style>
         /* MODERN VE PREMIUM CSS BAŞLANGICI */
         :root {
@@ -41,7 +44,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Özel modern kaydırma çubuğu (Scrollbar) */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
@@ -69,7 +71,7 @@
 
         #anaUygulama { display: none; width: 100%; }
 
-        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK - MAT VE ŞIK */
+        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK */
         .sabit-ust-alan {
             position: sticky;
             top: 0;
@@ -82,7 +84,6 @@
         
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
-        /* YENİ NESİL ŞIK ANA BAŞLIK */
         .ana-baslik {
             font-family: 'Montserrat', sans-serif;
             text-align: center;
@@ -141,9 +142,7 @@
             color: #fff;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
         }
-        @media (hover: hover) {
-            .buton-grup button:hover { transform: translateY(-2px); }
-        }
+        @media (hover: hover) { .buton-grup button:hover { transform: translateY(-2px); } }
         
         .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
         .btn-excel { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
@@ -152,7 +151,7 @@
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
 
-        /* KART TASARIMI - YUMUŞAK GÖLGELER VE HOVER */
+        /* KART TASARIMI */
         .stok-satir { 
             background-color: var(--bg-card); 
             border: 1px solid var(--border-color); 
@@ -174,7 +173,6 @@
             }
         }
         
-        /* KASALAR İÇİN ÖZEL "NEON PULSE" TASARIM */
         .kasa-satir { 
             background: linear-gradient(145deg, #2a1508 0%, #1a0d05 100%) !important; 
             border: 1px solid #c2410c !important; 
@@ -187,93 +185,39 @@
             }
         }
         
-        /* ÖZEL NEON KALP ATIŞI EFEKTİ (KASALAR ETİKETİ İÇİN) */
         @keyframes pulse-etiket {
             0% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
             50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(234, 88, 12, 0.85); opacity: 1; }
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
         
-        /* YENİ 3'LÜ IZGARA (GRID) STOK BİLGİ ALANI */
-        .stok-bilgi { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-            min-width: 0; 
-            width: 100%; 
-        }
-        .stok-ust-satir { 
-            display: flex; 
-            justify-content: center; 
-            text-align: center;
-            width: 100%; 
-        }
-        .stok-alt-satir { 
-            display: grid; 
-            grid-template-columns: 1fr auto 1fr; 
-            align-items: center; 
-            width: 100%; 
-            gap: 5px;
-        }
+        .stok-bilgi { display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; }
+        .stok-ust-satir { display: flex; justify-content: center; text-align: center; width: 100%; }
+        .stok-alt-satir { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; gap: 5px; }
         .alt-sol { text-align: left; }
         .alt-orta { text-align: center; }
         .alt-sag { text-align: right; }
         
-        /* İNCELTİLMİŞ KUTUCUK FONT WEIGHT DEĞERİ (600) */
         .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 11.5px;
-            font-weight: 600; /* ZARİFLEŞTİRİLDİ */
-            text-transform: uppercase;
-            border: 1px solid var(--border-color);
-            letter-spacing: 0.5px;
+            display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11.5px;
+            font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px;
         }
 
-        /* ÖZEL İÇ DOLGU VE SARI MARKA RENGİ */
-        .kategori-etiket, .log-kategori-etiket {
-            background-color: rgba(6, 182, 212, 0.08); 
-            color: var(--accent-cyan);
-        }
+        .kategori-etiket, .log-kategori-etiket { background-color: rgba(6, 182, 212, 0.08); color: var(--accent-cyan); }
+        .marka-etiket, .log-marka { background-color: var(--bg-dark); color: var(--accent-yellow); }
+        .raf-no-vurgu { background-color: rgba(239, 68, 68, 0.08); color: var(--accent-red); }
+        .kasa-no-vurgu { background-color: rgba(245, 158, 11, 0.08) !important; color: var(--accent-orange) !important; border: 1px solid var(--border-color) !important; }
         
-        .marka-etiket, .log-marka {
-            background-color: var(--bg-dark); 
-            color: var(--accent-yellow); 
-        }
-
-        .raf-no-vurgu {
-            background-color: rgba(239, 68, 68, 0.08); 
-            color: var(--accent-red);
-        }
-
-        .kasa-no-vurgu {
-            background-color: rgba(245, 158, 11, 0.08) !important; 
-            color: var(--accent-orange) !important;
-            border: 1px solid var(--border-color) !important;
-        }
-        
-        /* KASALAR İÇİN ÖZEL ANİMASYONLU ETİKET */
         .kasa-etiket { 
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            text-transform: uppercase;
-            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; 
-            color: #fff !important; 
-            font-size: 11.5px !important; 
-            font-weight: 600; /* ZARİFLEŞTİRİLDİ */
-            letter-spacing: 1px; 
-            border: 1px solid var(--border-color) !important;
-            animation: pulse-etiket 1.5s infinite ease-in-out; 
-            box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+            display: inline-block; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; 
+            font-size: 11.5px !important; font-weight: 600; letter-spacing: 1px; border: 1px solid var(--border-color) !important;
+            animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
         
-        /* MALZEME KODU PUNTOSU */
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
 
-        /* Sayılar Alanı - KUTULAR DARALTILDI (85px -> 72px) */
         .stok-sayilar { display: grid; grid-template-columns: repeat(5, 72px); gap: 8px; text-align: center; }
         .sayi-kutusu { font-size: 10px; color: var(--text-muted); background-color: var(--bg-dark); padding: 6px 2px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 600; letter-spacing: -0.3px;}
         .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 15px; font-weight: 800; margin-top: 4px; }
@@ -285,7 +229,7 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* MODAL (AÇILIR PENCERE) TASARIMLARI */
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background-color: var(--bg-card); padding: 30px; border-radius: 16px; width: 90%; max-width: 440px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); margin: 0 auto; }
         .modal-content h3 { margin-top: 0; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px; font-size: 18px; text-align: center; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
@@ -306,7 +250,6 @@
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
-        /* Sayı Artır/Azalt Kutuları */
         .sayi-input-grup { display: flex; align-items: center; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }
         .sayi-input-grup:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         .sayi-input-grup button { background-color: var(--bg-card); color: var(--text-main); border: none; padding: 12px 16px; font-size: 18px; cursor: pointer; transition: background 0.2s; font-weight: bold; }
@@ -322,7 +265,7 @@
         .btn-iptal { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: 700; font-size:15px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); transition: transform 0.2s;}
         .btn-iptal:hover { transform: translateY(-2px); }
 
-        /* YENİ ŞIK LOG LİSTESİ TASARIMI VE LOG ARAMA KUTULARI */
+        /* YENİ ŞIK LOG LİSTESİ */
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         
@@ -354,12 +297,10 @@
             .header { flex-direction: column; align-items: stretch; width: 100%; }
             .buton-grup { flex-wrap: wrap; order: -1; width: 100%; }
             
-            /* MOBİL BAŞLIK TASARIMI */
             .ana-baslik { font-size: 22px; margin-bottom: 12px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
             .baslik-ayrac { display: none; }
             .baslik-alt { display: block; margin-top: 5px; font-size: 18px; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
             
-            /* DİKKAT: SABİT 200PX YÜKSEKLİK, ZARİF YAZI BÜYÜKLÜĞÜ (16px) */
             #aramaKutusu, #kategoriFiltre, #markaFiltre { 
                 height: 200px !important; 
                 width: 100%; 
@@ -373,11 +314,9 @@
             #aramaKutusu::placeholder { font-size: 15px !important; font-weight: normal; }
             
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
-            
             .malzeme-kod { font-size: 15px; }
             .log-kod-span { font-size: 14px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
 
-            /* MOBİLDE SAYILAR 1FR OLARAK KALIR, BOZULMAZ */
             .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 4px; }
             .sayi-kutusu { font-size: 8.5px; padding: 6px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
             .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; margin-top: 4px; }
@@ -487,7 +426,6 @@
             <div class="log-arama-konteyner">
                 <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
                 <select id="logKullaniciSecici" style="display:none;" onchange="logIciAra()"></select>
-                <!-- TAM SABİT KATEGORİ LİSTESİ -->
                 <select id="logKategoriSecici" style="display:none;" onchange="logIciAra()">
                     <option value="">TÜM KATEGORİLER</option>
                     <option value="PLC">PLC</option>
@@ -600,7 +538,9 @@
         let suankiLoglar = []; 
         let sistemMarkalari = [];
         let sistemKullanicilari = []; 
-        let mevcutEkranVerileri = []; // BUTON ÇÖKME SORUNU İÇİN EKLENDİ
+        let mevcutEkranVerileri = []; 
+        
+        let tumMarkalarSet = new Set(); // Arka planda markaları toplayan havuz
 
         /* SİSTEM KULLANICI SÖZLÜĞÜ */
         const kullaniciSozlugu = {
@@ -627,14 +567,9 @@
             return temizKarakter(isimKismi);
         }
 
-        /* TÜRKÇE KARAKTER TEMİZLEME */
         function temizKarakter(str) {
             if (!str) return '';
-            return str.replace(/i/g, 'I')
-                      .replace(/İ/g, 'I')
-                      .replace(/ı/g, 'I')
-                      .replace(/I/g, 'I')
-                      .toLocaleUpperCase('tr-TR');
+            return str.replace(/i/g, 'I').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/I/g, 'I').toLocaleUpperCase('tr-TR');
         }
 
         function telefonMu() { return window.innerWidth <= 650; }
@@ -818,7 +753,7 @@
                 if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
                     aktifRol = 'duzenleyici';
                     document.getElementById('btnYeniEkle').style.display = 'block';
-                    secenekleriYukle(); 
+                    markalariArkaPlandaCek(); // Arka plan görevini başlat
                 } else {
                     aktifRol = 'okuyucu';
                 }
@@ -839,30 +774,27 @@
             }
         }
 
-        async function secenekleriYukle() {
-            let tumMarkalarData = [];
-            let baslangic = 0;
-            const limit = 1000;
-            let devam = true;
-
-            while (devam) {
-                const { data, error } = await sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1);
+        // MOBİL PERFORMANS İÇİN ASENKRON MARKA ÇEKİMİ (KASMAZ)
+        function markalariArkaPlandaCek(baslangic = 0) {
+            const limit = 2000;
+            sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
                 if (data && data.length > 0) {
-                    tumMarkalarData = tumMarkalarData.concat(data);
-                    baslangic += limit;
-                    if (data.length < limit) devam = false;
+                    data.forEach(item => {
+                        if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim());
+                    });
+                    
+                    const markalar = [...tumMarkalarSet].sort();
+                    document.getElementById('anaMarkaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
+                    
+                    if (data.length === limit) {
+                        setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); // Telefona nefes aldırmak için ufak bekleme
+                    } else {
+                        document.getElementById('markaFiltre').placeholder = "MARKA ARA VEYA SEÇ...";
+                    }
                 } else {
-                    devam = false;
+                    document.getElementById('markaFiltre').placeholder = "MARKA ARA VEYA SEÇ...";
                 }
-            }
-
-            if (tumMarkalarData.length > 0) {
-                const markalar = [...new Set(tumMarkalarData.map(item => temizKarakter(item.marka).trim()).filter(Boolean))].sort();
-                document.getElementById('anaMarkaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
-                
-                const markaFiltre = document.getElementById('markaFiltre');
-                markaFiltre.placeholder = "MARKA ARA VEYA SEÇ...";
-            }
+            });
         }
 
         function baslat() {
@@ -875,6 +807,7 @@
 
         async function stokGetir() {
             clearTimeout(aramaZamanlayici);
+            // DEBOUNCE 800MS YAPILDI -> KLAVYEDE YAZARKEN TELEFON KASMASI BİTİRİLDİ
             aramaZamanlayici = setTimeout(async () => {
                 const aranan = document.getElementById('aramaKutusu').value.trim();
                 const kategori = document.getElementById('kategoriFiltre').value;
@@ -900,8 +833,12 @@
                 }
                 
                 if (aranan) {
-                    const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
-                    sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
+                    // FUZZY SEARCH (ESNEK BULANIK ARAMA) EKLENDİ
+                    const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, ''); 
+                    if (arananTemiz.length > 0) {
+                        const esnekArama = '%' + arananTemiz.split('').join('%') + '%';
+                        sorgu = sorgu.ilike('kod', esnekArama);
+                    }
                 }
 
                 const { data, error } = await sorgu.limit(100);
@@ -912,7 +849,7 @@
         }
 
         function ekranaYazdir(veriler) {
-            mevcutEkranVerileri = veriler; // BUTON ÇÖKME SORUNUNA KÖKTEN ÇÖZÜM
+            mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
             liste.innerHTML = '';
             
@@ -924,7 +861,6 @@
             veriler.forEach(malzeme => {
                 let islemButonu = '';
                 if(aktifRol === 'duzenleyici') {
-                    // ARTIK ID NUMARASI İLE ÇAĞRILIYOR, İÇİNDE " VEYA ' OLSUN HİÇ FARK ETMEZ BOZULMAZ
                     islemButonu = `<button class="btn-duzenle" onclick="guncelleModalAcById('${malzeme.id}')">Güncelle</button>`;
                 } else {
                     islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
@@ -972,7 +908,6 @@
             });
         }
 
-        // TIKLANAN BUTONUN BİLGİSİNİ HAFIZADAN ÇEKEN YENİ GÜVENLİ FONKSİYON
         function guncelleModalAcById(id) {
             const malzeme = mevcutEkranVerileri.find(m => m.id == id);
             if (malzeme) {
@@ -1088,8 +1023,10 @@
 
                     let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
                     await logKaydet(logMetni, kod);
-                    secenekleriYukle(); 
                     
+                    // Markayı arka plan setine ekle ki aramada çıksın
+                    if(marka) tumMarkalarSet.add(marka);
+
                     document.getElementById('GuncelleModal').style.display = 'none';
                     uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => {
                         stokGetir();
@@ -1171,7 +1108,7 @@
                 
             } else if (kriter === 'kategori') {
                 kategoriSecici.style.display = 'block';
-                kategoriSecici.value = ''; // Seçimi sıfırla
+                kategoriSecici.value = ''; 
             } else {
                 aramaKutusu.style.display = 'block';
                 if (kriter === 'marka') {
@@ -1201,13 +1138,16 @@
             
             const malzemeMap = {};
             let geciciMarkalar = new Set();
+            let geciciKategoriler = new Set();
 
             if (malzemeData) {
                 malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
                     let mark = temizKarakter(m.marka || '-');
                     let kat = temizKarakter(m.kategori || '-');
                     malzemeMap[temizKarakter(m.kod || '')] = { kategori: kat, marka: mark };
+                    
                     if(mark !== '-') geciciMarkalar.add(mark);
+                    if(kat !== '-') geciciKategoriler.add(kat);
                 });
                 
                 malzemeData.filter(m => m.kategori === 'KASALAR').forEach(m => {
@@ -1217,6 +1157,7 @@
                         malzemeMap[k] = { kategori: 'KASALAR', marka: mark }; 
                     }
                     if(mark !== '-') geciciMarkalar.add(mark);
+                    geciciKategoriler.add('KASALAR');
                 });
             }
 
@@ -1239,6 +1180,8 @@
                         let icerik = log.islem.substring(5, bitisIndex).split('|MRK:');
                         logIciKat = temizKarakter(icerik[0]);
                         logIciMarka = temizKarakter(icerik[1]);
+                        
+                        if(logIciKat && logIciKat !== '-') geciciKategoriler.add(logIciKat);
                         if(logIciMarka && logIciMarka !== '-') geciciMarkalar.add(logIciMarka);
                     }
                 }
@@ -1248,12 +1191,12 @@
             });
 
             sistemMarkalari = [...geciciMarkalar].sort();
+            sistemKategorileri = [...geciciKategoriler].sort();
 
             logAramaOnerileriniGuncelle();
             loglariCiz(tumLoglar);
         }
 
-        // AKILLI ÖZEL HATA MESAJLARI İÇİN FONKSİYON REVİZE EDİLDİ
         function loglariCiz(logDizisi, ozelMesajIsmi = '', ozelKategoriMesaji = '') {
             suankiLoglar = logDizisi; 
             const logGövdesi = document.getElementById('logGövdesi');
@@ -1354,7 +1297,10 @@
             
             const filtrelenmis = tumLoglar.filter(log => {
                 if (kriter === 'kod') {
-                    return temizKarakter(log.kod || '').includes(aranan);
+                    // FUZZY ARAMA (LOGLAR İÇİN DE DEVREDE)
+                    const arananTemiz = aranan.replace(/[^A-Z0-9]/g, '');
+                    const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, '');
+                    return temizKod.includes(arananTemiz);
                 } else if (kriter === 'marka') {
                     return temizKarakter(log._gosterilenMarka || '').includes(aranan);
                 } else if (kriter === 'kategori') {
@@ -1368,25 +1314,26 @@
             loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
         }
 
+        // GERÇEK EXCEL ALTYAPISI (EXCELJS) ENTEGRE EDİLDİ
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim();
             const kategori = document.getElementById('kategoriFiltre').value;
-            const marka = document.getElementById('markaFiltre').value;
+            const marka = document.getElementById('markaFiltre').value.trim();
 
-            let uyariMesaji = "Şu anki görünen tabloyu indirmek istiyor musunuz?";
+            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?";
             if (!aranan && !kategori && !marka) {
-                uyariMesaji = "Herhangi bir kategori veya marka seçilmediği için tüm liste indirilecektir onaylıyor musunuz?";
+                uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM LİSTE indirilecektir. Onaylıyor musunuz?";
             }
 
             uyariGoster(uyariMesaji, "onay", async () => {
                 
                 const btn = document.querySelector('.btn-excel');
                 const oldText = btn.innerText;
-                btn.innerText = "İndiriliyor...";
+                btn.innerText = "Veriler Çekiliyor...";
 
                 let allData = [];
                 let baslangic = 0;
-                const limit = 1000;
+                const limit = 2000;
                 let devam = true;
 
                 while (devam) {
@@ -1396,7 +1343,6 @@
                         .order('kod', { ascending: true });
                     
                     if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                    
                     if (marka) {
                         let altMarka = marka.replace(/I/g, 'İ');
                         if (marka !== altMarka) {
@@ -1405,23 +1351,26 @@
                             sorgu = sorgu.ilike('marka', `%${marka}%`);
                         }
                     }
-
                     if (aranan) {
-                        const esnekArama = temizKarakter(aranan).replace(/[-/.\s]/g, '%');
-                        sorgu = sorgu.ilike('kod', `%${esnekArama}%`);
+                        const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, '');
+                        if (arananTemiz.length > 0) {
+                            const esnekArama = '%' + arananTemiz.split('').join('%') + '%';
+                            sorgu = sorgu.ilike('kod', esnekArama);
+                        }
                     }
                     
                     sorgu = sorgu.range(baslangic, baslangic + limit - 1);
                     const { data, error } = await sorgu;
 
                     if (error) { 
-                        alert("İndirme sırasında bir hata oluştu: " + error.message); 
+                        alert("İndirme sırasında hata oluştu: " + error.message); 
                         btn.innerText = oldText;
-                        break; 
+                        return; 
                     }
 
                     if (data && data.length > 0) {
                         allData = allData.concat(data);
+                        btn.innerText = `İndiriliyor (${allData.length})...`;
                         baslangic += limit;
                         if (data.length < limit) devam = false;
                     } else {
@@ -1429,66 +1378,158 @@
                     }
                 }
 
+                if (allData.length === 0) { 
+                    btn.innerText = oldText;
+                    alert("Döküm alınacak kayıt bulunamadı!"); 
+                    return; 
+                }
+
+                btn.innerText = "Excel Oluşturuluyor...";
+
+                try {
+                    const wb = new ExcelJS.Workbook();
+                    const ws = wb.addWorksheet('Stok_Listesi', { views: [{ state: 'frozen', ySplit: 1 }] });
+
+                    ws.columns = [
+                        { header: 'KATEGORİ', key: 'kategori', width: 16 },
+                        { header: 'MARKA', key: 'marka', width: 18 },
+                        { header: 'MALZEME KODU', key: 'kod', width: 35 },
+                        { header: 'İKİNCİ EL', key: 'ikinci_el', width: 12 },
+                        { header: 'AÇIK KUTU', key: 'acik_kutu', width: 12 },
+                        { header: 'KAPALI KUTU', key: 'kapali_kutu', width: 12 },
+                        { header: 'ARIZALI', key: 'arizali', width: 12 },
+                        { header: 'TOPLAM', key: 'toplam', width: 12 },
+                        { header: 'RAF / KASA NO', key: 'raf_no', width: 18 }
+                    ];
+
+                    allData.forEach(m => {
+                        ws.addRow({
+                            kategori: temizKarakter(m.kategori) || '',
+                            marka: temizKarakter(m.marka) || '-',
+                            kod: temizKarakter(m.kod) || '',
+                            ikinci_el: m.ikinci_el ?? 0,
+                            acik_kutu: m.acik_kutu ?? 0,
+                            kapali_kutu: m.kapali_kutu ?? 0,
+                            arizali: m.arizali ?? 0,
+                            toplam: m.toplam ?? 0,
+                            raf_no: temizKarakter(m.raf_no) || ''
+                        });
+                    });
+
+                    // TÜM EXCEL STİL VE HİZALAMA AYARLARI
+                    ws.eachRow((row, rowNumber) => {
+                        row.eachCell((cell, colNumber) => {
+                            cell.font = { name: 'Segoe UI', size: 10 };
+                            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                            cell.border = {
+                                top: { style: 'thin', color: { argb: 'FF000000' } },
+                                left: { style: 'thin', color: { argb: 'FF000000' } },
+                                bottom: { style: 'thin', color: { argb: 'FF000000' } },
+                                right: { style: 'thin', color: { argb: 'FF000000' } }
+                            };
+
+                            if (rowNumber === 1) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
+                                cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+                            } else {
+                                if (colNumber === 3) cell.font = { name: 'Segoe UI', size: 10, bold: true };
+                                if (colNumber === 8) cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF059669' } };
+                            }
+                        });
+                    });
+
+                    const buffer = await wb.xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = "STOK_TEMEL_LISTESI.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (err) {
+                    console.error(err);
+                    alert("Excel dosyası oluşturulurken bir hata meydana geldi!");
+                }
+                
                 btn.innerText = oldText;
+            });
+        }
 
-                if (allData.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
+        // LOGLAR İÇİN GERÇEK EXCEL (.XLSX) DÖKÜMÜ
+        function logExcelDokumuAl() {
+            uyariGoster("Şu an ekranda listelenen log kayıtlarını gerçek Excel (.xlsx) formatında indirmek istiyor musunuz?", "onay", async () => {
+                if (!suankiLoglar || suankiLoglar.length === 0) { 
+                    alert("Döküm alınacak kayıt bulunamadı!"); return; 
+                }
 
-                let htmlTablo = `
-                <html xmlns:o="urn:schemas-microsoft-com:office:office" 
-                      xmlns:x="urn:schemas-microsoft-com:office:excel" 
-                      xmlns="http://www.w3.org/TR/REC-html40">
-                <head>
-                    <meta charset="utf-8">
-                    <style>
-                        table { border-collapse: collapse; font-family: 'Segoe UI', Arial, sans-serif; font-size: 10pt; }
-                        th, td { border: .5pt solid #000000; text-align: center; vertical-align: middle; padding: 6px; }
-                        tr { height: 28px; }
-                    </style>
-                </head>
-                <body>
-                    <table>
-                        <thead>
-                            <tr style="height: 35px;">
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KATEGORİ</th>
-                                <th width="120" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MARKA</th>
-                                <th width="300" style="background-color:#FFFF00; color:#000000; font-weight:bold;">MALZEME KODU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">İKİNCİ EL</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">AÇIK KUTU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">KAPALI KUTU</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">ARIZALI</th>
-                                <th width="100" style="background-color:#FFFF00; color:#000000; font-weight:bold;">TOPLAM</th>
-                                <th width="110" style="background-color:#FFFF00; color:#000000; font-weight:bold;">RAF / KASA NO</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                try {
+                    const wb = new ExcelJS.Workbook();
+                    const ws = wb.addWorksheet('Sistem_Loglari', { views: [{ state: 'frozen', ySplit: 1 }] });
 
-                allData.forEach(m => {
-                    const formatliMarka = temizKarakter(m.marka || '-');
-                    const formatliKod = temizKarakter(m.kod || '');
-                    htmlTablo += `
-                            <tr>
-                                <td>${temizKarakter(m.kategori) || ''}</td>
-                                <td>${formatliMarka}</td>
-                                <td style="font-weight:bold;">${formatliKod}</td>
-                                <td>${m.ikinci_el ?? 0}</td>
-                                <td>${m.acik_kutu ?? 0}</td>
-                                <td>${m.kapali_kutu ?? 0}</td>
-                                <td>${m.arizali ?? 0}</td>
-                                <td style="font-weight:bold; color:#059669;">${m.toplam ?? 0}</td>
-                                <td>${temizKarakter(m.raf_no) || ''}</td>
-                            </tr>`;
-                });
+                    ws.columns = [
+                        { header: 'TARİH', key: 'tarih', width: 20 },
+                        { header: 'KULLANICI', key: 'kullanici', width: 25 },
+                        { header: 'KATEGORİ', key: 'kategori', width: 16 },
+                        { header: 'MARKA', key: 'marka', width: 18 },
+                        { header: 'MALZEME KODU', key: 'kod', width: 35 },
+                        { header: 'İŞLEM DETAYI', key: 'islem', width: 85 } // 600px karşılığı genişlik
+                    ];
 
-                htmlTablo += `</tbody></table></body></html>`;
+                    suankiLoglar.forEach(log => {
+                        const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const user = kullaniciAdiGetir(log.kullanici);
+                        
+                        let hamIslem = log.islem;
+                        if (hamIslem.startsWith('[CAT:')) {
+                            let bitisIndex = hamIslem.indexOf('] ');
+                            if (bitisIndex !== -1) { hamIslem = hamIslem.substring(bitisIndex + 2); }
+                        }
+                        let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/->/g, "→");
 
-                const blob = new Blob([htmlTablo], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = "stok_dokumu.xls";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                        ws.addRow({
+                            tarih: tarih,
+                            kullanici: user,
+                            kategori: log._gosterilenKategori || '-',
+                            marka: log._gosterilenMarka || '-',
+                            kod: temizKarakter(log.kod),
+                            islem: islemMetni
+                        });
+                    });
+
+                    // TÜM EXCEL STİL VE HİZALAMA AYARLARI
+                    ws.eachRow((row, rowNumber) => {
+                        row.eachCell((cell, colNumber) => {
+                            cell.font = { name: 'Segoe UI', size: 10 };
+                            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                            cell.border = {
+                                top: { style: 'thin', color: { argb: 'FF000000' } },
+                                left: { style: 'thin', color: { argb: 'FF000000' } },
+                                bottom: { style: 'thin', color: { argb: 'FF000000' } },
+                                right: { style: 'thin', color: { argb: 'FF000000' } }
+                            };
+
+                            if (rowNumber === 1) {
+                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
+                                cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF000000' } };
+                            } else {
+                                if (colNumber === 2) cell.font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: 'FF06B6D4' } }; // Kullanıcı
+                                if (colNumber === 5) cell.font = { name: 'Segoe UI', size: 10, bold: true }; // Kod
+                            }
+                        });
+                    });
+
+                    const buffer = await wb.xlsx.writeBuffer();
+                    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = "sistem_loglari.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (err) {
+                    console.error(err);
+                    alert("Excel dosyası oluşturulurken hata meydana geldi!");
+                }
             });
         }
 
