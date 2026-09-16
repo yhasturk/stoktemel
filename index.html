@@ -228,7 +228,7 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* ÖZEL AKILLI AÇILIR LİSTE (2.5x Genişlik ve Tek Satır) */
+        /* ÖZEL AKILLI AÇILIR LİSTE (2x Genişlik ve Tek Satır) */
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
         .header .custom-select-wrapper { min-width: 120px; }
         
@@ -239,7 +239,7 @@
         
         .custom-select-options { 
             position: absolute; top: calc(100% + 4px); left: 0; 
-            width: 250%; /* HOCAM'ın 2.5 kat genişlik isteği */
+            width: 200%; /* Dengeli: Tam 2 Kat Genişlik */
             z-index: 9999; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); 
         }
         
@@ -251,8 +251,8 @@
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background-color: #1e293b; color: var(--accent-cyan); }
 
-        /* MODAL VE LOG EKRANI TAŞMA ÖNLEYİCİLERİ (Sağa yaslayıp sola doğru genişletir) */
-        #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 220%; } 
+        /* MODAL VE LOG EKRANI TAŞMA ÖNLEYİCİLERİ */
+        #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 200%; } 
 
         /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
@@ -303,6 +303,7 @@
         #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus, #logKategoriSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
+        /* LOG BÖLÜMÜNDEKİ YENİ EXCEL BUTONU (ANA EKRANLA MİLİMETRİK AYNI) */
         .log-arama-konteyner .btn-excel {
             height: 42px;
             padding: 0 16px;
@@ -347,9 +348,9 @@
             .header .custom-select-wrapper { height: 34px !important; }
             .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
             
-            /* MOBİLDE MARKALAR SAĞDA KALDIĞI İÇİN SOLA DOĞRU 2 KAT GENİŞLER */
-            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 200%; max-width: 90vw; }
-            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 150%; max-width: 90vw; }
+            /* MOBİLDE ORANTILI GENİŞLİK */
+            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 180%; max-width: 90vw; }
+            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 180%; max-width: 90vw; }
 
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             
@@ -413,7 +414,7 @@
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
-
+                
                 <div class="header">
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
                     
@@ -682,7 +683,6 @@
             }
         }
 
-        // ÖZEL AKILLI LİSTE (CUSTOM DROPDOWN) FONKSİYONLARI
         function markaOnerileriniDoldur(markalar) {
             customOptionsMarkaListesi = markalar;
             const html = markalar.map(m => `<div class="custom-select-option" onclick="secCustom(this, 'TARGET_ID')">${m}</div>`).join('');
@@ -730,7 +730,6 @@
             }
         }
 
-        // Tıklanan yer menü dışıysa kapat
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.custom-select-wrapper')) {
                 document.querySelectorAll('.custom-select-options').forEach(el => el.style.display = 'none');
@@ -898,7 +897,6 @@
                     });
                     
                     const markalar = [...tumMarkalarSet].sort();
-                    
                     markaOnerileriniDoldur(markalar);
                     
                     baslangic += limit;
@@ -939,7 +937,6 @@
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
                 
                 if (kategori) sorgu = sorgu.ilike('kategori', kategori);
-                
                 if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                 
                 if (aranan) {
