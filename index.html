@@ -349,10 +349,14 @@
             .header .custom-select-wrapper { height: 34px !important; }
             .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
             
-            /* MOBİLDE ÖZEL ORANTILAR (HOCAM'IN PLANI) */
-            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 120%; max-width: 90vw; } /* ANA SAYFA: 1/3 daraltıldı (%120) */
-            #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 135%; max-width: 90vw; } /* YENİ KAYIT: 1/3 daraltıldı (%135) */
-            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 180%; max-width: 90vw; } /* LOG BÖLÜMÜ: Aynı kalsın (%180) */
+            /* MOBİLDE ÖZEL ORANTILAR (HOCAM'IN PLANI - YENİ) */
+            #wrapper-markaFiltre .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } /* ANA SAYFA: %100 Genişlik */
+            #wrapper-inputMarka .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } /* YENİ KAYIT: %100 Genişlik */
+            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 180%; max-width: 90vw; } /* LOG BÖLÜMÜ: %180 (Aynı Kalsın) */
+
+            /* YAZI BOYUTU (1 TIK KÜÇÜK) */
+            #wrapper-markaFiltre .custom-select-option, 
+            #wrapper-inputMarka .custom-select-option { font-size: 11.5px; }
 
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             
@@ -374,11 +378,14 @@
             
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
             
-            .log-arama-konteyner { flex-wrap: wrap; gap: 8px; }
-            #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { font-size: 14px; padding: 10px; }
+            /* LOG BÖLÜMÜ EXCEL BUTONU VE ARAMA SATIRI AYNI HİZADA OLMASI İÇİN */
+            .log-arama-konteyner { flex-direction: row; flex-wrap: nowrap; gap: 8px; align-items: stretch; }
+            #logAramaKriteri { font-size: 14px; padding: 10px; width: 100%; margin-bottom: 12px; }
             
-            #wrapper-logMarkaSecici { width: 100%; order: 2; margin-top: 2px;}
-            .log-arama-konteyner .btn-excel { width: 100%; order: 3; margin-top: 2px; padding: 0 12px !important; font-size: 12px !important; height: 42px !important;}
+            #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { font-size: 14px; padding: 10px; flex: 1; min-width: 0; margin-bottom: 0; }
+            
+            #wrapper-logMarkaSecici { width: auto; flex: 1; min-width: 0; order: unset; margin-top: 0; }
+            .log-arama-konteyner .btn-excel { width: auto; flex-shrink: 0; order: unset; margin-top: 0; padding: 0 12px !important; font-size: 12px !important; height: 42px !important; }
 
             .log-kart { padding: 14px; }
             .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
