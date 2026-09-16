@@ -228,7 +228,7 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* ÖZEL AKILLI AÇILIR LİSTE (2x Genişlik ve Tek Satır) */
+        /* ÖZEL AKILLI AÇILIR LİSTE KÖK AYARLARI */
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
         .header .custom-select-wrapper { min-width: 120px; }
         
@@ -239,7 +239,6 @@
         
         .custom-select-options { 
             position: absolute; top: calc(100% + 4px); left: 0; 
-            width: 200%; /* Dengeli: Tam 2 Kat Genişlik */
             z-index: 9999; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); 
         }
         
@@ -251,8 +250,10 @@
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background-color: #1e293b; color: var(--accent-cyan); }
 
-        /* MODAL VE LOG EKRANI TAŞMA ÖNLEYİCİLERİ */
-        #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 200%; } 
+        /* MASAÜSTÜ ÖZEL GENİŞLİKLER (HOCAM'IN PLANI) */
+        #wrapper-markaFiltre .custom-select-options { width: 200%; left: 0; right: auto; } /* ANA SAYFA: Aynı kalsın (%200) */
+        #wrapper-inputMarka .custom-select-options { width: 100%; left: 0; right: auto; } /* YENİ KAYIT: 1/2 daraltıldı (%100) */
+        #wrapper-logMarkaSecici .custom-select-options { width: 100%; left: 0; right: auto; } /* LOG BÖLÜMÜ: Arama satırı ile aynı (%100) */
 
         /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
@@ -348,9 +349,10 @@
             .header .custom-select-wrapper { height: 34px !important; }
             .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
             
-            /* MOBİLDE ORANTILI GENİŞLİK */
-            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 180%; max-width: 90vw; }
-            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 180%; max-width: 90vw; }
+            /* MOBİLDE ÖZEL ORANTILAR (HOCAM'IN PLANI) */
+            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 120%; max-width: 90vw; } /* ANA SAYFA: 1/3 daraltıldı (%120) */
+            #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 135%; max-width: 90vw; } /* YENİ KAYIT: 1/3 daraltıldı (%135) */
+            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 180%; max-width: 90vw; } /* LOG BÖLÜMÜ: Aynı kalsın (%180) */
 
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             
@@ -414,7 +416,7 @@
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
-                
+
                 <div class="header">
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
                     
