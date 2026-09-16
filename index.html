@@ -228,7 +228,7 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* ÖZEL AKILLI AÇILIR LİSTE (Sıfır Sınır - Tam Liste) */
+        /* ÖZEL AKILLI AÇILIR LİSTE (2.5x Genişlik ve Tek Satır) */
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
         .header .custom-select-wrapper { min-width: 120px; }
         
@@ -237,10 +237,22 @@
         .custom-select-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         .custom-select-input::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
-        .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 9999; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); }
-        .custom-select-option { padding: 12px 14px; cursor: pointer; color: var(--text-main); font-size: 13.5px; font-weight: 600; border-bottom: 1px solid var(--border-color); transition: background 0.2s; text-transform: uppercase;}
+        .custom-select-options { 
+            position: absolute; top: calc(100% + 4px); left: 0; 
+            width: 250%; /* HOCAM'ın 2.5 kat genişlik isteği */
+            z-index: 9999; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); 
+        }
+        
+        .custom-select-option { 
+            padding: 12px 14px; cursor: pointer; color: var(--text-main); font-size: 13.5px; font-weight: 600; border-bottom: 1px solid var(--border-color); transition: background 0.2s; text-transform: uppercase;
+            white-space: nowrap; /* KESİNLİKLE ALT SATIRA İNMESİNİ ENGELLER */
+            overflow: hidden; text-overflow: ellipsis; 
+        }
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background-color: #1e293b; color: var(--accent-cyan); }
+
+        /* MODAL VE LOG EKRANI TAŞMA ÖNLEYİCİLERİ (Sağa yaslayıp sola doğru genişletir) */
+        #wrapper-inputMarka .custom-select-options { left: auto; right: 0; width: 220%; } 
 
         /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
@@ -291,7 +303,6 @@
         #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus, #logKategoriSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
-        /* LOG BÖLÜMÜNDEKİ YENİ EXCEL BUTONU (ANA EKRANLA MİLİMETRİK AYNI) */
         .log-arama-konteyner .btn-excel {
             height: 42px;
             padding: 0 16px;
@@ -336,6 +347,10 @@
             .header .custom-select-wrapper { height: 34px !important; }
             .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
             
+            /* MOBİLDE MARKALAR SAĞDA KALDIĞI İÇİN SOLA DOĞRU 2 KAT GENİŞLER */
+            #wrapper-markaFiltre .custom-select-options { left: auto; right: 0; width: 200%; max-width: 90vw; }
+            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: auto; width: 150%; max-width: 90vw; }
+
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             
             .buton-grup button { height: 28px !important; font-size: 11px !important; padding: 0 4px !important; border-radius: 6px !important;}
@@ -414,7 +429,6 @@
                         <option value="MOTOR">MOTOR</option>
                     </select>
 
-                    <!-- ÖZEL AKILLI AÇILIR LİSTE: ANA EKRAN -->
                     <div class="custom-select-wrapper" id="wrapper-markaFiltre">
                         <input type="text" id="markaFiltre" class="custom-select-input" autocomplete="off" placeholder="YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); filtreleCustom('markaFiltre'); stokGetir()" onfocus="gosterCustom('markaFiltre')" onclick="gosterCustom('markaFiltre')">
                         <div class="custom-select-options" id="options-markaFiltre"></div>
@@ -472,7 +486,6 @@
                     <option value="MOTOR">MOTOR</option>
                 </select>
                 
-                <!-- ÖZEL AKILLI AÇILIR LİSTE: LOG EKRANI -->
                 <div class="custom-select-wrapper" id="wrapper-logMarkaSecici" style="display:none;">
                     <input type="text" id="logMarkaSecici" class="custom-select-input" autocomplete="off" placeholder="MARKA ARA VEYA SEÇ..." oninput="this.value = temizKarakter(this.value); filtreleCustom('logMarkaSecici'); logIciAra()" onfocus="gosterCustom('logMarkaSecici')" onclick="gosterCustom('logMarkaSecici')">
                     <div class="custom-select-options" id="options-logMarkaSecici"></div>
@@ -510,7 +523,6 @@
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
-                    <!-- ÖZEL AKILLI AÇILIR LİSTE: YENİ KAYIT MODALI -->
                     <div class="custom-select-wrapper" id="wrapper-inputMarka">
                         <input type="text" id="inputMarka" class="custom-select-input" autocomplete="off" placeholder="Örn: SIEMENS" oninput="this.value = temizKarakter(this.value); filtreleCustom('inputMarka')" onfocus="gosterCustom('inputMarka')" onclick="gosterCustom('inputMarka')">
                         <div class="custom-select-options" id="options-inputMarka"></div>
@@ -861,7 +873,6 @@
             }
         }
 
-        // V8 MOTORU: ASLA PES ETMEYEN ARKA PLAN MARKALAMA DÖNGÜSÜ (ASYNC/AWAIT)
         async function markalariArkaPlandaCek() {
             let baslangic = 0;
             const limit = 1000;
@@ -888,7 +899,6 @@
                     
                     const markalar = [...tumMarkalarSet].sort();
                     
-                    // ÖZEL AKILLI LİSTEYİ DOLDURUR
                     markaOnerileriniDoldur(markalar);
                     
                     baslangic += limit;
@@ -898,7 +908,6 @@
                 }
             }
             
-            // DÖNGÜ TAMAMEN BİTİNCE YAZILARI GÜNCELLE
             document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
             document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
         }
@@ -931,7 +940,6 @@
                 
                 if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                 
-                // MARKA İÇİN YARIM YAZIM DESTEĞİ (% içerir %)
                 if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                 
                 if (aranan) {
@@ -1128,7 +1136,6 @@
                     let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
                     await logKaydet(logMetni, kod);
                     
-                    // YENİ EKLENEN MARKAYI HAVUZA VE LİSTELERE OTOMATİK EKLE
                     if(marka) {
                         tumMarkalarSet.add(marka);
                         markaOnerileriniDoldur([...tumMarkalarSet].sort());
@@ -1410,7 +1417,6 @@
                     }
                     return false;
                 } else if (kriter === 'marka') {
-                    // YARIM YAZIM DESTEĞİ (% içerir %)
                     return temizKarakter(log._gosterilenMarka || '').includes(aranan);
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan;
@@ -1452,7 +1458,6 @@
                     
                     if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                     
-                    // EXCEL İNDİRMESİ İÇİN DE YARIM YAZIM EŞLEŞMESİ
                     if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                     
                     if (aranan) {
