@@ -766,8 +766,9 @@
             }
         }
 
+        // V8 MOTORU: Markaları çekerken de 1000'li limite tam uyum
         function markalariArkaPlandaCek(baslangic = 0) {
-            const limit = 2000;
+            const limit = 1000;
             sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
                 if (data && data.length > 0) {
                     data.forEach(item => {
@@ -1308,6 +1309,7 @@
             loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
         }
 
+        // V8 MOTORU: LİMİT VE SAYFALAMA (PAGINATION) KUSURSUZLAŞTIRILDI
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim();
             const kategori = document.getElementById('kategoriFiltre').value;
@@ -1315,7 +1317,7 @@
 
             let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?";
             if (!aranan && !kategori && !marka) {
-                uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM LİSTE indirilecektir. Onaylıyor musunuz?";
+                uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM LİSTE (yaklaşık 12.000+ kayıt) indirilecektir. Onaylıyor musunuz?";
             }
 
             uyariGoster(uyariMesaji, "onay", async () => {
@@ -1326,7 +1328,7 @@
 
                 let allData = [];
                 let baslangic = 0;
-                const limit = 2000;
+                const limit = 1000; // SUPABASE GÜVENLİK SINIRINA TAM UYUM!
                 let devam = true;
 
                 while (devam) {
@@ -1334,7 +1336,7 @@
                         .order('kategori', { ascending: true })
                         .order('marka', { ascending: true })
                         .order('kod', { ascending: true })
-                        .order('id', { ascending: true }); // V8 MOTORU EKSİK İNDİRME HATASI (PAGINATION) ÇÖZÜMÜ
+                        .order('id', { ascending: true }); 
                     
                     if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                     if (marka) {
@@ -1366,6 +1368,7 @@
                         allData = allData.concat(data);
                         btn.innerText = `İndiriliyor (${allData.length})...`;
                         baslangic += limit;
+                        // EĞER GELEN VERİ 1000'DEN KÜÇÜKSE DEMEK Kİ VERİTABANINDA BAŞKA BİR ŞEY KALMADI, DÖNGÜYÜ BİTİR!
                         if (data.length < limit) devam = false;
                     } else {
                         devam = false;
@@ -1384,7 +1387,6 @@
                     const wb = new ExcelJS.Workbook();
                     const ws = wb.addWorksheet('Stok_Listesi', { views: [{ state: 'frozen', ySplit: 1 }] });
 
-                    // YENİ HASSAS SÜTUN GENİŞLİKLERİ
                     ws.columns = [
                         { header: 'KATEGORİ', key: 'kategori', width: 16 },
                         { header: 'MARKA', key: 'marka', width: 20 },
@@ -1411,7 +1413,6 @@
                         });
                     });
 
-                    // TÜM HÜCRELER CALIBRI OLARAK GÜNCELLENDİ
                     ws.eachRow((row, rowNumber) => {
                         row.eachCell((cell, colNumber) => {
                             cell.font = { name: 'Calibri', size: 10 };
@@ -1490,7 +1491,6 @@
                         });
                     });
 
-                    // LOG EXCELİ İÇİN DE CALIBRI FONT GÜNCELLEMESİ
                     ws.eachRow((row, rowNumber) => {
                         row.eachCell((cell, colNumber) => {
                             cell.font = { name: 'Calibri', size: 10 };
