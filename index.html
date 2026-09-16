@@ -271,11 +271,11 @@
         
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
         
-        #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
+        #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
         #logAramaKriteri { margin-bottom: 12px; cursor: pointer; font-weight: 600; }
-        #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { text-transform: uppercase; flex: 1; margin-bottom: 0;}
-        #logKullaniciSecici, #logKategoriSecici { cursor: pointer; font-weight: 600; }
-        #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus, #logKategoriSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { text-transform: uppercase; flex: 1; margin-bottom: 0;}
+        #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { cursor: pointer; font-weight: 600; }
+        #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus, #logKategoriSecici:focus, #logMarkaSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; }
 
         .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 8px; }
@@ -322,7 +322,7 @@
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
             
             .log-arama-konteyner { flex-direction: row; gap: 8px; }
-            #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici { font-size: 14px; padding: 10px; }
+            #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { font-size: 14px; padding: 10px; }
             .log-arama-konteyner .btn-excel { padding: 0 12px !important; font-size: 12px !important; }
 
             .log-kart { padding: 14px; }
@@ -377,8 +377,10 @@
                         <option value="MOTOR">MOTOR</option>
                     </select>
 
-                    <input type="text" id="markaFiltre" list="anaMarkaListesi" autocomplete="off" placeholder="MARKALAR YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); stokGetir()" onchange="stokGetir(true)">
-                    <datalist id="anaMarkaListesi"></datalist>
+                    <!-- KLASİK AÇILIR MARKA LİSTESİ -->
+                    <select id="markaFiltre" onchange="stokGetir(true)">
+                        <option value="">MARKALAR YÜKLENİYOR...</option>
+                    </select>
                     
                     <div class="buton-grup">
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+ Yeni Ekle</button>
@@ -418,7 +420,7 @@
             </select>
             
             <div class="log-arama-konteyner">
-                <input type="text" id="logAramaKutusu" placeholder="Arama yap..." list="logOneriListesi" autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
+                <input type="text" id="logAramaKutusu" placeholder="Arama yap..." autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
                 <select id="logKullaniciSecici" style="display:none;" onchange="logIciAra()"></select>
                 <select id="logKategoriSecici" style="display:none;" onchange="logIciAra()">
                     <option value="">TÜM KATEGORİLER</option>
@@ -431,8 +433,9 @@
                     <option value="SÜRÜCÜ">SÜRÜCÜ</option>
                     <option value="MOTOR">MOTOR</option>
                 </select>
-                <datalist id="logOneriListesi"></datalist>
-                <button class="btn-excel" style="padding: 0 16px; border-radius: 10px; border: none; font-weight: 700; color: #fff; cursor: pointer; white-space: nowrap;" onclick="logExcelDokumuAl()">Excel'e Aktar</button>
+                <!-- KLASİK AÇILIR MARKA LİSTESİ (LOG EKRANI İÇİN) -->
+                <select id="logMarkaSecici" style="display:none;" onchange="logIciAra()"></select>
+                <button class="btn-excel" onclick="logExcelDokumuAl()">Excel'e Aktar</button>
             </div>
             
             <div class="log-liste-alani" id="logGövdesi">
@@ -559,6 +562,7 @@
             return temizKarakter(isimKismi);
         }
 
+        // BÜTÜN i, İ, ı HARFLERİNİ "I" YAPAR. (TÜRKÇE KARAKTER SORUNUNUN ÇÖZÜMÜ)
         function temizKarakter(str) {
             if (!str) return '';
             return str.replace(/i/g, 'I').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/I/g, 'I').toLocaleUpperCase('tr-TR');
@@ -766,7 +770,6 @@
             }
         }
 
-        // V8 MOTORU: Markaları çekerken de 1000'li limite tam uyum
         function markalariArkaPlandaCek(baslangic = 0) {
             const limit = 1000;
             sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
@@ -776,15 +779,21 @@
                     });
                     
                     const markalar = [...tumMarkalarSet].sort();
-                    document.getElementById('anaMarkaListesi').innerHTML = markalar.map(m => `<option value="${m}">`).join('');
+                    
+                    // KLASİK AÇILIR MENÜ OLARAK DOLDURULUYOR (ANA EKRAN İÇİN)
+                    const markaFiltre = document.getElementById('markaFiltre');
+                    const seciliMarka = markaFiltre.value; 
+                    markaFiltre.innerHTML = '<option value="">TÜM MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
+                    markaFiltre.value = seciliMarka;
                     
                     if (data.length === limit) {
                         setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); 
-                    } else {
-                        document.getElementById('markaFiltre').placeholder = "MARKA ARA VEYA SEÇ...";
                     }
                 } else {
-                    document.getElementById('markaFiltre').placeholder = "MARKA ARA VEYA SEÇ...";
+                    const markaFiltre = document.getElementById('markaFiltre');
+                    if (markaFiltre.options.length <= 1) {
+                        markaFiltre.innerHTML = '<option value="">TÜM MARKALAR</option>';
+                    }
                 }
             });
         }
@@ -814,21 +823,18 @@
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
-                if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
                 
-                if (marka) {
-                    let altMarka = marka.replace(/I/g, 'İ');
-                    if (marka !== altMarka) {
-                        sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
-                    } else {
-                        sorgu = sorgu.ilike('marka', `%${marka}%`);
-                    }
-                }
+                // KATEGORİ VE MARKA BİREBİR EŞLEŞME YAPILDI (ÇAKIŞMAYI ÖNLER)
+                if (kategori) sorgu = sorgu.ilike('kategori', kategori);
+                if (marka) sorgu = sorgu.ilike('marka', marka);
                 
+                // BULANIK ARAMA (FUZZY SEARCH) KUSURSUZLAŞTIRILDI
                 if (aranan) {
                     const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, ''); 
                     if (arananTemiz.length > 0) {
-                        const esnekArama = '%' + arananTemiz.split('').join('%') + '%';
+                        // I ve İ harflerini zorunlu kılmaz, SQL'de joker (_) kabul eder. TİRE'yi (-) yoksayar.
+                        const safeChars = arananTemiz.split('').map(c => (c === 'I' || c === 'İ') ? '_' : c);
+                        const esnekArama = '%' + safeChars.join('%') + '%';
                         sorgu = sorgu.ilike('kod', esnekArama);
                     }
                 }
@@ -1057,17 +1063,17 @@
 
         function logAramaOnerileriniGuncelle() {
             const kriter = document.getElementById('logAramaKriteri').value;
-            const datalist = document.getElementById('logOneriListesi');
             const aramaKutusu = document.getElementById('logAramaKutusu');
             const kullaniciSecici = document.getElementById('logKullaniciSecici');
             const kategoriSecici = document.getElementById('logKategoriSecici');
+            const markaSecici = document.getElementById('logMarkaSecici');
             
-            datalist.innerHTML = ''; 
             aramaKutusu.value = ''; 
             
             aramaKutusu.style.display = 'none';
             kullaniciSecici.style.display = 'none';
             kategoriSecici.style.display = 'none';
+            markaSecici.style.display = 'none';
             
             if (kriter === 'kullanici') {
                 kullaniciSecici.style.display = 'block';
@@ -1102,11 +1108,11 @@
             } else if (kriter === 'kategori') {
                 kategoriSecici.style.display = 'block';
                 kategoriSecici.value = ''; 
+            } else if (kriter === 'marka') {
+                markaSecici.style.display = 'block';
+                markaSecici.value = ''; 
             } else {
                 aramaKutusu.style.display = 'block';
-                if (kriter === 'marka') {
-                    sistemMarkalari.forEach(m => { datalist.innerHTML += `<option value="${m}">`; });
-                }
             }
             
             logIciAra(); 
@@ -1116,6 +1122,7 @@
             document.getElementById('logAramaKutusu').style.display = 'block';
             document.getElementById('logKullaniciSecici').style.display = 'none';
             document.getElementById('logKategoriSecici').style.display = 'none';
+            document.getElementById('logMarkaSecici').style.display = 'none';
             document.getElementById('logAramaKutusu').value = '';
             document.getElementById('logAramaKriteri').value = 'kod';
             document.getElementById('LogModal').style.display = 'flex';
@@ -1185,6 +1192,10 @@
 
             sistemMarkalari = [...geciciMarkalar].sort();
             sistemKategorileri = [...geciciKategoriler].sort();
+            
+            // LOG EKRANI KLASİK MARKA LİSTESİ DOLDURMA
+            const markaSelect = document.getElementById('logMarkaSecici');
+            markaSelect.innerHTML = '<option value="">TÜM MARKALAR</option>' + sistemMarkalari.map(m => `<option value="${m}">${m}</option>`).join('');
 
             logAramaOnerileriniGuncelle();
             loglariCiz(tumLoglar);
@@ -1279,14 +1290,13 @@
             } else if (kriter === 'kategori') {
                 aranan = document.getElementById('logKategoriSecici').value;
                 if(aranan) arananKategoriAd = aranan;
+            } else if (kriter === 'marka') {
+                aranan = document.getElementById('logMarkaSecici').value;
             } else {
                 aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
             }
             
-            if (!aranan && (kriter !== 'kullanici' && kriter !== 'kategori')) {
-                loglariCiz(tumLoglar);
-                return;
-            } else if (!aranan && (kriter === 'kullanici' || kriter === 'kategori')) {
+            if (!aranan) {
                 loglariCiz(tumLoglar);
                 return;
             }
@@ -1295,9 +1305,22 @@
                 if (kriter === 'kod') {
                     const arananTemiz = aranan.replace(/[^A-Z0-9]/g, '');
                     const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, '');
-                    return temizKod.includes(arananTemiz);
+                    
+                    // Log içindeki fuzzy search için manuel esnetme kontrolü
+                    let searchIndex = 0;
+                    for (let i = 0; i < temizKod.length; i++) {
+                        let charK = temizKod[i];
+                        let charA = arananTemiz[searchIndex];
+                        if ((charK === 'I' || charK === 'İ') && (charA === 'I' || charA === 'İ')) {
+                            searchIndex++;
+                        } else if (charK === charA) {
+                            searchIndex++;
+                        }
+                        if (searchIndex === arananTemiz.length) return true;
+                    }
+                    return false;
                 } else if (kriter === 'marka') {
-                    return temizKarakter(log._gosterilenMarka || '').includes(aranan);
+                    return temizKarakter(log._gosterilenMarka || '') === aranan;
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan;
                 } else if (kriter === 'kullanici') {
@@ -1309,7 +1332,7 @@
             loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
         }
 
-        // V8 MOTORU: LİMİT VE SAYFALAMA (PAGINATION) KUSURSUZLAŞTIRILDI
+        // SESSİZ EXCEL BUTONU (YAZI DEĞİŞMEZ, ARKA PLANDA ÇALIŞIR)
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim();
             const kategori = document.getElementById('kategoriFiltre').value;
@@ -1323,12 +1346,11 @@
             uyariGoster(uyariMesaji, "onay", async () => {
                 
                 const btn = document.querySelector('.btn-excel');
-                const oldText = btn.innerText;
-                btn.innerText = "Veriler Çekiliyor...";
+                btn.disabled = true; // Buton pasife alınır ama yazısı DEĞİŞMEZ
 
                 let allData = [];
                 let baslangic = 0;
-                const limit = 1000; // SUPABASE GÜVENLİK SINIRINA TAM UYUM!
+                const limit = 1000; 
                 let devam = true;
 
                 while (devam) {
@@ -1338,19 +1360,14 @@
                         .order('kod', { ascending: true })
                         .order('id', { ascending: true }); 
                     
-                    if (kategori) sorgu = sorgu.ilike('kategori', `%${kategori}%`);
-                    if (marka) {
-                        let altMarka = marka.replace(/I/g, 'İ');
-                        if (marka !== altMarka) {
-                            sorgu = sorgu.or(`marka.ilike.%${marka}%,marka.ilike.%${altMarka}%`);
-                        } else {
-                            sorgu = sorgu.ilike('marka', `%${marka}%`);
-                        }
-                    }
+                    if (kategori) sorgu = sorgu.ilike('kategori', kategori);
+                    if (marka) sorgu = sorgu.ilike('marka', marka);
+                    
                     if (aranan) {
                         const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, '');
                         if (arananTemiz.length > 0) {
-                            const esnekArama = '%' + arananTemiz.split('').join('%') + '%';
+                            const safeChars = arananTemiz.split('').map(c => (c === 'I' || c === 'İ') ? '_' : c);
+                            const esnekArama = '%' + safeChars.join('%') + '%';
                             sorgu = sorgu.ilike('kod', esnekArama);
                         }
                     }
@@ -1360,15 +1377,13 @@
 
                     if (error) { 
                         alert("İndirme sırasında hata oluştu: " + error.message); 
-                        btn.innerText = oldText;
+                        btn.disabled = false;
                         return; 
                     }
 
                     if (data && data.length > 0) {
                         allData = allData.concat(data);
-                        btn.innerText = `İndiriliyor (${allData.length})...`;
                         baslangic += limit;
-                        // EĞER GELEN VERİ 1000'DEN KÜÇÜKSE DEMEK Kİ VERİTABANINDA BAŞKA BİR ŞEY KALMADI, DÖNGÜYÜ BİTİR!
                         if (data.length < limit) devam = false;
                     } else {
                         devam = false;
@@ -1376,12 +1391,10 @@
                 }
 
                 if (allData.length === 0) { 
-                    btn.innerText = oldText;
+                    btn.disabled = false;
                     alert("Döküm alınacak kayıt bulunamadı!"); 
                     return; 
                 }
-
-                btn.innerText = "Excel Oluşturuluyor...";
 
                 try {
                     const wb = new ExcelJS.Workbook();
@@ -1447,7 +1460,7 @@
                     alert("Excel dosyası oluşturulurken bir hata meydana geldi!");
                 }
                 
-                btn.innerText = oldText;
+                btn.disabled = false; // İşlem bitince buton aktif edilir
             });
         }
 
@@ -1456,6 +1469,9 @@
                 if (!suankiLoglar || suankiLoglar.length === 0) { 
                     alert("Döküm alınacak kayıt bulunamadı!"); return; 
                 }
+                
+                const btn = document.querySelector('.log-arama-konteyner .btn-excel');
+                btn.disabled = true;
 
                 try {
                     const wb = new ExcelJS.Workbook();
@@ -1524,6 +1540,8 @@
                     console.error(err);
                     alert("Excel dosyası oluşturulurken hata meydana geldi!");
                 }
+                
+                btn.disabled = false;
             });
         }
 
