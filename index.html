@@ -760,39 +760,48 @@
             }
         }
 
-        function markalariArkaPlandaCek(baslangic = 0) {
+        // V8 MOTORU: ASLA PES ETMEYEN ARKA PLAN MARKALAMA DÖNGÜSÜ (ASYNC/AWAIT)
+        async function markalariArkaPlandaCek() {
+            let baslangic = 0;
             const limit = 1000;
-            // V8 MOTORU: '.order('id')' EKLENDİ! 
-            // Bu sayede veritabanı 1000'lik paketleri çekerken sırayı şaşırmaz ve Z harfine kadar tüm listeyi eksiksiz tarar.
-            sbClient.from('malzemeler').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
+            let devam = true;
+            
+            while (devam) {
+                const { data, error } = await sbClient.from('malzemeler')
+                    .select('marka')
+                    .order('id', { ascending: true })
+                    .range(baslangic, baslangic + limit - 1);
+                
+                if (error) {
+                    console.error("Marka yükleme hatası:", error);
+                    break;
+                }
+                
                 if (data && data.length > 0) {
                     data.forEach(item => {
                         if (item.marka) {
                             let m = temizKarakter(item.marka).trim();
-                            if (m !== '' && m !== '-') tumMarkalarSet.add(m); // Boşluk ve tireleri havuza almaz
+                            if (m !== '' && m !== '-') tumMarkalarSet.add(m);
                         }
                     });
                     
                     const markalar = [...tumMarkalarSet].sort();
-                    
-                    // GLOBAL LİSTEYE KAYIT (Bütün menüleri otomatik besler)
                     const markaListesiData = document.getElementById('markaListesi');
                     if (markaListesiData) {
                         markaListesiData.innerHTML = markalar.map(m => `<option value="${m}">`).join('');
                     }
                     
-                    if (data.length === limit) {
-                        setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); 
-                    } else {
-                        // Tarama Bittiğinde Yazılar Güncellenir
-                        document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
-                        document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
-                    }
+                    baslangic += limit;
+                    // Eğer çekilen paket 1000'den küçükse veritabanında başka marka kalmamış demektir
+                    if (data.length < limit) devam = false;
                 } else {
-                    document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
-                    document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
+                    devam = false;
                 }
-            });
+            }
+            
+            // DÖNGÜ TAMAMEN BİTİNCE: 12.000 kaydın tamamı taranmıştır.
+            document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
+            document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
         }
 
         function baslat() {
