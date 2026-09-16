@@ -212,6 +212,7 @@
             animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
         
+        /* ÇOK UZUN KODLAR İÇİN ESTETİK KISALTMA */
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
 
@@ -251,15 +252,16 @@
         }
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background-color: #1e293b; color: var(--accent-cyan); }
+        .custom-select-wrapper.disabled { opacity: 0.5; pointer-events: none; }
 
         /* MASAÜSTÜ ÖZEL GENİŞLİKLER */
-        #wrapper-kategoriFiltre .custom-select-options { width: 100%; left: 0; right: auto; } /* KATEGORİ (ANASAYFA) */
-        #wrapper-logKategoriSecici .custom-select-options { width: 100%; left: 0; right: auto; } /* KATEGORİ (LOG) */
-        #wrapper-inputKategori .custom-select-options { width: 100%; left: 0; right: auto; } /* KATEGORİ (YENİ KAYIT) */
+        #wrapper-kategoriFiltre .custom-select-options { width: 100%; left: 0; right: auto; } 
+        #wrapper-logKategoriSecici .custom-select-options { width: 100%; left: 0; right: auto; } 
+        #wrapper-inputKategori .custom-select-options { width: 100%; left: 0; right: auto; } 
 
-        #wrapper-markaFiltre .custom-select-options { width: 200%; left: 0; right: auto; } /* MARKA (ANASAYFA) */
-        #wrapper-inputMarka .custom-select-options { width: 100%; left: 0; right: auto; } /* MARKA (YENİ KAYIT) */
-        #wrapper-logMarkaSecici .custom-select-options { width: 100%; left: 0; right: auto; } /* MARKA (LOG) */
+        #wrapper-markaFiltre .custom-select-options { width: 200%; left: 0; right: auto; } 
+        #wrapper-inputMarka .custom-select-options { width: 100%; left: 0; right: auto; } 
+        #wrapper-logMarkaSecici .custom-select-options { width: 100%; left: 0; right: auto; } 
 
         /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
@@ -273,6 +275,7 @@
         .form-grid-tam { grid-column: span 2; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; transition: color 0.3s; }
         .label-kasa-vurgu { color: var(--accent-orange) !important; font-weight: 800 !important; }
+        .label-testli-vurgu { color: var(--accent-green) !important; font-weight: 800 !important; }
         
         .modal-content input[type="text"]:not(.custom-select-input) { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; text-transform: uppercase; }
         .modal-content input[type="text"]:not(.custom-select-input)::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
@@ -310,7 +313,6 @@
         #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
-        /* LOG BÖLÜMÜNDEKİ YENİ EXCEL BUTONU (ANA EKRANLA MİLİMETRİK AYNI) */
         .log-arama-konteyner .btn-excel {
             height: 42px;
             padding: 0 16px;
@@ -354,10 +356,10 @@
             .header .custom-select-wrapper { height: 34px !important; }
             .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
             
-            /* MOBİLDE ÖZEL ORANTILAR (HOCAM'IN SON MÜDAHALESİ) */
+            /* MOBİLDE ÖZEL ORANTILAR */
             #wrapper-markaFiltre .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } 
             #wrapper-inputMarka .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } 
-            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } /* LOG MARKASI KENDİ KUTUSUYLA AYNI BOYUTA İNDİ (%100) */
+            #wrapper-logMarkaSecici .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; } 
             
             #wrapper-kategoriFiltre .custom-select-options { width: 100%; left: 0; right: auto; }
             #wrapper-logKategoriSecici .custom-select-options { width: 100%; left: 0; right: auto; }
@@ -438,9 +440,8 @@
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
 
                 <div class="header">
-                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
+                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
                     
-                    <!-- ÖZEL KATEGORİ LİSTESİ (READONLY) -->
                     <div class="custom-select-wrapper" id="wrapper-kategoriFiltre">
                         <input type="text" id="kategoriFiltre" class="custom-select-input" autocomplete="off" placeholder="KATEGORİLER" readonly onclick="gosterCustom('kategoriFiltre')">
                         <div class="custom-select-options" id="options-kategoriFiltre">
@@ -499,10 +500,9 @@
             </select>
             
             <div class="log-arama-konteyner">
-                <input type="text" id="logAramaKutusu" placeholder="Arama yap..." autocomplete="off" oninput="this.value = temizKarakter(this.value); logIciAra()">
+                <input type="text" id="logAramaKutusu" placeholder="Arama yap..." autocomplete="off" oninput="logIciAra()">
                 <select id="logKullaniciSecici" style="display:none;" onchange="logIciAra()"></select>
                 
-                <!-- ÖZEL KATEGORİ LİSTESİ (LOG) -->
                 <div class="custom-select-wrapper" id="wrapper-logKategoriSecici" style="display:none;">
                     <input type="text" id="logKategoriSecici" class="custom-select-input" autocomplete="off" placeholder="TÜM KATEGORİLER" readonly onclick="gosterCustom('logKategoriSecici')">
                     <div class="custom-select-options" id="options-logKategoriSecici">
@@ -537,15 +537,14 @@
         <div class="modal-content">
             <h3 id="modalBaslik">Miktar Güncelle</h3>
             <input type="hidden" id="duzenlenenId">
+            <input type="hidden" id="duzenlenenTablo">
 
             <div class="form-grid">
                 <div class="form-group" id="grupKategori">
                     <label>Kategori:</label>
-                    <!-- ÖZEL KATEGORİ LİSTESİ (YENİ KAYIT) -->
                     <div class="custom-select-wrapper" id="wrapper-inputKategori">
                         <input type="text" id="inputKategori" class="custom-select-input" autocomplete="off" placeholder="SEÇİNİZ..." readonly onclick="gosterCustom('inputKategori')">
                         <div class="custom-select-options" id="options-inputKategori">
-                            <div class="custom-select-option" onclick="secCustomKategori(this, 'inputKategori', '')">SEÇİNİZ...</div>
                             <div class="custom-select-option" onclick="secCustomKategori(this, 'inputKategori', 'PLC')">PLC</div>
                             <div class="custom-select-option" onclick="secCustomKategori(this, 'inputKategori', 'EKRAN')">EKRAN</div>
                             <div class="custom-select-option" onclick="secCustomKategori(this, 'inputKategori', 'G.RÖLE')">G.RÖLE</div>
@@ -566,7 +565,7 @@
                 </div>
                 <div class="form-group form-grid-tam" id="grupKod">
                     <label>Malzeme Kodu:</label>
-                    <input type="text" id="inputKod" placeholder="Tam kodunu girin..." oninput="this.value = temizKarakter(this.value)">
+                    <input type="text" id="inputKod" placeholder="Tam kodunu girin..." oninput="this.value = this.value.toLocaleUpperCase('tr-TR')">
                 </div>
 
                 <div class="form-group">
@@ -578,7 +577,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Açık Kutu Adet:</label>
+                    <label id="lblAcikKutu">Açık Kutu Adet:</label>
                     <div class="sayi-input-grup">
                         <button type="button" onclick="sayiDegistir('inputAcikKutu', -1)">-</button>
                         <input type="number" id="inputAcikKutu" value="0">
@@ -586,7 +585,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Kapalı Kutu Adet:</label>
+                    <label id="lblKapaliKutu">Kapalı Kutu Adet:</label>
                     <div class="sayi-input-grup">
                         <button type="button" onclick="sayiDegistir('inputKapaliKutu', -1)">-</button>
                         <input type="number" id="inputKapaliKutu" value="0">
@@ -627,7 +626,6 @@
         
         let tumLoglar = []; 
         let suankiLoglar = []; 
-        let sistemKullanicilari = []; 
         let mevcutEkranVerileri = []; 
         
         let tumMarkalarSet = new Set(); 
@@ -668,15 +666,38 @@
             input.value = val;
         }
 
+        // HİBRİT YAPI: Kategori değiştiğinde form şekil değiştirir
         function kategoriDegisti() {
             const secilen = document.getElementById('inputKategori').value;
             const rafLabel = document.getElementById('labelRafKasa');
+            const lblAcik = document.getElementById('lblAcikKutu');
+            const lblKapali = document.getElementById('lblKapaliKutu');
+            const inputRaf = document.getElementById('inputRafNo');
+
             if (secilen === 'KASALAR') {
                 rafLabel.innerText = 'Kasa No:';
                 rafLabel.className = 'label-kasa-vurgu';
+                lblAcik.innerText = 'Açık Kutu Adet:';
+                lblKapali.innerText = 'Kapalı Kutu Adet:';
+                lblAcik.className = '';
+                lblKapali.className = '';
+                inputRaf.placeholder = "Örn: K1";
+            } else if (secilen === 'SÜRÜCÜ' || secilen === 'MOTOR') {
+                rafLabel.innerText = 'Raf No:';
+                rafLabel.className = '';
+                lblAcik.innerText = 'Testli Adet:';
+                lblKapali.innerText = 'Kutulu Adet:';
+                lblAcik.className = 'label-testli-vurgu';
+                lblKapali.className = 'label-testli-vurgu';
+                inputRaf.placeholder = "Örn: (A) R 3.2.4";
             } else {
                 rafLabel.innerText = 'Raf No:';
                 rafLabel.className = '';
+                lblAcik.innerText = 'Açık Kutu Adet:';
+                lblKapali.innerText = 'Kapalı Kutu Adet:';
+                lblAcik.className = '';
+                lblKapali.className = '';
+                inputRaf.placeholder = "Örn: A12";
             }
         }
 
@@ -728,6 +749,9 @@
         }
 
         function gosterCustom(id) {
+            const wrapper = document.getElementById('wrapper-' + id);
+            if (wrapper.classList.contains('disabled')) return; 
+            
             document.querySelectorAll('.custom-select-options').forEach(el => el.style.display = 'none');
             document.getElementById('options-' + id).style.display = 'block';
             filtreleCustom(id); 
@@ -750,13 +774,8 @@
         function secCustomKategori(element, id, gercekDeger) {
             const input = document.getElementById(id);
             input.value = gercekDeger;
-            
-            if(gercekDeger === '') {
-                input.value = ''; 
-            }
-            
+            if(gercekDeger === '') input.value = ''; 
             document.getElementById('options-' + id).style.display = 'none';
-
             if(id === 'kategoriFiltre') stokGetir(true);
             if(id === 'logKategoriSecici') logIciAra();
             if(id === 'inputKategori') kategoriDegisti();
@@ -768,23 +787,15 @@
             const options = optionsDiv.getElementsByClassName('custom-select-option');
             
             if(inputEl.hasAttribute('readonly')) {
-                for (let i = 0; i < options.length; i++) {
-                    options[i].style.display = "block";
-                }
+                for (let i = 0; i < options.length; i++) { options[i].style.display = "block"; }
                 return;
             }
             
             const inputVal = inputEl.value.trim();
             for (let i = 0; i < options.length; i++) {
-                if (options[i].innerText === "TÜM MARKALAR") {
-                    options[i].style.display = "block";
-                    continue;
-                }
-                if (options[i].innerText.includes(inputVal)) {
-                    options[i].style.display = "block";
-                } else {
-                    options[i].style.display = "none";
-                }
+                if (options[i].innerText === "TÜM MARKALAR") { options[i].style.display = "block"; continue; }
+                if (options[i].innerText.includes(inputVal)) { options[i].style.display = "block"; } 
+                else { options[i].style.display = "none"; }
             }
         }
 
@@ -844,45 +855,23 @@
         async function sifremiUnuttum() {
             const email = document.getElementById('authEmail').value.trim();
             const msg = document.getElementById('authMesaj');
-
-            if(!email) { 
-                msg.style.color = "var(--accent-red)";
-                msg.innerText = "Lütfen önce e-posta adresinizi yukarıya yazın, ardından 'Şifremi Unuttum'a tıklayın."; 
-                return; 
-            }
-
+            if(!email) { msg.style.color = "var(--accent-red)"; msg.innerText = "Lütfen önce e-posta adresinizi yukarıya yazın, ardından 'Şifremi Unuttum'a tıklayın."; return; }
             msg.style.color = "var(--accent-blue)";
             msg.innerText = "Sıfırlama bağlantısı gönderiliyor...";
             const { data, error } = await sbClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
-
-            if (error) { 
-                msg.style.color = "var(--accent-red)";
-                msg.innerText = "Hata: " + error.message; 
-            } else {
-                msg.style.color = "var(--accent-green)";
-                msg.innerText = "Şifre sıfırlama bağlantısı e-postanıza gönderildi!";
-            }
+            if (error) { msg.style.color = "var(--accent-red)"; msg.innerText = "Hata: " + error.message; } 
+            else { msg.style.color = "var(--accent-green)"; msg.innerText = "Şifre sıfırlama bağlantısı e-postanıza gönderildi!"; }
         }
 
         async function yeniSifreKaydet() {
             const yeniSifre = document.getElementById('yeniSifreInput').value.trim();
             const msg = document.getElementById('sifreSifirlaMesaj');
-            
             if(!yeniSifre || yeniSifre.length < 6) { msg.innerText = "Şifreniz en az 6 karakter olmalıdır."; return; }
-            
             msg.style.color = "var(--accent-blue)";
             msg.innerText = "Şifreniz güncelleniyor...";
-
             const { data, error } = await sbClient.auth.updateUser({ password: yeniSifre });
-
-            if (error) {
-                msg.style.color = "var(--accent-red)";
-                msg.innerText = "Hata: " + error.message;
-            } else {
-                msg.style.color = "var(--accent-green)";
-                msg.innerText = "Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz...";
-                setTimeout(() => { window.location.hash = ''; window.location.reload(); }, 2000);
-            }
+            if (error) { msg.style.color = "var(--accent-red)"; msg.innerText = "Hata: " + error.message; } 
+            else { msg.style.color = "var(--accent-green)"; msg.innerText = "Şifreniz başarıyla güncellendi! Yönlendiriliyorsunuz..."; setTimeout(() => { window.location.hash = ''; window.location.reload(); }, 2000); }
         }
 
         function cikisYap() {
@@ -894,17 +883,14 @@
 
         async function oturumKontrolu() {
             const { data: { session } } = await sbClient.auth.getSession();
-            
             if (session) {
                 aktifKullaniciEmail = session.user.email;
                 const { data: yetkiData } = await sbClient.from('kullanicilar').select('*').eq('email', aktifKullaniciEmail).single();
-                
                 if(!yetkiData || yetkiData.onayli === false) {
                     await sbClient.auth.signOut();
                     document.getElementById('authMesaj').innerText = "Hesabınız henüz yönetici tarafından onaylanmadı.";
                     return;
                 }
-
                 let dbRol = yetkiData.rol ? yetkiData.rol.toLowerCase().trim() : 'okuyucu';
                 if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
                     aktifRol = 'duzenleyici';
@@ -913,57 +899,38 @@
                 } else {
                     aktifRol = 'okuyucu';
                 }
-
                 document.getElementById('authEkrani').style.display = 'none';
                 document.getElementById('anaUygulama').style.display = 'block';
-                
                 baslat();
-                
-                setTimeout(() => {
-                    const arama = document.getElementById('aramaKutusu');
-                    if (arama) arama.focus();
-                }, 300);
-
+                setTimeout(() => { const arama = document.getElementById('aramaKutusu'); if (arama) arama.focus(); }, 300);
             } else {
                 document.getElementById('authEkrani').style.display = 'flex';
                 document.getElementById('anaUygulama').style.display = 'none';
             }
         }
 
+        // HİBRİT YAPI: Her iki tablodan da markaları çeker
         async function markalariArkaPlandaCek() {
-            let baslangic = 0;
-            const limit = 1000;
-            let devam = true;
-            
+            // Malzemeler tablosu taraması
+            let baslangic = 0; const limit = 1000; let devam = true;
             while (devam) {
-                const { data, error } = await sbClient.from('malzemeler')
-                    .select('marka')
-                    .order('id', { ascending: true })
-                    .range(baslangic, baslangic + limit - 1);
-                
-                if (error) {
-                    console.error("Marka yükleme hatası:", error);
-                    break;
-                }
-                
+                const { data } = await sbClient.from('malzemeler').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
                 if (data && data.length > 0) {
-                    data.forEach(item => {
-                        if (item.marka) {
-                            let m = temizKarakter(item.marka).trim();
-                            if (m !== '' && m !== '-') tumMarkalarSet.add(m);
-                        }
-                    });
-                    
-                    const markalar = [...tumMarkalarSet].sort();
-                    markaOnerileriniDoldur(markalar);
-                    
-                    baslangic += limit;
-                    if (data.length < limit) devam = false;
-                } else {
-                    devam = false;
-                }
+                    data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); });
+                    baslangic += limit; if (data.length < limit) devam = false;
+                } else { devam = false; }
             }
-            
+            // Alt_kat tablosu taraması
+            baslangic = 0; devam = true;
+            while (devam) {
+                const { data } = await sbClient.from('alt_kat').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
+                if (data && data.length > 0) {
+                    data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); });
+                    baslangic += limit; if (data.length < limit) devam = false;
+                } else { devam = false; }
+            }
+            tumMarkalarSet.delete(''); tumMarkalarSet.delete('-');
+            markaOnerileriniDoldur([...tumMarkalarSet].sort());
             document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
             document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
         }
@@ -976,40 +943,86 @@
                 </div>`;
         }
 
+        // HİBRİT YAPI: Her iki tablodan veri standardizasyonu
+        function verileriNormallestir(veriDizisi, tabloAdi) {
+            return veriDizisi.map(v => {
+                let isAlt = (tabloAdi === 'alt_kat');
+                return {
+                    ...v,
+                    _tablo: tabloAdi,
+                    _acik_testli: isAlt ? (v.testli || 0) : (v.acik_kutu || 0),
+                    _kapali_kutulu: isAlt ? (v.kutulu || 0) : (v.kapali_kutu || 0)
+                };
+            });
+        }
+
         async function stokGetir(aninda = false) {
             clearTimeout(aramaZamanlayici);
             const beklemeSuresi = aninda ? 0 : 800;
 
             aramaZamanlayici = setTimeout(async () => {
-                const aranan = document.getElementById('aramaKutusu').value.trim();
+                const arananInput = document.getElementById('aramaKutusu').value.trim();
                 const kategori = document.getElementById('kategoriFiltre').value.trim();
                 const marka = document.getElementById('markaFiltre').value.trim();
 
-                if (!aranan && !kategori && !marka) {
-                    baslat();
-                    return;
-                }
-
+                if (!arananInput && !kategori && !marka) { baslat(); return; }
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
-                let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
-                
-                if (kategori) sorgu = sorgu.ilike('kategori', kategori);
-                if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                
-                if (aranan) {
-                    const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, ''); 
-                    if (arananTemiz.length > 0) {
-                        const safeChars = arananTemiz.split('').map(c => (c === 'I' || c === 'İ') ? '_' : c);
-                        const esnekArama = '%' + safeChars.join('%') + '%';
-                        sorgu = sorgu.ilike('kod', esnekArama);
-                    }
+                // Hangi tablo aranacak kararı
+                const altKategoriler = ['SÜRÜCÜ', 'MOTOR'];
+                let searchMalzemeler = true;
+                let searchAltKat = true;
+
+                if (kategori) {
+                    if (altKategoriler.includes(kategori)) { searchMalzemeler = false; } 
+                    else { searchAltKat = false; }
                 }
 
-                const { data, error } = await sorgu.limit(100);
-                if (error) return;
+                let p1 = Promise.resolve({ data: [] });
+                let p2 = Promise.resolve({ data: [] });
 
-                ekranaYazdir(data);
+                // Joker destekli özel karakter araması
+                let esnekAramaStr = '';
+                if (arananInput) {
+                    const buyukArama = arananInput.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
+                    esnekAramaStr = `%${buyukArama}%`;
+                }
+
+                if (searchMalzemeler) {
+                    let sorgu1 = sbClient.from('malzemeler').select('*').limit(100);
+                    if (kategori) sorgu1 = sorgu1.eq('kategori', kategori);
+                    if (marka) sorgu1 = sorgu1.ilike('marka', `%${marka}%`);
+                    if (arananInput) sorgu1 = sorgu1.ilike('kod', esnekAramaStr);
+                    p1 = sorgu1;
+                }
+
+                if (searchAltKat) {
+                    let sorgu2 = sbClient.from('alt_kat').select('*').limit(100);
+                    if (kategori) sorgu2 = sorgu2.eq('kategori', kategori);
+                    if (marka) sorgu2 = sorgu2.ilike('marka', `%${marka}%`);
+                    if (arananInput) sorgu2 = sorgu2.ilike('kod', esnekAramaStr);
+                    p2 = sorgu2;
+                }
+
+                const [res1, res2] = await Promise.all([p1, p2]);
+                if (res1.error) console.error(res1.error);
+                if (res2.error) console.error(res2.error);
+
+                let veri1 = verileriNormallestir(res1.data || [], 'malzemeler');
+                let veri2 = verileriNormallestir(res2.data || [], 'alt_kat');
+                
+                let birlesikVeri = [...veri1, ...veri2];
+                // Sıralama (Önce Marka, sonra Kategori)
+                birlesikVeri.sort((a, b) => {
+                    let m1 = (a.marka || '').localeCompare(b.marka || '');
+                    if (m1 !== 0) return m1;
+                    return (a.kategori || '').localeCompare(b.kategori || '');
+                });
+
+                // Toplam limit koruması
+                if (birlesikVeri.length > 100) birlesikVeri = birlesikVeri.slice(0, 100);
+                
+                ekranaYazdir(birlesikVeri);
             }, beklemeSuresi); 
         }
 
@@ -1027,19 +1040,24 @@
             veriler.forEach(malzeme => {
                 let islemButonu = '';
                 if(aktifRol === 'duzenleyici') {
-                    islemButonu = `<button class="btn-duzenle" onclick="guncelleModalAcById('${malzeme.id}')">Güncelle</button>`;
+                    islemButonu = `<button class="btn-duzenle" onclick="guncelleModalAcById('${malzeme.id}', '${malzeme._tablo}')">Güncelle</button>`;
                 } else {
                     islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
                 }
 
                 const isKasa = temizKarakter(malzeme.kategori) === 'KASALAR';
+                const isAltTablo = (malzeme._tablo === 'alt_kat');
                 
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
-                const formatliKod = temizKarakter(malzeme.kod || '');
+                const orjinalKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
+                
+                // Çok Uzun Kodları Ekranda Estetik Kısaltma (Orjinali title'da durur)
+                let gosterilenKod = orjinalKod;
+                if (orjinalKod.length > 25) { gosterilenKod = orjinalKod.substring(0, 25) + '...'; }
 
                 const ikinciElBaslik = telefonMu() ? "İkinci El" : "İKİNCİ EL";
-                const acikKutuBaslik = telefonMu() ? "A.Kutu" : "AÇIK KUTU";
-                const kapaliKutuBaslik = telefonMu() ? "K.Kutu" : "KAPALI KUTU";
+                const acikKutuBaslik = isAltTablo ? "TESTLİ" : (telefonMu() ? "A.Kutu" : "AÇIK KUTU");
+                const kapaliKutuBaslik = isAltTablo ? "KUTULU" : (telefonMu() ? "K.Kutu" : "KAPALI KUTU");
                 const arizaliBaslik = telefonMu() ? "Arızalı" : "ARIZALI";
                 const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
 
@@ -1051,7 +1069,7 @@
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="stok-ust-satir">
-                                <span class="malzeme-kod" title="${formatliKod}">${formatliKod}</span>
+                                <span class="malzeme-kod" title="${orjinalKod}">${gosterilenKod}</span>
                             </div>
                             <div class="stok-alt-satir malzeme-detay">
                                 <div class="alt-sol"><span class="${etiketClass}">${temizKarakter(malzeme.kategori) || '-'}</span></div>
@@ -1062,8 +1080,8 @@
 
                         <div class="stok-sayilar">
                             <div class="sayi-kutusu">${ikinciElBaslik}<div class="sayi-deger">${malzeme.ikinci_el ?? 0}</div></div>
-                            <div class="sayi-kutusu">${acikKutuBaslik}<div class="sayi-deger">${malzeme.acik_kutu ?? 0}</div></div>
-                            <div class="sayi-kutusu">${kapaliKutuBaslik}<div class="sayi-deger">${malzeme.kapali_kutu ?? 0}</div></div>
+                            <div class="sayi-kutusu">${acikKutuBaslik}<div class="sayi-deger" style="${isAltTablo ? 'color:var(--accent-green)' : ''}">${malzeme._acik_testli}</div></div>
+                            <div class="sayi-kutusu">${kapaliKutuBaslik}<div class="sayi-deger" style="${isAltTablo ? 'color:var(--accent-green)' : ''}">${malzeme._kapali_kutulu}</div></div>
                             <div class="sayi-kutusu">${arizaliBaslik}<div class="sayi-arizali">${malzeme.arizali ?? 0}</div></div>
                             <div class="sayi-kutusu">${toplamBaslik}<div class="sayi-toplam">${malzeme.toplam ?? 0}</div></div>
                         </div>
@@ -1075,8 +1093,8 @@
             liste.innerHTML = tumKartlar;
         }
 
-        function guncelleModalAcById(id) {
-            const malzeme = mevcutEkranVerileri.find(m => m.id == id);
+        function guncelleModalAcById(id, tablo) {
+            const malzeme = mevcutEkranVerileri.find(m => m.id == id && m._tablo === tablo);
             if (malzeme) {
                 guncelleModalAc(malzeme);
             }
@@ -1087,7 +1105,7 @@
 
             const kategori = temizKarakter(document.getElementById('inputKategori').value.trim()); 
             let marka = temizKarakter(document.getElementById('inputMarka').value.trim());
-            let kod = temizKarakter(document.getElementById('inputKod').value.trim()); 
+            let kod = document.getElementById('inputKod').value.trim().toLocaleUpperCase('tr-TR'); 
             const raf_no = temizKarakter(document.getElementById('inputRafNo').value.trim());
 
             const eAdet = parseInt(document.getElementById('inputIkinciEl').value) || 0;
@@ -1095,6 +1113,8 @@
             const kAdet = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
             const rAdet = parseInt(document.getElementById('inputArizali').value) || 0;
             const toplamAdetGiris = eAdet + aAdet + kAdet + rAdet;
+            
+            const hedefTablo = ['SÜRÜCÜ', 'MOTOR'].includes(kategori) ? 'alt_kat' : 'malzemeler';
 
             if (islemTuru === 'yeni') {
                 let bosAlanlar = [];
@@ -1108,116 +1128,98 @@
                 }
                 
                 if (toplamAdetGiris <= 0) {
-                    uyariGoster("Yeni malzeme eklerken İkinci El, Açık Kutu, Kapalı Kutu veya Arızalı adetlerinden <b style='color:var(--accent-blue);'>en az birini</b> girmelisiniz.<br>Sadece kod eklemenin bir anlamı yok!", 'hata');
+                    uyariGoster("Yeni malzeme eklerken adetlerinden <b style='color:var(--accent-blue);'>en az birini</b> girmelisiniz.<br>Sadece kod eklemenin bir anlamı yok!", 'hata');
                     return;
                 }
 
-                if (kategori !== 'KASALAR') {
-                    const { data: mevcutData } = await sbClient.from('malzemeler')
-                        .select('kod')
-                        .ilike('kod', kod)
-                        .neq('kategori', 'KASALAR');
-
+                // Sadece malzemeler tablosunda Unique kontrolü var (alt_kat'ta özgürüz)
+                if (kategori !== 'KASALAR' && hedefTablo !== 'alt_kat') {
+                    const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod).neq('kategori', 'KASALAR');
                     if (mevcutData && mevcutData.length > 0) {
-                        uyariGoster("Bu kod sisteme zaten normal rafta daha önceden kayıt edilmiş!<br>Aynı kodu normal kategorilerde tekrar ekleyemezsiniz.", 'hata');
+                        uyariGoster("Bu kod standart kategorilerde zaten sisteme kayıtlı!<br>Aynı kodu standart raflarda tekrar ekleyemezsiniz.", 'hata');
                         return;
                     }
                 }
 
                 if (!raf_no) {
                     const msgRaf = kategori === 'KASALAR' ? "Kasa" : "Raf";
-                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
+                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no, hedefTablo); });
                     return;
                 }
             } else {
                 if (!kod) { uyariGoster("Malzeme kodu boş olamaz!", 'hata'); return; }
                 if (!raf_no) {
                     const msgRaf = kategori === 'KASALAR' ? "Kasa" : "Raf";
-                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no); });
+                    uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekVeriKaydet(kategori, marka, kod, raf_no, hedefTablo); });
                     return;
                 }
             }
             
-            gercekVeriKaydet(kategori, marka, kod, raf_no);
+            gercekVeriKaydet(kategori, marka, kod, raf_no, hedefTablo);
         }
 
-        async function gercekVeriKaydet(kategori, marka, kod, raf_no) {
+        async function gercekVeriKaydet(kategori, marka, kod, raf_no, hedefTablo) {
             const btn = document.getElementById('btnModalKaydet');
-            if(btn) {
-                btn.disabled = true;
-                btn.innerHTML = 'Kaydediliyor...';
-            }
+            if(btn) { btn.disabled = true; btn.innerHTML = 'Kaydediliyor...'; }
             
             const islemZamani = Date.now();
 
             const ikinci_el = parseInt(document.getElementById('inputIkinciEl').value) || 0;
-            const acik_kutu = parseInt(document.getElementById('inputAcikKutu').value) || 0;
-            const kapali_kutu = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
+            const ui_acik = parseInt(document.getElementById('inputAcikKutu').value) || 0;
+            const ui_kapali = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
             const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
-            const toplam = ikinci_el + acik_kutu + kapali_kutu;
+            const toplam = ikinci_el + ui_acik + ui_kapali; // Arızalı toplama dahil değil
+
+            let payload = { kategori, marka, kod, ikinci_el, arizali, toplam, raf_no };
+            if (hedefTablo === 'alt_kat') {
+                payload.testli = ui_acik;
+                payload.kutulu = ui_kapali;
+            } else {
+                payload.acik_kutu = ui_acik;
+                payload.kapali_kutu = ui_kapali;
+            }
             
             let logPrefix = `[CAT:${kategori}|MRK:${marka}] `;
+            const lblA = hedefTablo === 'alt_kat' ? 'Testli' : 'Açık Kutu';
+            const lblK = hedefTablo === 'alt_kat' ? 'Kutulu' : 'Kapalı Kutu';
 
             if (islemTuru === 'guncelle') {
                 const id = document.getElementById('duzenlenenId').value;
-                const { error } = await sbClient.from('malzemeler').update({ 
-                    ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no, marka, kategori, kod 
-                }).eq('id', id);
+                const kaynakTablo = document.getElementById('duzenlenenTablo').value;
+                
+                const { error } = await sbClient.from(kaynakTablo).update(payload).eq('id', id);
 
                 if (!error) {
                     let e1 = aktifDuzenlenenMalzeme.ikinci_el || 0;
-                    let a1 = aktifDuzenlenenMalzeme.acik_kutu || 0;
-                    let k1 = aktifDuzenlenenMalzeme.kapali_kutu || 0;
+                    let a1 = aktifDuzenlenenMalzeme._acik_testli || 0;
+                    let k1 = aktifDuzenlenenMalzeme._kapali_kutulu || 0;
                     let r1 = aktifDuzenlenenMalzeme.arizali || 0;
 
-                    let logMetni = `${logPrefix}GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - Açık Kutu (${a1} → ${acik_kutu})<br>Kapalı Kutu (${k1} → ${kapali_kutu}) - Arızalı (${r1} → ${arizali})`;
+                    let logMetni = `${logPrefix}GÜNCELLEME<br>İkinci El (${e1} → ${ikinci_el}) - ${lblA} (${a1} → ${ui_acik})<br>${lblK} (${k1} → ${ui_kapali}) - Arızalı (${r1} → ${arizali})`;
                     await logKaydet(logMetni, kod);
                     basariSonrasi();
-                } else {
-                    uyariGoster("<b>Veritabanı Kayıt Hatası:</b><br>" + error.message, 'hata');
-                }
-
+                } else { uyariGoster("<b>Veritabanı Kayıt Hatası:</b><br>" + error.message, 'hata'); }
             } else {
-                const { error } = await sbClient.from('malzemeler').insert([{ 
-                    kategori, marka, kod, ikinci_el, acik_kutu, kapali_kutu, arizali, toplam, raf_no 
-                }]);
+                const { error } = await sbClient.from(hedefTablo).insert([payload]);
 
                 if (!error) {
-                    let vE = ikinci_el === 0 ? '' : ikinci_el;
-                    let vA = acik_kutu === 0 ? '' : acik_kutu;
-                    let vK = kapali_kutu === 0 ? '' : kapali_kutu;
-                    let vR = arizali === 0 ? '' : arizali;
-
-                    let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${vE}) - Açık Kutu (${vA})<br>Kapalı Kutu (${vK}) - Arızalı (${vR})`;
+                    let logMetni = `${logPrefix}YENİ KAYIT<br>İkinci El (${ikinci_el}) - ${lblA} (${ui_acik})<br>${lblK} (${ui_kapali}) - Arızalı (${arizali})`;
                     await logKaydet(logMetni, kod);
                     
-                    if(marka) {
-                        tumMarkalarSet.add(marka);
-                        markaOnerileriniDoldur([...tumMarkalarSet].sort());
-                    }
+                    if(marka) { tumMarkalarSet.add(marka); markaOnerileriniDoldur([...tumMarkalarSet].sort()); }
 
                     document.getElementById('GuncelleModal').style.display = 'none';
-                    uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => {
-                        stokGetir();
-                    });
+                    uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => { stokGetir(); });
                 } else {
                     if (error.message.includes('duplicate key') || error.message.includes('unique constraint')) {
-                        uyariGoster("<b>Veritabanı Engelledi!</b><br><br>Supabase veritabanınızda 'kod' sütunu hala <b>'Is Unique' (Benzersiz)</b> olarak işaretli. Bu yüzden aynı kodu kasalara tekrar eklemenize veritabanı izin vermiyor.<br><br><b>Çözüm:</b> Lütfen Supabase'den 'Table Editor'e girin, malzemeler tablosunda 'kod' sütununu düzenleyip 'Is Unique' tikini kaldırın.", 'hata');
-                    } else {
-                        uyariGoster("<b>Kayıt sırasında hata oluştu:</b><br>" + error.message, 'hata');
-                    }
+                        uyariGoster("<b>Veritabanı Engelledi!</b><br><br>Supabase veritabanınızda 'kod' sütunu 'Unique' (Benzersiz) olarak işaretli. Lütfen tablo ayarlarından tiki kaldırın.", 'hata');
+                    } else { uyariGoster("<b>Kayıt sırasında hata oluştu:</b><br>" + error.message, 'hata'); }
                 }
             }
 
             const gecenSure = Date.now() - islemZamani;
             const bekleme = gecenSure < 1500 ? 1500 - gecenSure : 0;
-            
-            setTimeout(() => {
-                if(btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = 'Kaydet';
-                }
-            }, bekleme);
+            setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, bekleme);
         }
 
         function basariSonrasi() {
@@ -1235,12 +1237,10 @@
             const kriter = document.getElementById('logAramaKriteri').value;
             const aramaKutusu = document.getElementById('logAramaKutusu');
             const kullaniciSecici = document.getElementById('logKullaniciSecici');
-            
             const kategoriSeciciWrapper = document.getElementById('wrapper-logKategoriSecici');
             const markaSeciciWrapper = document.getElementById('wrapper-logMarkaSecici');
             
             aramaKutusu.value = ''; 
-            
             aramaKutusu.style.display = 'none';
             kullaniciSecici.style.display = 'none';
             kategoriSeciciWrapper.style.display = 'none';
@@ -1248,34 +1248,12 @@
             
             if (kriter === 'kullanici') {
                 kullaniciSecici.style.display = 'block';
-                
-                const ozelSiralama = [
-                    "FAZLI ŞEN",
-                    "MUSTAFA TEMEL",
-                    "YASİN HASTÜRK",
-                    "ŞÜKRÜ YILMAZ",
-                    "KÖKSAL DUR",
-                    "TALHA ÇADIR",
-                    "AHMET SARIKAYA",
-                    "GÖKDENİZ BULUT",
-                    "BERAT KANAT",
-                    "SERHAT ÖZ",
-                    "SEMRA GENÇ"
-                ];
-
+                const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"];
                 let gosterilecekKullanicilar = [...ozelSiralama];
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
-                logdakiKullanicilar.forEach(u => {
-                    if(!gosterilecekKullanicilar.includes(u)) {
-                        gosterilecekKullanicilar.push(u);
-                    }
-                });
-
+                logdakiKullanicilar.forEach(u => { if(!gosterilecekKullanicilar.includes(u)) gosterilecekKullanicilar.push(u); });
                 kullaniciSecici.innerHTML = '<option value="">BİR KULLANICI SEÇİN...</option>';
-                gosterilecekKullanicilar.forEach(u => { 
-                    kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; 
-                });
-                
+                gosterilecekKullanicilar.forEach(u => { kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; });
             } else if (kriter === 'kategori') {
                 kategoriSeciciWrapper.style.display = 'block';
                 document.getElementById('logKategoriSecici').value = ''; 
@@ -1285,7 +1263,6 @@
             } else {
                 aramaKutusu.style.display = 'block';
             }
-            
             logIciAra(); 
         }
 
@@ -1302,42 +1279,27 @@
             logGövdesi.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Kayıtlar çekiliyor...</div>';
 
             const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(500);
-
             if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px;">Kayıtlar alınamadı!</div>'; return; }
 
-            const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
+            // Log detayları için her iki tabloyu hızlıca referans alma
+            const p1 = sbClient.from('malzemeler').select('kod, kategori, marka');
+            const p2 = sbClient.from('alt_kat').select('kod, kategori, marka');
+            const [r1, r2] = await Promise.all([p1, p2]);
             
             const malzemeMap = {};
-
-            if (malzemeData) {
-                malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
-                    let mark = temizKarakter(m.marka || '-');
-                    let kat = temizKarakter(m.kategori || '-');
-                    malzemeMap[temizKarakter(m.kod || '')] = { kategori: kat, marka: mark };
-                });
-                
-                malzemeData.filter(m => m.kategori === 'KASALAR').forEach(m => {
-                    const k = temizKarakter(m.kod || '');
-                    let mark = temizKarakter(m.marka || '-');
-                    if (!malzemeMap[k]) { 
-                        malzemeMap[k] = { kategori: 'KASALAR', marka: mark }; 
-                    }
-                });
-            }
+            [...(r1.data||[]), ...(r2.data||[])].forEach(m => {
+                let mark = temizKarakter(m.marka || '-');
+                let kat = temizKarakter(m.kategori || '-');
+                let k = (m.kod || '').toLocaleUpperCase('tr-TR');
+                if(!malzemeMap[k] || kat === 'KASALAR') malzemeMap[k] = { kategori: kat, marka: mark };
+            });
 
             const { data: userDbData } = await sbClient.from('kullanicilar').select('email');
-            let tumEmailler = [];
-            if (userDbData) {
-                tumEmailler = userDbData.map(u => u.email);
-            }
+            let tumEmailler = userDbData ? userDbData.map(u => u.email) : [];
             
             tumLoglar = logData.map(log => {
-                if(log.kullanici && !tumEmailler.includes(log.kullanici)) {
-                    tumEmailler.push(log.kullanici);
-                }
-
-                let logIciKat = '';
-                let logIciMarka = '';
+                if(log.kullanici && !tumEmailler.includes(log.kullanici)) tumEmailler.push(log.kullanici);
+                let logIciKat = ''; let logIciMarka = '';
                 if (log.islem.startsWith('[CAT:')) {
                     let bitisIndex = log.islem.indexOf('] ');
                     if (bitisIndex !== -1) {
@@ -1346,8 +1308,7 @@
                         logIciMarka = temizKarakter(icerik[1]);
                     }
                 }
-
-                const mapInfo = malzemeMap[temizKarakter(log.kod || '')] || { kategori: '-', marka: '-' };
+                const mapInfo = malzemeMap[(log.kod||'').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' };
                 return { ...log, _mapKategori: mapInfo.kategori, _mapMarka: mapInfo.marka, _logIciKategori: logIciKat, _logIciMarka: logIciMarka };
             });
 
@@ -1360,18 +1321,13 @@
             const logGövdesi = document.getElementById('logGövdesi');
             
             if(logDizisi.length === 0) {
-                if (ozelMesajIsmi) {
-                    logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi bir işlem bulunmamaktadır.</div>`;
-                } else if (ozelKategoriMesaji) {
-                    logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelKategoriMesaji} kategorisinde herhangi bir kayıt bulunmamaktadır.</div>`;
-                } else {
-                    logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>';
-                }
+                if (ozelMesajIsmi) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi bir işlem bulunmamaktadır.</div>`; } 
+                else if (ozelKategoriMesaji) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelKategoriMesaji} kategorisinde herhangi bir kayıt bulunmamaktadır.</div>`; } 
+                else { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>'; }
                 return;
             }
 
             let tumLogKartlari = '';
-
             logDizisi.forEach(log => {
                 const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 const user = kullaniciAdiGetir(log.kullanici);
@@ -1388,7 +1344,6 @@
                         hamIslem = hamIslem.substring(bitisIndex + 2); 
                     }
                 }
-
                 log._gosterilenKategori = kayitKategori;
                 log._gosterilenMarka = kayitMarka;
 
@@ -1397,16 +1352,13 @@
                 if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>");
                 else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
 
-                if (hamIslem.includes(", Kapalı") && !hamIslem.includes("<br>Kapalı")) {
-                    hamIslem = hamIslem.replace(", Kapalı", "<br>Kapalı");
-                }
-
                 hamIslem = hamIslem.replace(/->/g, "→");
                 let islemParcalari = hamIslem.split('<br>');
                 let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`;
                 let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
 
                 const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket';
+                let orijinalLogKod = (log.kod || '').toLocaleUpperCase('tr-TR');
 
                 tumLogKartlari += `
                     <div class="log-kart">
@@ -1419,7 +1371,7 @@
                                 <span class="${etiketClass}">${kayitKategori}</span>
                                 <span class="log-marka">${kayitMarka}</span>
                             </div>
-                            <span class="log-kod-span">${temizKarakter(log.kod)}</span>
+                            <span class="log-kod-span" style="font-size:13.5px;">${orijinalLogKod}</span>
                         </div>
                         <div class="log-islem-detay" style="border-left-color: ${islemRengi}">
                             ${islemBaslik}
@@ -1428,60 +1380,30 @@
                     </div>
                 `;
             });
-
             logGövdesi.innerHTML = tumLogKartlari;
         }
 
         function logIciAra() {
             const kriter = document.getElementById('logAramaKriteri').value;
-            let aranan = '';
-            let arananKullaniciAd = '';
-            let arananKategoriAd = '';
+            let aranan = ''; let arananKullaniciAd = ''; let arananKategoriAd = '';
             
-            if (kriter === 'kullanici') {
-                aranan = document.getElementById('logKullaniciSecici').value;
-                if(aranan) arananKullaniciAd = aranan;
-            } else if (kriter === 'kategori') {
-                aranan = document.getElementById('logKategoriSecici').value.trim();
-                if(aranan) arananKategoriAd = aranan;
-            } else if (kriter === 'marka') {
-                aranan = document.getElementById('logMarkaSecici').value.trim();
-            } else {
-                aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
-            }
+            if (kriter === 'kullanici') { aranan = document.getElementById('logKullaniciSecici').value; if(aranan) arananKullaniciAd = aranan; } 
+            else if (kriter === 'kategori') { aranan = document.getElementById('logKategoriSecici').value.trim(); if(aranan) arananKategoriAd = aranan; } 
+            else if (kriter === 'marka') { aranan = document.getElementById('logMarkaSecici').value.trim(); } 
+            else { aranan = document.getElementById('logAramaKutusu').value.trim().toLocaleUpperCase('tr-TR'); }
             
-            if (!aranan) {
-                loglariCiz(tumLoglar);
-                return;
-            }
+            if (!aranan) { loglariCiz(tumLoglar); return; }
             
             const filtrelenmis = tumLoglar.filter(log => {
                 if (kriter === 'kod') {
-                    const arananTemiz = aranan.replace(/[^A-Z0-9]/g, '');
-                    const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, '');
-                    
-                    let searchIndex = 0;
-                    for (let i = 0; i < temizKod.length; i++) {
-                        let charK = temizKod[i];
-                        let charA = arananTemiz[searchIndex];
-                        if ((charK === 'I' || charK === 'İ') && (charA === 'I' || charA === 'İ')) {
-                            searchIndex++;
-                        } else if (charK === charA) {
-                            searchIndex++;
-                        }
-                        if (searchIndex === arananTemiz.length) return true;
-                    }
-                    return false;
-                } else if (kriter === 'marka') {
-                    return temizKarakter(log._gosterilenMarka || '').includes(aranan);
-                } else if (kriter === 'kategori') {
-                    return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan;
-                } else if (kriter === 'kullanici') {
-                    return temizKarakter(kullaniciAdiGetir(log.kullanici)) === aranan; 
-                }
+                    // Log içinde esnek ve noktalama işaretlerini kapsayan zeki arama
+                    const logKodu = (log.kod||'').toLocaleUpperCase('tr-TR');
+                    return logKodu.includes(aranan);
+                } else if (kriter === 'marka') { return temizKarakter(log._gosterilenMarka || '').includes(aranan); } 
+                else if (kriter === 'kategori') { return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan; } 
+                else if (kriter === 'kullanici') { return temizKarakter(kullaniciAdiGetir(log.kullanici)) === aranan; }
                 return false;
             });
-            
             loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
         }
 
@@ -1492,62 +1414,64 @@
 
             let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?";
             if (!aranan && !kategori && !marka) {
-                uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM LİSTE (yaklaşık 12.000+ kayıt) indirilecektir. Onaylıyor musunuz?";
+                uyariMesaji = "Herhangi bir filtre seçilmediği için İKİ TABLODAKİ (Standart ve Alt Kat) TÜM LİSTE indirilecektir. Onaylıyor musunuz?";
             }
 
             uyariGoster(uyariMesaji, "onay", async () => {
-                
                 const btn = document.querySelector('.btn-excel');
                 btn.disabled = true; 
 
                 let allData = [];
-                let baslangic = 0;
                 const limit = 1000; 
-                let devam = true;
 
-                while (devam) {
-                    let sorgu = sbClient.from('malzemeler').select('*')
-                        .order('kategori', { ascending: true })
-                        .order('marka', { ascending: true })
-                        .order('kod', { ascending: true })
-                        .order('id', { ascending: true }); 
-                    
-                    if (kategori) sorgu = sorgu.ilike('kategori', kategori);
-                    
-                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                    
-                    if (aranan) {
-                        const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, '');
-                        if (arananTemiz.length > 0) {
-                            const safeChars = arananTemiz.split('').map(c => (c === 'I' || c === 'İ') ? '_' : c);
-                            const esnekArama = '%' + safeChars.join('%') + '%';
-                            sorgu = sorgu.ilike('kod', esnekArama);
-                        }
-                    }
-                    
-                    sorgu = sorgu.range(baslangic, baslangic + limit - 1);
-                    const { data, error } = await sorgu;
+                // Arama filtresi kurulumu (Stok getirmedeki ile aynı)
+                const altKategoriler = ['SÜRÜCÜ', 'MOTOR'];
+                let searchMalzemeler = !kategori || !altKategoriler.includes(kategori);
+                let searchAltKat = !kategori || altKategoriler.includes(kategori);
 
-                    if (error) { 
-                        alert("İndirme sırasında hata oluştu: " + error.message); 
-                        btn.disabled = false;
-                        return; 
-                    }
+                let esnekAramaStr = '';
+                if (aranan) {
+                    const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
+                    esnekAramaStr = `%${buyukArama}%`;
+                }
 
-                    if (data && data.length > 0) {
-                        allData = allData.concat(data);
-                        baslangic += limit;
-                        if (data.length < limit) devam = false;
-                    } else {
-                        devam = false;
+                // Malzemeler Tablosunu Çek
+                if (searchMalzemeler) {
+                    let baslangic = 0; let devam = true;
+                    while(devam) {
+                        let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
+                        if (kategori) sorgu = sorgu.eq('kategori', kategori);
+                        if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
+                        if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
+                        
+                        let { data, error } = await sorgu;
+                        if (error) { alert("Hata: " + error.message); btn.disabled = false; return; }
+                        if (data && data.length > 0) {
+                            allData = allData.concat(verileriNormallestir(data, 'malzemeler'));
+                            baslangic += limit; if (data.length < limit) devam = false;
+                        } else { devam = false; }
                     }
                 }
 
-                if (allData.length === 0) { 
-                    btn.disabled = false;
-                    alert("Döküm alınacak kayıt bulunamadı!"); 
-                    return; 
+                // Alt_kat Tablosunu Çek
+                if (searchAltKat) {
+                    let baslangic = 0; let devam = true;
+                    while(devam) {
+                        let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
+                        if (kategori) sorgu = sorgu.eq('kategori', kategori);
+                        if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
+                        if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
+                        
+                        let { data, error } = await sorgu;
+                        if (error) { alert("Hata: " + error.message); btn.disabled = false; return; }
+                        if (data && data.length > 0) {
+                            allData = allData.concat(verileriNormallestir(data, 'alt_kat'));
+                            baslangic += limit; if (data.length < limit) devam = false;
+                        } else { devam = false; }
+                    }
                 }
+
+                if (allData.length === 0) { btn.disabled = false; alert("Döküm alınacak kayıt bulunamadı!"); return; }
 
                 try {
                     const wb = new ExcelJS.Workbook();
@@ -1556,23 +1480,23 @@
                     ws.columns = [
                         { header: 'KATEGORİ', key: 'kategori', width: 16 },
                         { header: 'MARKA', key: 'marka', width: 20 },
-                        { header: 'MALZEME KODU', key: 'kod', width: 40 },
+                        { header: 'MALZEME KODU', key: 'kod', width: 45 },
                         { header: 'İKİNCİ EL', key: 'ikinci_el', width: 16 },
-                        { header: 'AÇIK KUTU', key: 'acik_kutu', width: 16 },
-                        { header: 'KAPALI KUTU', key: 'kapali_kutu', width: 16 },
+                        { header: 'AÇIK KUTU / TESTLİ', key: 'acik_testli', width: 20 },
+                        { header: 'KAPALI KUTU / KUTULU', key: 'kapali_kutulu', width: 22 },
                         { header: 'ARIZALI', key: 'arizali', width: 16 },
                         { header: 'TOPLAM', key: 'toplam', width: 16 },
-                        { header: 'RAF / KASA NO', key: 'raf_no', width: 16 }
+                        { header: 'RAF / KASA NO', key: 'raf_no', width: 18 }
                     ];
 
                     allData.forEach(m => {
                         ws.addRow({
                             kategori: temizKarakter(m.kategori) || '',
                             marka: temizKarakter(m.marka) || '-',
-                            kod: temizKarakter(m.kod) || '',
+                            kod: (m.kod || '').toLocaleUpperCase('tr-TR'),
                             ikinci_el: m.ikinci_el ?? 0,
-                            acik_kutu: m.acik_kutu ?? 0,
-                            kapali_kutu: m.kapali_kutu ?? 0,
+                            acik_testli: m._acik_testli ?? 0,
+                            kapali_kutulu: m._kapali_kutulu ?? 0,
                             arizali: m.arizali ?? 0,
                             toplam: m.toplam ?? 0,
                             raf_no: temizKarakter(m.raf_no) || ''
@@ -1583,12 +1507,7 @@
                         row.eachCell((cell, colNumber) => {
                             cell.font = { name: 'Calibri', size: 10 };
                             cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-                            cell.border = {
-                                top: { style: 'thin', color: { argb: 'FF000000' } },
-                                left: { style: 'thin', color: { argb: 'FF000000' } },
-                                bottom: { style: 'thin', color: { argb: 'FF000000' } },
-                                right: { style: 'thin', color: { argb: 'FF000000' } }
-                            };
+                            cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } };
 
                             if (rowNumber === 1) {
                                 cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
@@ -1604,27 +1523,17 @@
                     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
-                    link.download = "STOK_TEMEL_LISTESI.xlsx";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } catch (err) {
-                    console.error(err);
-                    alert("Excel dosyası oluşturulurken bir hata meydana geldi!");
-                }
-                
+                    link.download = "STOK_TEMEL_HIBER_LISTESI.xlsx";
+                    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                } catch (err) { console.error(err); alert("Excel dosyası oluşturulurken hata meydana geldi!"); }
                 btn.disabled = false; 
             });
         }
 
         function logExcelDokumuAl() {
-            uyariGoster("Şu an ekranda listelenen log kayıtlarını gerçek Excel (.xlsx) formatında indirmek istiyor musunuz?", "onay", async () => {
-                if (!suankiLoglar || suankiLoglar.length === 0) { 
-                    alert("Döküm alınacak kayıt bulunamadı!"); return; 
-                }
-                
-                const btn = document.querySelector('.log-arama-konteyner .btn-excel');
-                btn.disabled = true;
+            uyariGoster("Şu an ekranda listelenen log kayıtlarını Excel formatında indirmek istiyor musunuz?", "onay", async () => {
+                if (!suankiLoglar || suankiLoglar.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; }
+                const btn = document.querySelector('.log-arama-konteyner .btn-excel'); btn.disabled = true;
 
                 try {
                     const wb = new ExcelJS.Workbook();
@@ -1635,14 +1544,13 @@
                         { header: 'KULLANICI', key: 'kullanici', width: 25 },
                         { header: 'KATEGORİ', key: 'kategori', width: 16 },
                         { header: 'MARKA', key: 'marka', width: 20 },
-                        { header: 'MALZEME KODU', key: 'kod', width: 40 },
-                        { header: 'İŞLEM DETAYI', key: 'islem', width: 85 }
+                        { header: 'MALZEME KODU', key: 'kod', width: 45 },
+                        { header: 'İŞLEM DETAYI', key: 'islem', width: 90 }
                     ];
 
                     suankiLoglar.forEach(log => {
                         const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
                         const user = kullaniciAdiGetir(log.kullanici);
-                        
                         let hamIslem = log.islem;
                         if (hamIslem.startsWith('[CAT:')) {
                             let bitisIndex = hamIslem.indexOf('] ');
@@ -1651,49 +1559,28 @@
                         let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/->/g, "→");
 
                         ws.addRow({
-                            tarih: tarih,
-                            kullanici: user,
+                            tarih: tarih, kullanici: user,
                             kategori: log._gosterilenKategori || '-',
                             marka: log._gosterilenMarka || '-',
-                            kod: temizKarakter(log.kod),
+                            kod: (log.kod || '').toLocaleUpperCase('tr-TR'),
                             islem: islemMetni
                         });
                     });
 
                     ws.eachRow((row, rowNumber) => {
                         row.eachCell((cell, colNumber) => {
-                            cell.font = { name: 'Calibri', size: 10 };
-                            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-                            cell.border = {
-                                top: { style: 'thin', color: { argb: 'FF000000' } },
-                                left: { style: 'thin', color: { argb: 'FF000000' } },
-                                bottom: { style: 'thin', color: { argb: 'FF000000' } },
-                                right: { style: 'thin', color: { argb: 'FF000000' } }
-                            };
-
-                            if (rowNumber === 1) {
-                                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
-                                cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } };
-                            } else {
-                                if (colNumber === 2) cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF06B6D4' } };
-                                if (colNumber === 5) cell.font = { name: 'Calibri', size: 10, bold: true };
-                            }
+                            cell.font = { name: 'Calibri', size: 10 }; cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+                            cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } };
+                            if (rowNumber === 1) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } }; } 
+                            else { if (colNumber === 2) cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF06B6D4' } }; if (colNumber === 5) cell.font = { name: 'Calibri', size: 10, bold: true }; }
                         });
                     });
 
                     const buffer = await wb.xlsx.writeBuffer();
                     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                    const link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    link.download = "sistem_loglari.xlsx";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } catch (err) {
-                    console.error(err);
-                    alert("Excel dosyası oluşturulurken hata meydana geldi!");
-                }
-                
+                    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "sistem_loglari.xlsx";
+                    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                } catch (err) { console.error(err); alert("Excel dosyası oluşturulurken hata meydana geldi!"); }
                 btn.disabled = false;
             });
         }
@@ -1703,21 +1590,28 @@
             aktifDuzenlenenMalzeme = malzeme;
             
             document.getElementById('duzenlenenId').value = malzeme.id;
-            document.getElementById('modalBaslik').innerText = `${temizKarakter(malzeme.kod)} GÜNCELLE`;
+            document.getElementById('duzenlenenTablo').value = malzeme._tablo;
+            
+            const orjinalKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
+            const gosterilecekBaslik = orjinalKod.length > 20 ? orjinalKod.substring(0, 20) + '...' : orjinalKod;
+            document.getElementById('modalBaslik').innerText = `${gosterilecekBaslik} GÜNCELLE`;
             
             document.getElementById('grupKategori').style.display = 'block';
             document.getElementById('grupMarka').style.display = 'block';
             document.getElementById('grupKod').style.display = 'block';
             
             document.getElementById('inputKategori').value = temizKarakter(malzeme.kategori || '');
+            
+            // GÜNCELLEMEDE KATEGORİ DEĞİŞTİRME KİLİDİ (Tablo karmaşasını önlemek için)
+            document.getElementById('wrapper-inputKategori').classList.add('disabled');
+            
             document.getElementById('inputMarka').value = temizKarakter(malzeme.marka || '');
             kategoriDegisti();
             
-            document.getElementById('inputKod').value = temizKarakter(malzeme.kod); 
-
+            document.getElementById('inputKod').value = orjinalKod; 
             document.getElementById('inputIkinciEl').value = malzeme.ikinci_el || 0;
-            document.getElementById('inputAcikKutu').value = malzeme.acik_kutu || 0;
-            document.getElementById('inputKapaliKutu').value = malzeme.kapali_kutu || 0;
+            document.getElementById('inputAcikKutu').value = malzeme._acik_testli || 0;
+            document.getElementById('inputKapaliKutu').value = malzeme._kapali_kutulu || 0;
             document.getElementById('inputArizali').value = malzeme.arizali || 0;
             document.getElementById('inputRafNo').value = temizKarakter(malzeme.raf_no || '');
             
@@ -1735,6 +1629,10 @@
             document.getElementById('grupKod').style.display = 'block';
 
             document.getElementById('inputKategori').value = '';
+            
+            // YENİ KAYITTA KATEGORİ SEÇİMİ SERBEST
+            document.getElementById('wrapper-inputKategori').classList.remove('disabled');
+            
             kategoriDegisti(); 
 
             document.getElementById('inputMarka').value = '';
