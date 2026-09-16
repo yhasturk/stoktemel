@@ -4,21 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
+    <!-- GÖMÜLÜ SVG LOGO -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%2306b6d4' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
+    
+    <!-- YENİ MODERN BAŞLIK FONTU: MONTSERRAT -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    
+    <!-- SUPABASE VE GERÇEK EXCEL (.XLSX) KÜTÜPHANESİ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
     <style>
-        :root { --bg-dark: #0f172a; --bg-card: #1e293b; --border-color: #334155; --text-main: #f8fafc; --text-muted: #94a3b8; --accent-blue: #3b82f6; --accent-cyan: #06b6d4; --accent-green: #10b981; --accent-orange: #f59e0b; --accent-red: #ef4444; --accent-purple: #8b5cf6; --accent-yellow: #fbbf24; }
+        /* MODERN VE PREMIUM CSS BAŞLANGICI */
+        :root {
+            --bg-dark: #0f172a;       /* Slate 900 */
+            --bg-card: #1e293b;       /* Slate 800 */
+            --border-color: #334155;  /* Slate 700 */
+            --text-main: #f8fafc;     /* Slate 50 */
+            --text-muted: #94a3b8;    /* Slate 400 */
+            --accent-blue: #3b82f6;   /* Blue 500 */
+            --accent-cyan: #06b6d4;   /* Cyan 500 */
+            --accent-green: #10b981;  /* Emerald 500 */
+            --accent-orange: #f59e0b; /* Amber 500 */
+            --accent-red: #ef4444;    /* Red 500 */
+            --accent-purple: #8b5cf6; /* Violet 500 */
+            --accent-yellow: #fbbf24; /* Şık Kehribar Sarısı */
+        }
+
         * { box-sizing: border-box; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0; margin: 0; overflow-x: hidden; width: 100%; -webkit-font-smoothing: antialiased; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        .container { max-width: 950px; margin: 0 auto; padding: 0 20px; width: 100%; }
         
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* GİRİŞ VE YETKİ EKRANLARI */
         #authEkrani, #SifreSifirlamaEkrani { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: var(--bg-dark); width: 100%; }
         .auth-kutu { background-color: var(--bg-card); padding: 40px; border-radius: 16px; border: 1px solid var(--border-color); width: 100%; max-width: 360px; text-align: center; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); margin: 0 auto; }
         .auth-kutu h2 { color: var(--accent-cyan); margin-top: 0; margin-bottom: 25px; font-weight: 700; letter-spacing: -0.5px;}
@@ -33,23 +71,77 @@
 
         #anaUygulama { display: none; width: 100%; }
 
-        .sabit-ust-alan { position: sticky; top: 0; z-index: 1000; background-color: var(--bg-dark); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5); width: 100%; }
+        /* SIFIR ZIPLAMA YAPAN SABİT ÜST BLOK */
+        .sabit-ust-alan {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5);
+            width: 100%;
+        }
+        
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
-        .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 1px; font-weight: 900; width: 100%; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(59, 130, 246, 0.25); }
+        .ana-baslik {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            margin: 0 auto 15px auto;
+            font-size: 26px;
+            letter-spacing: 1px;
+            font-weight: 900;
+            width: 100%;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+        }
 
+        /* Arama ve Kontrol Paneli */
         .header { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%;}
-        .header input, .header select { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); height: 42px; padding: 0 14px; border-radius: 10px; font-size: 14px; outline: none; text-transform: uppercase; width: 100%; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .header input, .header select { 
+            background-color: var(--bg-card); 
+            color: var(--text-main); 
+            border: 1px solid var(--border-color); 
+            height: 42px; 
+            padding: 0 14px; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            outline: none; 
+            text-transform: uppercase;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
         .header select { font-size: 13px; cursor: pointer; }
-        .header input::placeholder { text-transform: none; color: #64748b; }
+        .header input::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         .header input:focus, .header select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         
         #aramaKutusu { flex: 2; min-width: 150px; }
         #kategoriFiltre { flex: 1; min-width: 120px; }
-        #markaFiltre { flex: 1; min-width: 120px; }
+        #markaFiltre { flex: 1; min-width: 120px; font-weight: 600; cursor: pointer;}
         
+        /* ŞIK GRADIENT BUTONLAR */
         .buton-grup { display: flex; gap: 10px; flex: 2; min-width: 320px;}
-        .buton-grup button { flex: 1; height: 42px; padding: 0 6px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; color: #fff; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s; }
+        .buton-grup button { 
+            flex: 1; 
+            height: 42px; 
+            padding: 0 6px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            white-space: nowrap;
+            color: #fff;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        }
         @media (hover: hover) { .buton-grup button:hover { transform: translateY(-2px); } }
         
         .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
@@ -59,13 +151,45 @@
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
 
-        .stok-satir { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px 20px; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 25px; width: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); }
-        @media (hover: hover) and (min-width: 651px) { .stok-satir:hover { transform: translateY(-3px); border-color: #475569; box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.5); } }
+        /* KART TASARIMI */
+        .stok-satir { 
+            background-color: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 14px; 
+            padding: 16px 20px; 
+            display: grid; 
+            grid-template-columns: 1fr auto auto; 
+            align-items: center; 
+            gap: 25px; 
+            width: 100%; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+        @media (hover: hover) and (min-width: 651px) {
+            .stok-satir:hover { 
+                transform: translateY(-3px); 
+                border-color: #475569;
+                box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.5); 
+            }
+        }
         
-        .kasa-satir { background: linear-gradient(145deg, #2a1508 0%, #1a0d05 100%) !important; border: 1px solid #c2410c !important; box-shadow: 0 4px 15px rgba(194, 65, 12, 0.15) !important; }
-        @media (hover: hover) and (min-width: 651px) { .kasa-satir:hover { border-color: #ea580c !important; box-shadow: 0 12px 25px rgba(234, 88, 12, 0.25) !important; } }
+        .kasa-satir { 
+            background: linear-gradient(145deg, #2a1508 0%, #1a0d05 100%) !important; 
+            border: 1px solid #c2410c !important; 
+            box-shadow: 0 4px 15px rgba(194, 65, 12, 0.15) !important; 
+        }
+        @media (hover: hover) and (min-width: 651px) {
+            .kasa-satir:hover { 
+                border-color: #ea580c !important; 
+                box-shadow: 0 12px 25px rgba(234, 88, 12, 0.25) !important; 
+            }
+        }
         
-        @keyframes pulse-etiket { 0% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; } 50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(234, 88, 12, 0.85); opacity: 1; } 100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; } }
+        @keyframes pulse-etiket {
+            0% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
+            50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(234, 88, 12, 0.85); opacity: 1; }
+            100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
+        }
         
         .stok-bilgi { display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; }
         .stok-ust-satir { display: flex; justify-content: center; text-align: center; width: 100%; }
@@ -74,12 +198,22 @@
         .alt-orta { text-align: center; }
         .alt-sag { text-align: right; }
         
-        .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px; }
+        .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket {
+            display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11.5px;
+            font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px;
+        }
+
         .kategori-etiket, .log-kategori-etiket { background-color: rgba(6, 182, 212, 0.08); color: var(--accent-cyan); }
         .marka-etiket, .log-marka { background-color: var(--bg-dark); color: var(--accent-yellow); }
         .raf-no-vurgu { background-color: rgba(239, 68, 68, 0.08); color: var(--accent-red); }
         .kasa-no-vurgu { background-color: rgba(245, 158, 11, 0.08) !important; color: var(--accent-orange) !important; border: 1px solid var(--border-color) !important; }
-        .kasa-etiket { display: inline-block; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; font-size: 11.5px !important; font-weight: 600; letter-spacing: 1px; border: 1px solid var(--border-color) !important; animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3); }
+        
+        .kasa-etiket { 
+            display: inline-block; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; 
+            font-size: 11.5px !important; font-weight: 600; letter-spacing: 1px; border: 1px solid var(--border-color) !important;
+            animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+        }
         
         .malzeme-kod { font-size: 17px; font-weight: 500; color: #fff; text-transform: uppercase; letter-spacing: 0; word-break: break-all; }
         .malzeme-detay { font-size: 13.5px; color: var(--text-muted); text-transform: uppercase; }
@@ -95,10 +229,11 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* MODALS */
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
         .modal-content { background-color: var(--bg-card); padding: 30px; border-radius: 16px; width: 90%; max-width: 440px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); margin: 0 auto; }
         .modal-content h3 { margin-top: 0; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px; font-size: 18px; text-align: center; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
+
         #CustomModal .modal-content { max-width: 380px; text-align: center; }
         #CustomModalMesaj { font-size: 15px; line-height: 1.6; color: var(--text-main); margin-bottom: 30px; }
         
@@ -106,10 +241,13 @@
         .form-grid-tam { grid-column: span 2; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; transition: color 0.3s; }
         .label-kasa-vurgu { color: var(--accent-orange) !important; font-weight: 800 !important; }
+        
         .modal-content input[type="text"], .modal-content select { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; text-transform: uppercase; }
-        .modal-content input[type="text"]::placeholder { text-transform: none; color: #64748b; }
+        .modal-content input[type="text"]::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         .modal-content input[type="text"]:focus, .modal-content select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
-        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
         .sayi-input-grup { display: flex; align-items: center; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; transition: all 0.2s ease; }
@@ -117,53 +255,76 @@
         .sayi-input-grup button { background-color: var(--bg-card); color: var(--text-main); border: none; padding: 12px 16px; font-size: 18px; cursor: pointer; transition: background 0.2s; font-weight: bold; }
         .sayi-input-grup button:hover { background-color: #334155; color: #fff; }
         .sayi-input-grup input { flex: 1; width: 100%; border: none; background: transparent; text-align: center; font-size: 16px; font-weight: 800; color: #fff; padding: 12px 0; outline: none; }
+
         .modal-buttons { display: flex; gap: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); justify-content: center; }
+        
         .btn-kaydet { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: 700; font-size:15px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
         .btn-kaydet:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); }
         .btn-kaydet:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
+        
         .btn-iptal { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; border: none; padding: 14px; border-radius: 10px; cursor: pointer; flex: 1; font-weight: 700; font-size:15px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); transition: transform 0.2s;}
         .btn-iptal:hover { transform: translateY(-2px); }
 
+        /* YENİ ŞIK LOG LİSTESİ */
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
+        
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
+        
         #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
         #logAramaKriteri { margin-bottom: 12px; cursor: pointer; font-weight: 600; }
         #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { text-transform: uppercase; flex: 1; margin-bottom: 0;}
-        #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { cursor: pointer; font-weight: 600; }
+        #logKullaniciSecici, #logKategoriSecici { cursor: pointer; font-weight: 600; }
         #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus, #logKategoriSecici:focus, #logMarkaSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
-        #logAramaKutusu::placeholder { text-transform: none; color: #64748b; }
+        #logAramaKutusu::placeholder, #logMarkaSecici::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
+
         .log-liste-alani { flex: 1; overflow-y: auto; padding-right: 8px; }
+        
+        /* LOG KARTLARI */
         .log-kart { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
         .log-kart-ust { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 12px;}
         .log-tarih { font-size: 12px; color: var(--text-muted); font-weight: 500;}
         .log-kullanici { font-size: 12px; font-weight: 700; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.08); padding: 4px 10px; border-radius: 12px; }
+        
         .log-kod-alani { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .log-sol-bilgi { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: #fff; letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
+        
         .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: #cbd5e1; padding: 4px 0 4px 12px; border-left: 4px solid; }
 
+        /* MOBİL UYARLAMA KISMI - SADECE MOBİL (MAX 650PX) */
         @media screen and (max-width: 650px) {
             .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
             .buton-grup { grid-column: 1 / 3; order: -1; width: 100%; flex-wrap: wrap;}
+            
             #aramaKutusu { grid-column: 1 / 3; width: 100%; height: 42px !important; font-size: 15px !important; text-align: left; padding: 0 14px !important; border-radius: 10px;}
+            
             #kategoriFiltre, #markaFiltre { height: 34px !important; width: 100%; font-size: 13px !important; font-weight: 700; text-align: center; border-radius: 8px; padding: 0 8px !important; }
+            
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
+            
             .buton-grup button { height: 28px !important; font-size: 11px !important; padding: 0 4px !important; border-radius: 6px !important;}
+            
             .ana-baslik { font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .baslik-ayrac, .baslik-alt { display: none !important; }
+            
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
             .malzeme-kod { font-size: 15px; }
             .log-kod-span { font-size: 14px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
+
             .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 4px; }
             .sayi-kutusu { font-size: 8.5px; padding: 6px 0; text-transform: none !important; font-weight: 700; white-space: nowrap; letter-spacing: -0.2px; } 
             .sayi-deger, .sayi-toplam, .sayi-arizali { font-size: 14px; margin-top: 4px; }
+            
             .btn-duzenle, .btn-pasif { width: 100%; padding: 14px;}
             .modal-content { padding: 22px 18px; width: 92%; }
+            
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
+            
             .log-arama-konteyner { flex-direction: row; gap: 8px; }
             #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici, #logKategoriSecici, #logMarkaSecici { font-size: 14px; padding: 10px; }
             .log-arama-konteyner .btn-excel { padding: 0 12px !important; font-size: 12px !important; }
+
             .log-kart { padding: 14px; }
             .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -200,6 +361,9 @@
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
+                
+                <!-- BÜTÜN UYGULAMAYA HİZMET EDEN GLOBAL MARKA HAVUZU -->
+                <datalist id="markaListesi"></datalist>
 
                 <div class="header">
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="this.value = temizKarakter(this.value); stokGetir()">
@@ -216,9 +380,8 @@
                         <option value="MOTOR">MOTOR</option>
                     </select>
 
-                    <select id="markaFiltre" onchange="stokGetir(true)">
-                        <option value="">YÜKLENİYOR...</option>
-                    </select>
+                    <!-- AKILLI YAZILABİLİR LİSTE: ANA EKRAN -->
+                    <input type="text" id="markaFiltre" list="markaListesi" autocomplete="off" placeholder="YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); stokGetir()" onchange="stokGetir(true)">
                     
                     <div class="buton-grup">
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+ Yeni Ekle</button>
@@ -271,7 +434,8 @@
                     <option value="SÜRÜCÜ">SÜRÜCÜ</option>
                     <option value="MOTOR">MOTOR</option>
                 </select>
-                <select id="logMarkaSecici" style="display:none;" onchange="logIciAra()"></select>
+                <!-- AKILLI YAZILABİLİR LİSTE: LOG EKRANI -->
+                <input type="text" id="logMarkaSecici" list="markaListesi" style="display:none;" autocomplete="off" placeholder="MARKA ARA VEYA SEÇ..." oninput="this.value = temizKarakter(this.value); logIciAra()" onchange="logIciAra()">
                 <button class="btn-excel" onclick="logExcelDokumuAl()">Excel'e Aktar</button>
             </div>
             
@@ -286,7 +450,6 @@
         <div class="modal-content">
             <h3 id="modalBaslik">Miktar Güncelle</h3>
             <input type="hidden" id="duzenlenenId">
-            <datalist id="markaListesi"></datalist>
 
             <div class="form-grid">
                 <div class="form-group" id="grupKategori">
@@ -305,6 +468,7 @@
                 </div>
                 <div class="form-group" id="grupMarka">
                     <label>Marka:</label>
+                    <!-- AKILLI YAZILABİLİR LİSTE: YENİ KAYIT MODALI -->
                     <input type="text" id="inputMarka" list="markaListesi" autocomplete="off" placeholder="Örn: SIEMENS" oninput="this.value = temizKarakter(this.value)">
                 </div>
                 <div class="form-group form-grid-tam" id="grupKod">
@@ -370,7 +534,6 @@
         
         let tumLoglar = []; 
         let suankiLoglar = []; 
-        let sistemMarkalari = [];
         let sistemKullanicilari = []; 
         let mevcutEkranVerileri = []; 
         
@@ -607,11 +770,7 @@
                     
                     const markalar = [...tumMarkalarSet].sort();
                     
-                    const markaFiltre = document.getElementById('markaFiltre');
-                    const seciliMarka = markaFiltre.value; 
-                    markaFiltre.innerHTML = '<option value="">TÜM MARKALAR</option>' + markalar.map(m => `<option value="${m}">${m}</option>`).join('');
-                    markaFiltre.value = seciliMarka;
-
+                    // GLOBAL LİSTEYE KAYIT (Bütün menüleri otomatik besler)
                     const markaListesiData = document.getElementById('markaListesi');
                     if (markaListesiData) {
                         markaListesiData.innerHTML = markalar.map(m => `<option value="${m}">`).join('');
@@ -619,12 +778,12 @@
                     
                     if (data.length === limit) {
                         setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); 
+                    } else {
+                        // Tarama Bitti
+                        document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
                     }
                 } else {
-                    const markaFiltre = document.getElementById('markaFiltre');
-                    if (markaFiltre.options.length <= 1) {
-                        markaFiltre.innerHTML = '<option value="">TÜM MARKALAR</option>';
-                    }
+                    document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
                 }
             });
         }
@@ -656,7 +815,9 @@
                 let sorgu = sbClient.from('malzemeler').select('*').order('marka', { ascending: true }).order('id', { ascending: true });
                 
                 if (kategori) sorgu = sorgu.ilike('kategori', kategori);
-                if (marka) sorgu = sorgu.ilike('marka', marka);
+                
+                // MARKA İÇİN YARIM YAZIM DESTEĞİ (% içerir %)
+                if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                 
                 if (aranan) {
                     const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, ''); 
@@ -965,17 +1126,12 @@
             const { data: malzemeData } = await sbClient.from('malzemeler').select('kod, kategori, marka');
             
             const malzemeMap = {};
-            let geciciMarkalar = new Set();
-            let geciciKategoriler = new Set();
 
             if (malzemeData) {
                 malzemeData.filter(m => m.kategori !== 'KASALAR').forEach(m => {
                     let mark = temizKarakter(m.marka || '-');
                     let kat = temizKarakter(m.kategori || '-');
                     malzemeMap[temizKarakter(m.kod || '')] = { kategori: kat, marka: mark };
-                    
-                    if(mark !== '-') geciciMarkalar.add(mark);
-                    if(kat !== '-') geciciKategoriler.add(kat);
                 });
                 
                 malzemeData.filter(m => m.kategori === 'KASALAR').forEach(m => {
@@ -984,8 +1140,6 @@
                     if (!malzemeMap[k]) { 
                         malzemeMap[k] = { kategori: 'KASALAR', marka: mark }; 
                     }
-                    if(mark !== '-') geciciMarkalar.add(mark);
-                    geciciKategoriler.add('KASALAR');
                 });
             }
 
@@ -1008,21 +1162,12 @@
                         let icerik = log.islem.substring(5, bitisIndex).split('|MRK:');
                         logIciKat = temizKarakter(icerik[0]);
                         logIciMarka = temizKarakter(icerik[1]);
-                        
-                        if(logIciKat && logIciKat !== '-') geciciKategoriler.add(logIciKat);
-                        if(logIciMarka && logIciMarka !== '-') geciciMarkalar.add(logIciMarka);
                     }
                 }
 
                 const mapInfo = malzemeMap[temizKarakter(log.kod || '')] || { kategori: '-', marka: '-' };
                 return { ...log, _mapKategori: mapInfo.kategori, _mapMarka: mapInfo.marka, _logIciKategori: logIciKat, _logIciMarka: logIciMarka };
             });
-
-            sistemMarkalari = [...geciciMarkalar].sort();
-            sistemKategorileri = [...geciciKategoriler].sort();
-            
-            const markaSelect = document.getElementById('logMarkaSecici');
-            markaSelect.innerHTML = '<option value="">TÜM MARKALAR</option>' + sistemMarkalari.map(m => `<option value="${m}">${m}</option>`).join('');
 
             logAramaOnerileriniGuncelle();
             loglariCiz(tumLoglar);
@@ -1118,7 +1263,7 @@
                 aranan = document.getElementById('logKategoriSecici').value;
                 if(aranan) arananKategoriAd = aranan;
             } else if (kriter === 'marka') {
-                aranan = document.getElementById('logMarkaSecici').value;
+                aranan = document.getElementById('logMarkaSecici').value.trim();
             } else {
                 aranan = temizKarakter(document.getElementById('logAramaKutusu').value.trim());
             }
@@ -1146,7 +1291,8 @@
                     }
                     return false;
                 } else if (kriter === 'marka') {
-                    return temizKarakter(log._gosterilenMarka || '') === aranan;
+                    // YARIM YAZIM DESTEĞİ (% içerir %)
+                    return temizKarakter(log._gosterilenMarka || '').includes(aranan);
                 } else if (kriter === 'kategori') {
                     return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan;
                 } else if (kriter === 'kullanici') {
@@ -1186,7 +1332,9 @@
                         .order('id', { ascending: true }); 
                     
                     if (kategori) sorgu = sorgu.ilike('kategori', kategori);
-                    if (marka) sorgu = sorgu.ilike('marka', marka);
+                    
+                    // EXCEL İNDİRMESİ İÇİN DE YARIM YAZIM EŞLEŞMESİ
+                    if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                     
                     if (aranan) {
                         const arananTemiz = temizKarakter(aranan).replace(/[^A-Z0-9]/g, '');
