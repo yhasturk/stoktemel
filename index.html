@@ -762,10 +762,15 @@
 
         function markalariArkaPlandaCek(baslangic = 0) {
             const limit = 1000;
-            sbClient.from('malzemeler').select('marka').range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
+            // V8 MOTORU: '.order('id')' EKLENDİ! 
+            // Bu sayede veritabanı 1000'lik paketleri çekerken sırayı şaşırmaz ve Z harfine kadar tüm listeyi eksiksiz tarar.
+            sbClient.from('malzemeler').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1).then(({ data, error }) => {
                 if (data && data.length > 0) {
                     data.forEach(item => {
-                        if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim());
+                        if (item.marka) {
+                            let m = temizKarakter(item.marka).trim();
+                            if (m !== '' && m !== '-') tumMarkalarSet.add(m); // Boşluk ve tireleri havuza almaz
+                        }
                     });
                     
                     const markalar = [...tumMarkalarSet].sort();
@@ -779,11 +784,13 @@
                     if (data.length === limit) {
                         setTimeout(() => markalariArkaPlandaCek(baslangic + limit), 50); 
                     } else {
-                        // Tarama Bitti
+                        // Tarama Bittiğinde Yazılar Güncellenir
                         document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
+                        document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
                     }
                 } else {
                     document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
+                    document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
                 }
             });
         }
