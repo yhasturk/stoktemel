@@ -313,6 +313,7 @@
         #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
+        /* LOG BÖLÜMÜNDEKİ YENİ EXCEL BUTONU */
         .log-arama-konteyner .btn-excel {
             height: 42px;
             padding: 0 16px;
@@ -577,7 +578,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <!-- BURADAKI HAYATİ EKSİKLİKLER (ID'LER) GİDERİLDİ -->
                     <label id="lblAcikKutu">Açık Kutu Adet:</label>
                     <div class="sayi-input-grup">
                         <button type="button" onclick="sayiDegistir('inputAcikKutu', -1)">-</button>
@@ -586,7 +586,6 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <!-- BURADAKI HAYATİ EKSİKLİKLER (ID'LER) GİDERİLDİ -->
                     <label id="lblKapaliKutu">Kapalı Kutu Adet:</label>
                     <div class="sayi-input-grup">
                         <button type="button" onclick="sayiDegistir('inputKapaliKutu', -1)">-</button>
@@ -668,7 +667,6 @@
             input.value = val;
         }
 
-        // HİBRİT YAPI: Kategori değiştiğinde form şekil değiştirir
         function kategoriDegisti() {
             const secilen = document.getElementById('inputKategori').value;
             const rafLabel = document.getElementById('labelRafKasa');
@@ -676,7 +674,6 @@
             const lblKapali = document.getElementById('lblKapaliKutu');
             const inputRaf = document.getElementById('inputRafNo');
 
-            // Eğer herhangi bir sebeple elementler bulunamazsa fonksiyon çökmesin
             if (!lblAcik || !lblKapali || !rafLabel || !inputRaf) return;
 
             if (secilen === 'KASALAR') {
@@ -686,7 +683,7 @@
                 lblKapali.innerText = 'Kapalı Kutu Adet:';
                 lblAcik.className = '';
                 lblKapali.className = '';
-                inputRaf.placeholder = "Örn: 41";
+                inputRaf.placeholder = "Örn: K1";
             } else if (secilen === 'SÜRÜCÜ' || secilen === 'MOTOR') {
                 rafLabel.innerText = 'Raf No:';
                 rafLabel.className = '';
@@ -914,9 +911,7 @@
             }
         }
 
-        // HİBRİT YAPI: Her iki tablodan da markaları çeker
         async function markalariArkaPlandaCek() {
-            // Malzemeler tablosu taraması
             let baslangic = 0; const limit = 1000; let devam = true;
             while (devam) {
                 const { data } = await sbClient.from('malzemeler').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
@@ -925,7 +920,6 @@
                     baslangic += limit; if (data.length < limit) devam = false;
                 } else { devam = false; }
             }
-            // Alt_kat tablosu taraması
             baslangic = 0; devam = true;
             while (devam) {
                 const { data } = await sbClient.from('alt_kat').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
@@ -948,7 +942,6 @@
                 </div>`;
         }
 
-        // HİBRİT YAPI: Her iki tablodan veri standardizasyonu
         function verileriNormallestir(veriDizisi, tabloAdi) {
             return veriDizisi.map(v => {
                 let isAlt = (tabloAdi === 'alt_kat');
@@ -973,7 +966,6 @@
                 if (!arananInput && !kategori && !marka) { baslat(); return; }
                 document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
 
-                // Hangi tablo aranacak kararı
                 const altKategoriler = ['SÜRÜCÜ', 'MOTOR'];
                 let searchMalzemeler = true;
                 let searchAltKat = true;
@@ -986,7 +978,6 @@
                 let p1 = Promise.resolve({ data: [] });
                 let p2 = Promise.resolve({ data: [] });
 
-                // Joker destekli özel karakter araması
                 let esnekAramaStr = '';
                 if (arananInput) {
                     const buyukArama = arananInput.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
@@ -995,7 +986,8 @@
 
                 if (searchMalzemeler) {
                     let sorgu1 = sbClient.from('malzemeler').select('*').limit(100);
-                    if (kategori) sorgu1 = sorgu1.eq('kategori', kategori);
+                    // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
+                    if (kategori) sorgu1 = sorgu1.ilike('kategori', kategori);
                     if (marka) sorgu1 = sorgu1.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu1 = sorgu1.ilike('kod', esnekAramaStr);
                     p1 = sorgu1;
@@ -1003,7 +995,8 @@
 
                 if (searchAltKat) {
                     let sorgu2 = sbClient.from('alt_kat').select('*').limit(100);
-                    if (kategori) sorgu2 = sorgu2.eq('kategori', kategori);
+                    // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
+                    if (kategori) sorgu2 = sorgu2.ilike('kategori', kategori);
                     if (marka) sorgu2 = sorgu2.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu2 = sorgu2.ilike('kod', esnekAramaStr);
                     p2 = sorgu2;
@@ -1017,16 +1010,13 @@
                 let veri2 = verileriNormallestir(res2.data || [], 'alt_kat');
                 
                 let birlesikVeri = [...veri1, ...veri2];
-                // Sıralama (Önce Marka, sonra Kategori)
                 birlesikVeri.sort((a, b) => {
                     let m1 = (a.marka || '').localeCompare(b.marka || '');
                     if (m1 !== 0) return m1;
                     return (a.kategori || '').localeCompare(b.kategori || '');
                 });
 
-                // Toplam limit koruması
                 if (birlesikVeri.length > 100) birlesikVeri = birlesikVeri.slice(0, 100);
-                
                 ekranaYazdir(birlesikVeri);
             }, beklemeSuresi); 
         }
@@ -1056,7 +1046,6 @@
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
                 const orjinalKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
                 
-                // Çok Uzun Kodları Ekranda Estetik Kısaltma (Orjinali title'da durur)
                 let gosterilenKod = orjinalKod;
                 if (orjinalKod.length > 25) { gosterilenKod = orjinalKod.substring(0, 25) + '...'; }
 
@@ -1100,9 +1089,7 @@
 
         function guncelleModalAcById(id, tablo) {
             const malzeme = mevcutEkranVerileri.find(m => m.id == id && m._tablo === tablo);
-            if (malzeme) {
-                guncelleModalAc(malzeme);
-            }
+            if (malzeme) { guncelleModalAc(malzeme); }
         }
 
         async function veriKaydetPreCheck() {
@@ -1158,7 +1145,6 @@
                     return;
                 }
             }
-            
             gercekVeriKaydet(kategori, marka, kod, raf_no, hedefTablo);
         }
 
@@ -1172,7 +1158,7 @@
             const ui_acik = parseInt(document.getElementById('inputAcikKutu').value) || 0;
             const ui_kapali = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
             const arizali = parseInt(document.getElementById('inputArizali').value) || 0;
-            const toplam = ikinci_el + ui_acik + ui_kapali; // Arızalı toplama dahil değil
+            const toplam = ikinci_el + ui_acik + ui_kapali;
 
             let payload = { kategori, marka, kod, ikinci_el, arizali, toplam, raf_no };
             if (hedefTablo === 'alt_kat') {
@@ -1190,7 +1176,6 @@
             if (islemTuru === 'guncelle') {
                 const id = document.getElementById('duzenlenenId').value;
                 const kaynakTablo = document.getElementById('duzenlenenTablo').value;
-                
                 const { error } = await sbClient.from(kaynakTablo).update(payload).eq('id', id);
 
                 if (!error) {
@@ -1285,7 +1270,6 @@
             const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(500);
             if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px;">Kayıtlar alınamadı!</div>'; return; }
 
-            // Log detayları için her iki tabloyu hızlıca referans alma
             const p1 = sbClient.from('malzemeler').select('kod, kategori, marka');
             const p2 = sbClient.from('alt_kat').select('kod, kategori, marka');
             const [r1, r2] = await Promise.all([p1, p2]);
@@ -1400,9 +1384,21 @@
             
             const filtrelenmis = tumLoglar.filter(log => {
                 if (kriter === 'kod') {
-                    // Log içinde esnek ve noktalama işaretlerini kapsayan zeki arama
-                    const logKodu = (log.kod||'').toLocaleUpperCase('tr-TR');
-                    return logKodu.includes(aranan);
+                    const arananTemiz = aranan.replace(/[^A-Z0-9]/g, '');
+                    const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, '');
+                    
+                    let searchIndex = 0;
+                    for (let i = 0; i < temizKod.length; i++) {
+                        let charK = temizKod[i];
+                        let charA = arananTemiz[searchIndex];
+                        if ((charK === 'I' || charK === 'İ') && (charA === 'I' || charA === 'İ')) {
+                            searchIndex++;
+                        } else if (charK === charA) {
+                            searchIndex++;
+                        }
+                        if (searchIndex === arananTemiz.length) return true;
+                    }
+                    return false;
                 } else if (kriter === 'marka') { return temizKarakter(log._gosterilenMarka || '').includes(aranan); } 
                 else if (kriter === 'kategori') { return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan; } 
                 else if (kriter === 'kullanici') { return temizKarakter(kullaniciAdiGetir(log.kullanici)) === aranan; }
@@ -1418,7 +1414,8 @@
 
             let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?";
             if (!aranan && !kategori && !marka) {
-                uyariMesaji = "Herhangi bir filtre seçilmediği için İKİ TABLODAKİ (Standart ve Alt Kat) TÜM LİSTE indirilecektir. Onaylıyor musunuz?";
+                // SADELEŞTİRİLMİŞ YENİ UYARI MESAJI
+                uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?";
             }
 
             uyariGoster(uyariMesaji, "onay", async () => {
@@ -1428,7 +1425,6 @@
                 let allData = [];
                 const limit = 1000; 
 
-                // Arama filtresi kurulumu (Stok getirmedeki ile aynı)
                 const altKategoriler = ['SÜRÜCÜ', 'MOTOR'];
                 let searchMalzemeler = !kategori || !altKategoriler.includes(kategori);
                 let searchAltKat = !kategori || altKategoriler.includes(kategori);
@@ -1444,7 +1440,8 @@
                     let baslangic = 0; let devam = true;
                     while(devam) {
                         let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                        if (kategori) sorgu = sorgu.eq('kategori', kategori);
+                        // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
+                        if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                         if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
                         
@@ -1462,7 +1459,8 @@
                     let baslangic = 0; let devam = true;
                     while(devam) {
                         let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                        if (kategori) sorgu = sorgu.eq('kategori', kategori);
+                        // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
+                        if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                         if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
                         
