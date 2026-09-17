@@ -511,7 +511,6 @@
         <div class="modal-content">
             <h3 style="color:var(--accent-purple); margin-top:0; margin-bottom: 18px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
             
-            <!-- YENİ: KARANLIK TEMA ARAMA KRİTERİ SEÇİCİ -->
             <div class="custom-select-wrapper" id="wrapper-logAramaKriteri">
                 <input type="text" id="logAramaKriteri" class="custom-select-input" autocomplete="off" value="Malzeme Koduna Göre" readonly onclick="gosterCustom('logAramaKriteri')">
                 <input type="hidden" id="logAramaKriteriDeğer" value="kod">
@@ -524,18 +523,13 @@
             </div>
             
             <div class="log-arama-konteyner">
-                <!-- Kod Araması (Klasik) -->
                 <input type="text" id="logAramaKutusu" placeholder="Arama yap..." autocomplete="off" oninput="logIciAra()">
                 
-                <!-- YENİ: KARANLIK TEMA KULLANICI SEÇİCİ (Readonly) -->
                 <div class="custom-select-wrapper" id="wrapper-logKullaniciSecici" style="display:none; flex: 1;">
                     <input type="text" id="logKullaniciSecici" class="custom-select-input" autocomplete="off" placeholder="BİR KULLANICI SEÇİN..." readonly onclick="gosterCustom('logKullaniciSecici')">
-                    <div class="custom-select-options" id="options-logKullaniciSecici">
-                        <!-- JS Tarafından Dinamik Doldurulacak -->
-                    </div>
+                    <div class="custom-select-options" id="options-logKullaniciSecici"></div>
                 </div>
                 
-                <!-- Kategori Seçici (Readonly) -->
                 <div class="custom-select-wrapper" id="wrapper-logKategoriSecici" style="display:none; flex: 1;">
                     <input type="text" id="logKategoriSecici" class="custom-select-input" autocomplete="off" placeholder="TÜM KATEGORİLER" readonly onclick="gosterCustom('logKategoriSecici')">
                     <div class="custom-select-options" id="options-logKategoriSecici">
@@ -551,7 +545,6 @@
                     </div>
                 </div>
                 
-                <!-- Marka Seçici (CANLI ARAMA VE SEÇİM AKTİF) -->
                 <div class="custom-select-wrapper" id="wrapper-logMarkaSecici" style="display:none; flex: 1;">
                     <input type="text" id="logMarkaSecici" class="custom-select-input" autocomplete="off" placeholder="MARKA ARA VEYA SEÇ..." oninput="this.value = temizKarakter(this.value); filtreleCustom('logMarkaSecici'); logIciAra()" onfocus="gosterCustom('logMarkaSecici')" onclick="gosterCustom('logMarkaSecici')">
                     <div class="custom-select-options" id="options-logMarkaSecici"></div>
@@ -816,7 +809,6 @@
             if(id === 'inputKategori') kategoriDegisti();
         }
 
-        // YENİ: Log Kriter Seçici Fonksiyonu
         function secCustomKriter(element, gercekDeger) {
             document.getElementById('logAramaKriteri').value = element.innerText;
             document.getElementById('logAramaKriteriDeğer').value = gercekDeger;
@@ -825,7 +817,6 @@
             logIciAra();
         }
 
-        // YENİ: Log Kullanıcı Seçici Fonksiyonu
         function secCustomKullanici(element, gercekDeger) {
             document.getElementById('logKullaniciSecici').value = gercekDeger;
             if (gercekDeger === '') { document.getElementById('logKullaniciSecici').value = ''; }
@@ -1306,9 +1297,17 @@
                 document.getElementById('logKullaniciSecici').value = '';
                 
                 const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"];
-                let gosterilecekKullanicilar = [...ozelSiralama];
+                
+                // MÜKERRER İSİM ÇÖZÜMÜ: Elle yazılan listeyi temizKarakter filtresinden geçiriyoruz
+                let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim));
+                
+                // Veritabanından gelen isimleri ekliyoruz (Eğer filtreli listede yoksa)
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
-                logdakiKullanicilar.forEach(u => { if(!gosterilecekKullanicilar.includes(u)) gosterilecekKullanicilar.push(u); });
+                logdakiKullanicilar.forEach(u => { 
+                    if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) {
+                        gosterilecekKullanicilar.push(u); 
+                    }
+                });
                 
                 let html = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`;
                 gosterilecekKullanicilar.forEach(u => { html += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`; });
