@@ -187,6 +187,13 @@
             50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(234, 88, 12, 0.85); opacity: 1; }
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
+
+        /* YENİ: STANDART KATEGORİLER İÇİN YEŞİL ANİMASYON */
+        @keyframes pulse-etiket-yesil {
+            0% { transform: scale(1); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); opacity: 0.9; }
+            50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(16, 185, 129, 0.85); opacity: 1; }
+            100% { transform: scale(1); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); opacity: 0.9; }
+        }
         
         .stok-bilgi { display: flex; flex-direction: column; gap: 10px; min-width: 0; width: 100%; }
         .stok-ust-satir { display: flex; justify-content: center; text-align: center; width: 100%; }
@@ -205,11 +212,21 @@
         .raf-no-vurgu { background-color: rgba(239, 68, 68, 0.08); color: var(--accent-red); }
         .kasa-no-vurgu { background-color: rgba(245, 158, 11, 0.08) !important; color: var(--accent-orange) !important; border: 1px solid var(--border-color) !important; }
         
+        /* KASALAR İÇİN KIRMIZI/TURUNCU ETİKET */
         .kasa-etiket { 
             display: inline-block; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;
             background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; 
             font-size: 11.5px !important; font-weight: 600; letter-spacing: 1px; border: 1px solid var(--border-color) !important;
             animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
+        }
+
+        /* YENİ: DİĞER TÜM KATEGORİLER İÇİN YEŞİL ETİKET */
+        .kategori-yesil-pulse {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
+            color: #fff !important;
+            border: 1px solid var(--border-color) !important;
+            animation: pulse-etiket-yesil 1.5s infinite ease-in-out; 
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
         
         /* ÇOK UZUN KODLAR İÇİN ESTETİK KISALTMA */
@@ -986,7 +1003,6 @@
 
                 if (searchMalzemeler) {
                     let sorgu1 = sbClient.from('malzemeler').select('*').limit(100);
-                    // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
                     if (kategori) sorgu1 = sorgu1.ilike('kategori', kategori);
                     if (marka) sorgu1 = sorgu1.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu1 = sorgu1.ilike('kod', esnekAramaStr);
@@ -995,7 +1011,6 @@
 
                 if (searchAltKat) {
                     let sorgu2 = sbClient.from('alt_kat').select('*').limit(100);
-                    // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
                     if (kategori) sorgu2 = sorgu2.ilike('kategori', kategori);
                     if (marka) sorgu2 = sorgu2.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu2 = sorgu2.ilike('kod', esnekAramaStr);
@@ -1010,7 +1025,15 @@
                 let veri2 = verileriNormallestir(res2.data || [], 'alt_kat');
                 
                 let birlesikVeri = [...veri1, ...veri2];
+                
+                // HİBRİT YAPI 3: ZEKİ SIRALAMA (KASALAR HEP EN SONA İTİLİR)
                 birlesikVeri.sort((a, b) => {
+                    const isKasaA = (temizKarakter(a.kategori) === 'KASALAR');
+                    const isKasaB = (temizKarakter(b.kategori) === 'KASALAR');
+                    
+                    if (isKasaA && !isKasaB) return 1;  // A kasa ise sona at
+                    if (!isKasaA && isKasaB) return -1; // B kasa ise sona at
+                    
                     let m1 = (a.marka || '').localeCompare(b.marka || '');
                     if (m1 !== 0) return m1;
                     return (a.kategori || '').localeCompare(b.kategori || '');
@@ -1040,7 +1063,9 @@
                     islemButonu = `<button class="btn-pasif" disabled title="Sadece izleme yetkiniz var">İzleyici</button>`;
                 }
 
-                const isKasa = temizKarakter(malzeme.kategori) === 'KASALAR';
+                const kategoriBuyuk = temizKarakter(malzeme.kategori);
+                const isKasa = kategoriBuyuk === 'KASALAR';
+                const isSurucuMotor = (kategoriBuyuk === 'SÜRÜCÜ' || kategoriBuyuk === 'MOTOR');
                 const isAltTablo = (malzeme._tablo === 'alt_kat');
                 
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
@@ -1056,8 +1081,19 @@
                 const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
-                const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
-                const rafMetni = isKasa ? `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>` : `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                
+                // HİBRİT YAPI 2: KASALAR HARİÇ DİĞER ETİKETLERDE YEŞİL ANİMASYON
+                const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket kategori-yesil-pulse";
+                
+                // HİBRİT YAPI 4: SÜRÜCÜ/MOTOR'DA RAF İFADESİNİ SİLME
+                let rafMetni = '';
+                if (isKasa) {
+                    rafMetni = `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                } else if (isSurucuMotor) {
+                    rafMetni = `<span class="raf-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                } else {
+                    rafMetni = `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                }
 
                 tumKartlar += `
                     <div class="${satirClass}">
@@ -1066,7 +1102,7 @@
                                 <span class="malzeme-kod" title="${orjinalKod}">${gosterilenKod}</span>
                             </div>
                             <div class="stok-alt-satir malzeme-detay">
-                                <div class="alt-sol"><span class="${etiketClass}">${temizKarakter(malzeme.kategori) || '-'}</span></div>
+                                <div class="alt-sol"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
                                 <div class="alt-orta"><span class="marka-etiket">${formatliMarka}</span></div>
                                 <div class="alt-sag">${rafMetni}</div>
                             </div>
@@ -1414,7 +1450,6 @@
 
             let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?";
             if (!aranan && !kategori && !marka) {
-                // SADELEŞTİRİLMİŞ YENİ UYARI MESAJI
                 uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?";
             }
 
@@ -1435,12 +1470,10 @@
                     esnekAramaStr = `%${buyukArama}%`;
                 }
 
-                // Malzemeler Tablosunu Çek
                 if (searchMalzemeler) {
                     let baslangic = 0; let devam = true;
                     while(devam) {
                         let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                        // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
                         if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                         if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
@@ -1454,12 +1487,10 @@
                     }
                 }
 
-                // Alt_kat Tablosunu Çek
                 if (searchAltKat) {
                     let baslangic = 0; let devam = true;
                     while(devam) {
                         let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                        // HİBRİT ESNEME: Kategori araması büyük/küçük harf duyarsız (ilike) yapıldı
                         if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
                         if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
@@ -1604,7 +1635,6 @@
             
             document.getElementById('inputKategori').value = temizKarakter(malzeme.kategori || '');
             
-            // GÜNCELLEMEDE KATEGORİ DEĞİŞTİRME KİLİDİ (Tablo karmaşasını önlemek için)
             document.getElementById('wrapper-inputKategori').classList.add('disabled');
             
             document.getElementById('inputMarka').value = temizKarakter(malzeme.marka || '');
@@ -1632,7 +1662,6 @@
 
             document.getElementById('inputKategori').value = '';
             
-            // YENİ KAYITTA KATEGORİ SEÇİMİ SERBEST
             document.getElementById('wrapper-inputKategori').classList.remove('disabled');
             
             kategoriDegisti(); 
