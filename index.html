@@ -323,7 +323,7 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         
-        /* LOG ARAMA KONTEYNER */
+        /* LOG ARAMA KONTEYNER (YENİ SİYAH LİSTELERE UYUMLU) */
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
         
         #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
@@ -395,20 +395,7 @@
             .baslik-ayrac, .baslik-alt { display: none !important; }
             
             .stok-satir { grid-template-columns: 1fr; gap: 14px; width: 100%; padding: 18px 16px;}
-            
-            /* YENİ: KART İÇİ MOBİL KUSURSUZ HİZALAMA (GRID CONTENTS) */
-            .stok-bilgi { display: grid !important; grid-template-columns: 1fr auto; row-gap: 12px; column-gap: 10px; align-items: center; }
-            .stok-ust-satir, .stok-alt-satir { display: contents !important; }
-            
-            /* Sol Üst */
-            .malzeme-kod { grid-column: 1 / 2; grid-row: 1 / 2; text-align: left; justify-self: start; font-size: 15px; }
-            /* Sağ Üst */
-            .alt-sag { grid-column: 2 / 3; grid-row: 1 / 2; text-align: right; justify-self: end; }
-            /* Sol Alt */
-            .alt-sol { grid-column: 1 / 2; grid-row: 2 / 3; text-align: left; justify-self: start; }
-            /* Sağ Alt */
-            .alt-orta { grid-column: 2 / 3; grid-row: 2 / 3; text-align: right; justify-self: end; }
-
+            .malzeme-kod { font-size: 15px; }
             .log-kod-span { font-size: 14px; text-align: left; width: 100%; border-top: 1px dashed var(--border-color); padding-top: 10px; }
 
             .stok-sayilar { grid-template-columns: repeat(5, 1fr); gap: 4px; }
@@ -1311,8 +1298,10 @@
                 
                 const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"];
                 
+                // MÜKERRER İSİM ÇÖZÜMÜ: Elle yazılan listeyi temizKarakter filtresinden geçiriyoruz
                 let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim));
                 
+                // Veritabanından gelen isimleri ekliyoruz (Eğer filtreli listede yoksa)
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
                 logdakiKullanicilar.forEach(u => { 
                     if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) {
