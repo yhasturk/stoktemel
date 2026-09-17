@@ -709,7 +709,7 @@
                 lblKapali.innerText = 'Kapalı Kutu Adet:';
                 lblAcik.className = '';
                 lblKapali.className = '';
-                inputRaf.placeholder = "Örn: K1";
+                inputRaf.placeholder = "Kasa no girin...";
             } else if (secilen === 'SÜRÜCÜ' || secilen === 'MOTOR') {
                 rafLabel.innerText = 'Raf No:';
                 rafLabel.className = '';
@@ -1088,7 +1088,6 @@
 
                 const kategoriBuyuk = temizKarakter(malzeme.kategori);
                 const isKasa = kategoriBuyuk === 'KASALAR';
-                const isSurucuMotor = (kategoriBuyuk === 'SÜRÜCÜ' || kategoriBuyuk === 'MOTOR');
                 const isAltTablo = (malzeme._tablo === 'alt_kat');
                 
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
@@ -1104,16 +1103,13 @@
                 const toplamBaslik = telefonMu() ? "Toplam" : "TOPLAM";
 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
-                
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket kategori-yesil-pulse";
                 
                 let rafMetni = '';
                 if (isKasa) {
-                    rafMetni = `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
-                } else if (isSurucuMotor) {
-                    rafMetni = `<span class="raf-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                    rafMetni = `<span class="kasa-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
                 } else {
-                    rafMetni = `<span class="raf-no-vurgu">Raf: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
+                    rafMetni = `<span class="raf-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
                 }
 
                 tumKartlar += `
@@ -1298,10 +1294,8 @@
                 
                 const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"];
                 
-                // MÜKERRER İSİM ÇÖZÜMÜ: Elle yazılan listeyi temizKarakter filtresinden geçiriyoruz
                 let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim));
                 
-                // Veritabanından gelen isimleri ekliyoruz (Eğer filtreli listede yoksa)
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
                 logdakiKullanicilar.forEach(u => { 
                     if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) {
