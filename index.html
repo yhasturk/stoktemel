@@ -188,7 +188,7 @@
             100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; }
         }
 
-        /* YENİ: STANDART KATEGORİLER İÇİN YEŞİL ANİMASYON */
+        /* DİĞER KATEGORİLER İÇİN YEŞİL ANİMASYON */
         @keyframes pulse-etiket-yesil {
             0% { transform: scale(1); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); opacity: 0.9; }
             50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(16, 185, 129, 0.85); opacity: 1; }
@@ -220,7 +220,7 @@
             animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3);
         }
 
-        /* YENİ: DİĞER TÜM KATEGORİLER İÇİN YEŞİL ETİKET */
+        /* DİĞER TÜM KATEGORİLER İÇİN YEŞİL ETİKET */
         .kategori-yesil-pulse {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; 
             color: #fff !important;
@@ -275,6 +275,8 @@
         #wrapper-kategoriFiltre .custom-select-options { width: 100%; left: 0; right: auto; } 
         #wrapper-logKategoriSecici .custom-select-options { width: 100%; left: 0; right: auto; } 
         #wrapper-inputKategori .custom-select-options { width: 100%; left: 0; right: auto; } 
+        #wrapper-logAramaKriteri .custom-select-options { width: 100%; left: 0; right: auto; } 
+        #wrapper-logKullaniciSecici .custom-select-options { width: 100%; left: 0; right: auto; } 
 
         #wrapper-markaFiltre .custom-select-options { width: 200%; left: 0; right: auto; } 
         #wrapper-inputMarka .custom-select-options { width: 100%; left: 0; right: auto; } 
@@ -321,32 +323,22 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         
+        /* LOG ARAMA KONTEYNER (YENİ SİYAH LİSTELERE UYUMLU) */
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
         
-        #logAramaKriteri, #logAramaKutusu, #logKullaniciSecici { width: 100%; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s;}
-        #logAramaKriteri { margin-bottom: 12px; cursor: pointer; font-weight: 600; }
-        #logAramaKutusu, #logKullaniciSecici { text-transform: uppercase; flex: 1; margin-bottom: 0;}
-        #logKullaniciSecici { cursor: pointer; font-weight: 600; }
-        #logAramaKriteri:focus, #logAramaKutusu:focus, #logKullaniciSecici:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
+        #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
+        #wrapper-logAramaKriteri .custom-select-input { font-weight: 600; cursor: pointer; }
+        
+        #logAramaKutusu { text-transform: uppercase; flex: 1; margin-bottom: 0; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: #fff; border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s; }
+        #logAramaKutusu:focus { border-color: var(--accent-purple); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2); }
         #logAramaKutusu::placeholder { text-transform: none; color: #64748b; font-weight: 600; }
         
-        /* LOG BÖLÜMÜNDEKİ YENİ EXCEL BUTONU */
+        #wrapper-logKullaniciSecici .custom-select-input { font-weight: 600; cursor: pointer; }
+        
         .log-arama-konteyner .btn-excel {
-            height: 42px;
-            padding: 0 16px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 12px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+            height: 42px; padding: 0 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; color: #fff;
+            display: flex; align-items: center; justify-content: center; white-space: nowrap;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
         }
         @media (hover: hover) { .log-arama-konteyner .btn-excel:hover { transform: translateY(-2px); } }
 
@@ -382,6 +374,8 @@
             #wrapper-kategoriFiltre .custom-select-options { width: 100%; left: 0; right: auto; }
             #wrapper-logKategoriSecici .custom-select-options { width: 100%; left: 0; right: auto; }
             #wrapper-inputKategori .custom-select-options { width: 100%; left: 0; right: auto; }
+            #wrapper-logAramaKriteri .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; }
+            #wrapper-logKullaniciSecici .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; }
 
             /* YAZI BOYUTU (1 TIK KÜÇÜK) */
             #wrapper-markaFiltre .custom-select-option, 
@@ -389,7 +383,9 @@
             #wrapper-logMarkaSecici .custom-select-option,
             #wrapper-kategoriFiltre .custom-select-option,
             #wrapper-logKategoriSecici .custom-select-option,
-            #wrapper-inputKategori .custom-select-option { font-size: 11.5px; }
+            #wrapper-inputKategori .custom-select-option,
+            #wrapper-logAramaKriteri .custom-select-option,
+            #wrapper-logKullaniciSecici .custom-select-option { font-size: 11.5px; }
 
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             
@@ -411,11 +407,16 @@
             
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
             
+            /* MOBİL LOG EKRANI YENİ SİYAH KUTULARIN HİZALAMASI */
             .log-arama-konteyner { flex-direction: row; flex-wrap: nowrap; gap: 8px; align-items: stretch; }
-            #logAramaKriteri { font-size: 14px; padding: 10px; width: 100%; margin-bottom: 12px; }
             
-            #logAramaKutusu, #logKullaniciSecici, #wrapper-logKategoriSecici { font-size: 14px; flex: 1; min-width: 0; margin-bottom: 0; }
-            #wrapper-logKategoriSecici .custom-select-input { padding: 10px; font-size: 14px; height: 42px; border-radius: 10px;}
+            #wrapper-logAramaKriteri { margin-bottom: 12px; width: 100%; }
+            #wrapper-logAramaKriteri .custom-select-input { padding: 10px; font-size: 14px; height: 42px; border-radius: 10px; text-align: left; }
+            
+            #logAramaKutusu, #wrapper-logKullaniciSecici, #wrapper-logKategoriSecici { flex: 1; min-width: 0; margin-bottom: 0; }
+            #logAramaKutusu { font-size: 14px; padding: 10px; height: 42px; border-radius: 10px; }
+            
+            #wrapper-logKullaniciSecici .custom-select-input, #wrapper-logKategoriSecici .custom-select-input { padding: 10px; font-size: 14px; height: 42px; border-radius: 10px; text-align: left; }
             
             #wrapper-logMarkaSecici { width: auto; flex: 1; min-width: 0; order: unset; margin-top: 0; }
             .log-arama-konteyner .btn-excel { width: auto; flex-shrink: 0; order: unset; margin-top: 0; padding: 0 12px !important; font-size: 12px !important; height: 42px !important; }
@@ -510,18 +511,32 @@
         <div class="modal-content">
             <h3 style="color:var(--accent-purple); margin-top:0; margin-bottom: 18px; flex-shrink: 0; text-align: center;">SİSTEM HAREKETLERİ</h3>
             
-            <select id="logAramaKriteri" onchange="logIciAra(); logAramaOnerileriniGuncelle();">
-                <option value="kod">Malzeme Koduna Göre</option>
-                <option value="marka">Markaya Göre</option>
-                <option value="kategori">Kategoriye Göre</option>
-                <option value="kullanici">Kullanıcıya Göre</option>
-            </select>
+            <!-- YENİ: KARANLIK TEMA ARAMA KRİTERİ SEÇİCİ -->
+            <div class="custom-select-wrapper" id="wrapper-logAramaKriteri">
+                <input type="text" id="logAramaKriteri" class="custom-select-input" autocomplete="off" value="Malzeme Koduna Göre" readonly onclick="gosterCustom('logAramaKriteri')">
+                <input type="hidden" id="logAramaKriteriDeğer" value="kod">
+                <div class="custom-select-options" id="options-logAramaKriteri">
+                    <div class="custom-select-option" onclick="secCustomKriter(this, 'kod')">Malzeme Koduna Göre</div>
+                    <div class="custom-select-option" onclick="secCustomKriter(this, 'marka')">Markaya Göre</div>
+                    <div class="custom-select-option" onclick="secCustomKriter(this, 'kategori')">Kategoriye Göre</div>
+                    <div class="custom-select-option" onclick="secCustomKriter(this, 'kullanici')">Kullanıcıya Göre</div>
+                </div>
+            </div>
             
             <div class="log-arama-konteyner">
+                <!-- Kod Araması (Klasik) -->
                 <input type="text" id="logAramaKutusu" placeholder="Arama yap..." autocomplete="off" oninput="logIciAra()">
-                <select id="logKullaniciSecici" style="display:none;" onchange="logIciAra()"></select>
                 
-                <div class="custom-select-wrapper" id="wrapper-logKategoriSecici" style="display:none;">
+                <!-- YENİ: KARANLIK TEMA KULLANICI SEÇİCİ (Readonly) -->
+                <div class="custom-select-wrapper" id="wrapper-logKullaniciSecici" style="display:none; flex: 1;">
+                    <input type="text" id="logKullaniciSecici" class="custom-select-input" autocomplete="off" placeholder="BİR KULLANICI SEÇİN..." readonly onclick="gosterCustom('logKullaniciSecici')">
+                    <div class="custom-select-options" id="options-logKullaniciSecici">
+                        <!-- JS Tarafından Dinamik Doldurulacak -->
+                    </div>
+                </div>
+                
+                <!-- Kategori Seçici (Readonly) -->
+                <div class="custom-select-wrapper" id="wrapper-logKategoriSecici" style="display:none; flex: 1;">
                     <input type="text" id="logKategoriSecici" class="custom-select-input" autocomplete="off" placeholder="TÜM KATEGORİLER" readonly onclick="gosterCustom('logKategoriSecici')">
                     <div class="custom-select-options" id="options-logKategoriSecici">
                         <div class="custom-select-option" onclick="secCustomKategori(this, 'logKategoriSecici', '')">TÜM KATEGORİLER</div>
@@ -536,7 +551,8 @@
                     </div>
                 </div>
                 
-                <div class="custom-select-wrapper" id="wrapper-logMarkaSecici" style="display:none;">
+                <!-- Marka Seçici (CANLI ARAMA VE SEÇİM AKTİF) -->
+                <div class="custom-select-wrapper" id="wrapper-logMarkaSecici" style="display:none; flex: 1;">
                     <input type="text" id="logMarkaSecici" class="custom-select-input" autocomplete="off" placeholder="MARKA ARA VEYA SEÇ..." oninput="this.value = temizKarakter(this.value); filtreleCustom('logMarkaSecici'); logIciAra()" onfocus="gosterCustom('logMarkaSecici')" onclick="gosterCustom('logMarkaSecici')">
                     <div class="custom-select-options" id="options-logMarkaSecici"></div>
                 </div>
@@ -769,7 +785,7 @@
 
         function gosterCustom(id) {
             const wrapper = document.getElementById('wrapper-' + id);
-            if (wrapper.classList.contains('disabled')) return; 
+            if (wrapper && wrapper.classList.contains('disabled')) return; 
             
             document.querySelectorAll('.custom-select-options').forEach(el => el.style.display = 'none');
             document.getElementById('options-' + id).style.display = 'block';
@@ -798,6 +814,23 @@
             if(id === 'kategoriFiltre') stokGetir(true);
             if(id === 'logKategoriSecici') logIciAra();
             if(id === 'inputKategori') kategoriDegisti();
+        }
+
+        // YENİ: Log Kriter Seçici Fonksiyonu
+        function secCustomKriter(element, gercekDeger) {
+            document.getElementById('logAramaKriteri').value = element.innerText;
+            document.getElementById('logAramaKriteriDeğer').value = gercekDeger;
+            document.getElementById('options-logAramaKriteri').style.display = 'none';
+            logAramaOnerileriniGuncelle();
+            logIciAra();
+        }
+
+        // YENİ: Log Kullanıcı Seçici Fonksiyonu
+        function secCustomKullanici(element, gercekDeger) {
+            document.getElementById('logKullaniciSecici').value = gercekDeger;
+            if (gercekDeger === '') { document.getElementById('logKullaniciSecici').value = ''; }
+            document.getElementById('options-logKullaniciSecici').style.display = 'none';
+            logIciAra();
         }
 
         function filtreleCustom(id) {
@@ -1026,13 +1059,12 @@
                 
                 let birlesikVeri = [...veri1, ...veri2];
                 
-                // HİBRİT YAPI 3: ZEKİ SIRALAMA (KASALAR HEP EN SONA İTİLİR)
                 birlesikVeri.sort((a, b) => {
                     const isKasaA = (temizKarakter(a.kategori) === 'KASALAR');
                     const isKasaB = (temizKarakter(b.kategori) === 'KASALAR');
                     
-                    if (isKasaA && !isKasaB) return 1;  // A kasa ise sona at
-                    if (!isKasaA && isKasaB) return -1; // B kasa ise sona at
+                    if (isKasaA && !isKasaB) return 1;  
+                    if (!isKasaA && isKasaB) return -1; 
                     
                     let m1 = (a.marka || '').localeCompare(b.marka || '');
                     if (m1 !== 0) return m1;
@@ -1082,10 +1114,8 @@
 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
                 
-                // HİBRİT YAPI 2: KASALAR HARİÇ DİĞER ETİKETLERDE YEŞİL ANİMASYON
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket kategori-yesil-pulse";
                 
-                // HİBRİT YAPI 4: SÜRÜCÜ/MOTOR'DA RAF İFADESİNİ SİLME
                 let rafMetni = '';
                 if (isKasa) {
                     rafMetni = `<span class="kasa-no-vurgu">Kasa: ${temizKarakter(malzeme.raf_no) || '-'}</span>`;
@@ -1259,26 +1289,31 @@
         }
 
         function logAramaOnerileriniGuncelle() {
-            const kriter = document.getElementById('logAramaKriteri').value;
+            const kriter = document.getElementById('logAramaKriteriDeğer').value;
             const aramaKutusu = document.getElementById('logAramaKutusu');
-            const kullaniciSecici = document.getElementById('logKullaniciSecici');
+            const kullaniciSeciciWrapper = document.getElementById('wrapper-logKullaniciSecici');
             const kategoriSeciciWrapper = document.getElementById('wrapper-logKategoriSecici');
             const markaSeciciWrapper = document.getElementById('wrapper-logMarkaSecici');
             
             aramaKutusu.value = ''; 
             aramaKutusu.style.display = 'none';
-            kullaniciSecici.style.display = 'none';
+            kullaniciSeciciWrapper.style.display = 'none';
             kategoriSeciciWrapper.style.display = 'none';
             markaSeciciWrapper.style.display = 'none';
             
             if (kriter === 'kullanici') {
-                kullaniciSecici.style.display = 'block';
+                kullaniciSeciciWrapper.style.display = 'block';
+                document.getElementById('logKullaniciSecici').value = '';
+                
                 const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"];
                 let gosterilecekKullanicilar = [...ozelSiralama];
                 const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))];
                 logdakiKullanicilar.forEach(u => { if(!gosterilecekKullanicilar.includes(u)) gosterilecekKullanicilar.push(u); });
-                kullaniciSecici.innerHTML = '<option value="">BİR KULLANICI SEÇİN...</option>';
-                gosterilecekKullanicilar.forEach(u => { kullaniciSecici.innerHTML += `<option value="${u}">${u}</option>`; });
+                
+                let html = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`;
+                gosterilecekKullanicilar.forEach(u => { html += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`; });
+                document.getElementById('options-logKullaniciSecici').innerHTML = html;
+                
             } else if (kriter === 'kategori') {
                 kategoriSeciciWrapper.style.display = 'block';
                 document.getElementById('logKategoriSecici').value = ''; 
@@ -1292,12 +1327,14 @@
         }
 
         async function logModalAc() {
+            document.getElementById('logAramaKriteri').value = 'Malzeme Koduna Göre';
+            document.getElementById('logAramaKriteriDeğer').value = 'kod';
             document.getElementById('logAramaKutusu').style.display = 'block';
-            document.getElementById('logKullaniciSecici').style.display = 'none';
+            document.getElementById('wrapper-logKullaniciSecici').style.display = 'none';
             document.getElementById('wrapper-logKategoriSecici').style.display = 'none';
             document.getElementById('wrapper-logMarkaSecici').style.display = 'none';
             document.getElementById('logAramaKutusu').value = '';
-            document.getElementById('logAramaKriteri').value = 'kod';
+            
             document.getElementById('LogModal').style.display = 'flex';
             
             const logGövdesi = document.getElementById('logGövdesi');
@@ -1408,7 +1445,7 @@
         }
 
         function logIciAra() {
-            const kriter = document.getElementById('logAramaKriteri').value;
+            const kriter = document.getElementById('logAramaKriteriDeğer').value;
             let aranan = ''; let arananKullaniciAd = ''; let arananKategoriAd = '';
             
             if (kriter === 'kullanici') { aranan = document.getElementById('logKullaniciSecici').value; if(aranan) arananKullaniciAd = aranan; } 
