@@ -953,23 +953,23 @@
         }
 
         async function markalariArkaPlandaCek() {
-            let baslangic = 0; const limit = 1000; let devam = true;
-            while (devam) {
-                const { data } = await sbClient.from('malzemeler').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                if (data && data.length > 0) {
-                    data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); });
-                    baslangic += limit; if (data.length < limit) devam = false;
-                } else { devam = false; }
+            // HİBRİT YAPI 2.0: SQL RPC ile saniyelik marka taraması
+            const { data, error } = await sbClient.rpc('get_unique_brands');
+            
+            if (error) {
+                console.error("Marka çekme hatası:", error.message);
+                return;
             }
-            baslangic = 0; devam = true;
-            while (devam) {
-                const { data } = await sbClient.from('alt_kat').select('marka').order('id', { ascending: true }).range(baslangic, baslangic + limit - 1);
-                if (data && data.length > 0) {
-                    data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); });
-                    baslangic += limit; if (data.length < limit) devam = false;
-                } else { devam = false; }
+
+            if (data && data.length > 0) {
+                data.forEach(item => { 
+                    if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); 
+                });
             }
-            tumMarkalarSet.delete(''); tumMarkalarSet.delete('-');
+            
+            tumMarkalarSet.delete(''); 
+            tumMarkalarSet.delete('-');
+            
             markaOnerileriniDoldur([...tumMarkalarSet].sort());
             document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
             document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
