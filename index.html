@@ -924,6 +924,18 @@
             });
         }
 
+        // YENİ: Gerçek Zamanlı Radar Dinleyicisi
+        function canliYayinBaslat() {
+            sbClient.channel('stok-canli-takip')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'malzemeler' }, payload => {
+                    stokGetir(true); // Veri değişirse arkaplanda sessizce listeyi tazeler
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'alt_kat' }, payload => {
+                    stokGetir(true); 
+                })
+                .subscribe();
+        }
+
         async function oturumKontrolu() {
             const { data: { session } } = await sbClient.auth.getSession();
             if (session) {
@@ -945,6 +957,9 @@
                 document.getElementById('authEkrani').style.display = 'none';
                 document.getElementById('anaUygulama').style.display = 'block';
                 baslat();
+                
+                canliYayinBaslat(); // HİBRİT YAPI 2.0: Radar Çalıştırılıyor
+                
                 setTimeout(() => { const arama = document.getElementById('aramaKutusu'); if (arama) arama.focus(); }, 300);
             } else {
                 document.getElementById('authEkrani').style.display = 'flex';
@@ -953,23 +968,12 @@
         }
 
         async function markalariArkaPlandaCek() {
-            // HİBRİT YAPI 2.0: SQL RPC ile saniyelik marka taraması
             const { data, error } = await sbClient.rpc('get_unique_brands');
-            
-            if (error) {
-                console.error("Marka çekme hatası:", error.message);
-                return;
-            }
-
+            if (error) { console.error("Marka çekme hatası:", error.message); return; }
             if (data && data.length > 0) {
-                data.forEach(item => { 
-                    if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); 
-                });
+                data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); });
             }
-            
-            tumMarkalarSet.delete(''); 
-            tumMarkalarSet.delete('-');
-            
+            tumMarkalarSet.delete(''); tumMarkalarSet.delete('-');
             markaOnerileriniDoldur([...tumMarkalarSet].sort());
             document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
             document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
