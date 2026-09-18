@@ -323,7 +323,7 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; background-color: var(--bg-dark); }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         
-        /* LOG ARAMA KONTEYNER (YENİ SİYAH LİSTELERE UYUMLU) */
+        /* LOG ARAMA KONTEYNER */
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
         
         #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
@@ -1022,7 +1022,12 @@
                 let esnekAramaStr = '';
                 if (arananInput) {
                     const buyukArama = arananInput.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
-                    esnekAramaStr = `%${buyukArama}%`;
+                    const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split('');
+                    if (safKarakterler.length > 0) {
+                        esnekAramaStr = `%${safKarakterler.join('%')}%`;
+                    } else {
+                        esnekAramaStr = `%${buyukArama}%`;
+                    }
                 }
 
                 if (searchMalzemeler) {
@@ -1105,12 +1110,7 @@
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket kategori-yesil-pulse";
                 
-                let rafMetni = '';
-                if (isKasa) {
-                    rafMetni = `<span class="kasa-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
-                } else {
-                    rafMetni = `<span class="raf-no-vurgu">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
-                }
+                let rafMetni = `<span class="raf-no-vurgu" style="${isKasa ? 'background-color: rgba(245, 158, 11, 0.08); color: var(--accent-orange); border: 1px solid var(--border-color);' : ''}">${temizKarakter(malzeme.raf_no) || '-'}</span>`;
 
                 tumKartlar += `
                     <div class="${satirClass}">
@@ -1497,7 +1497,12 @@
                 let esnekAramaStr = '';
                 if (aranan) {
                     const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
-                    esnekAramaStr = `%${buyukArama}%`;
+                    const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split('');
+                    if (safKarakterler.length > 0) {
+                        esnekAramaStr = `%${safKarakterler.join('%')}%`;
+                    } else {
+                        esnekAramaStr = `%${buyukArama}%`;
+                    }
                 }
 
                 if (searchMalzemeler) {
