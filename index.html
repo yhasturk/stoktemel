@@ -244,7 +244,7 @@
         @media (hover: hover) { .btn-duzenle:hover { transform: translateY(-2px); } }
         .btn-pasif { background-color: var(--border-color); color: var(--text-muted); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; justify-self: end; cursor: not-allowed; }
 
-        /* YENİ: DAHA FAZLA YÜKLE BUTONU TASARIMI */
+        /* DAHA FAZLA YÜKLE BUTONU TASARIMI */
         .btn-daha-fazla {
             background: transparent;
             color: var(--accent-cyan);
@@ -679,7 +679,6 @@
         let tumMarkalarSet = new Set(); 
         let customOptionsMarkaListesi = [];
         
-        // YENİ: Sayfalama (Pagination) için global değişken
         let aramaLimiti = 50;
 
         const kullaniciSozlugu = {
@@ -951,7 +950,7 @@
         function canliYayinBaslat() {
             sbClient.channel('stok-canli-takip')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'malzemeler' }, payload => {
-                    stokGetir(true, true); // HİBRİT YAPI 3.0: Limit korunarak canlı güncellenir
+                    stokGetir(true, true); 
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'alt_kat' }, payload => {
                     stokGetir(true, true); 
@@ -1022,13 +1021,11 @@
             });
         }
 
-        // YENİ: Daha Fazla Yükle Fonksiyonu
         function dahaFazlaYukle() {
             aramaLimiti += 50;
             stokGetir(true, true);
         }
 
-        // YENİ: Limit parametresi eklendi
         async function stokGetir(aninda = false, mevcutLimitiKoru = false) {
             clearTimeout(aramaZamanlayici);
             const beklemeSuresi = aninda ? 0 : 800;
@@ -1040,7 +1037,6 @@
 
                 if (!arananInput && !kategori && !marka) { baslat(); return; }
                 
-                // Yeni aramaysa limiti 50'ye sıfırla
                 if (!mevcutLimitiKoru) {
                     aramaLimiti = 50;
                     document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
@@ -1058,14 +1054,22 @@
                 let p1 = Promise.resolve({ data: [] });
                 let p2 = Promise.resolve({ data: [] });
 
-                let esnekAramaStr = '';
+                // YENİ: "KESİN NİŞANCI" BLOK ARAMA ALGORİTMASI
+                let aramaOperatoru = 'ilike';
+                let aramaDegeri = '';
+
                 if (arananInput) {
                     const buyukArama = arananInput.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
+                    // Sadece harf ve rakamları saf olarak çekiyoruz
                     const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split('');
+                    
                     if (safKarakterler.length > 0) {
-                        esnekAramaStr = `%${safKarakterler.join('%')}%`;
+                        // Supabase regex (imatch) mantığı: Karakterlerin arasına sadece tire, boşluk, taksim veya nokta girebilir. Başka HARF/RAKAM giremez!
+                        aramaDegeri = safKarakterler.join('[- /.]*');
+                        aramaOperatoru = 'imatch';
                     } else {
-                        esnekAramaStr = `%${buyukArama}%`;
+                        aramaDegeri = `%${buyukArama}%`;
+                        aramaOperatoru = 'ilike';
                     }
                 }
 
@@ -1073,7 +1077,7 @@
                     let sorgu1 = sbClient.from('malzemeler').select('*').limit(aramaLimiti);
                     if (kategori) sorgu1 = sorgu1.ilike('kategori', kategori);
                     if (marka) sorgu1 = sorgu1.ilike('marka', `%${marka}%`);
-                    if (arananInput) sorgu1 = sorgu1.ilike('kod', esnekAramaStr);
+                    if (arananInput) sorgu1 = sorgu1.filter('kod', aramaOperatoru, aramaDegeri);
                     p1 = sorgu1;
                 }
 
@@ -1081,7 +1085,7 @@
                     let sorgu2 = sbClient.from('alt_kat').select('*').limit(aramaLimiti);
                     if (kategori) sorgu2 = sorgu2.ilike('kategori', kategori);
                     if (marka) sorgu2 = sorgu2.ilike('marka', `%${marka}%`);
-                    if (arananInput) sorgu2 = sorgu2.ilike('kod', esnekAramaStr);
+                    if (arananInput) sorgu2 = sorgu2.filter('kod', aramaOperatoru, aramaDegeri);
                     p2 = sorgu2;
                 }
 
@@ -1089,7 +1093,6 @@
                 if (res1.error) console.error(res1.error);
                 if (res2.error) console.error(res2.error);
 
-                // Eğer limit kadar veri geldiyse, arkada hala veri olma ihtimali yüksektir
                 let dahaFazlaVarMi = (res1.data && res1.data.length === aramaLimiti) || (res2.data && res2.data.length === aramaLimiti);
 
                 let veri1 = verileriNormallestir(res1.data || [], 'malzemeler');
@@ -1109,13 +1112,11 @@
                     return (a.kategori || '').localeCompare(b.kategori || '');
                 });
 
-                // Tam limiti aşanları kesiyoruz ki sayfa düzeni bozulmasın
                 let gosterilecekVeri = birlesikVeri.slice(0, aramaLimiti);
                 ekranaYazdir(gosterilecekVeri, dahaFazlaVarMi);
             }, beklemeSuresi); 
         }
 
-        // YENİ: Ekrana yazdırırken daha fazla butonu ekleniyor
         function ekranaYazdir(veriler, dahaFazlaVarMi = false) {
             mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
@@ -1542,14 +1543,20 @@
                 let searchMalzemeler = !kategori || !altKategoriler.includes(kategori);
                 let searchAltKat = !kategori || altKategoriler.includes(kategori);
 
-                let esnekAramaStr = '';
+                // YENİ: EXCEL İÇİN KESİN NİŞANCI ALGORİTMASI
+                let aramaOperatoru = 'ilike';
+                let aramaDegeri = '';
+
                 if (aranan) {
                     const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
                     const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split('');
+                    
                     if (safKarakterler.length > 0) {
-                        esnekAramaStr = `%${safKarakterler.join('%')}%`;
+                        aramaDegeri = safKarakterler.join('[- /.]*');
+                        aramaOperatoru = 'imatch';
                     } else {
-                        esnekAramaStr = `%${buyukArama}%`;
+                        aramaDegeri = `%${buyukArama}%`;
+                        aramaOperatoru = 'ilike';
                     }
                 }
 
@@ -1559,7 +1566,7 @@
                         let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
                         if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                        if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
+                        if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri);
                         
                         let { data, error } = await sorgu;
                         if (error) { alert("Hata: " + error.message); btn.disabled = false; return; }
@@ -1576,7 +1583,7 @@
                         let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1);
                         if (kategori) sorgu = sorgu.ilike('kategori', kategori);
                         if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`);
-                        if (aranan) sorgu = sorgu.ilike('kod', esnekAramaStr);
+                        if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri);
                         
                         let { data, error } = await sorgu;
                         if (error) { alert("Hata: " + error.message); btn.disabled = false; return; }
