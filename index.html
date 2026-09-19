@@ -98,7 +98,7 @@
         
         .malzeme-kod { font-size: 18px; font-weight: 600; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; }
         
-        /* YENİ INLINE DÜZENLEME ALANI */
+        /* INLINE DÜZENLEME ALANI */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .kutu-baslik { font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;}
@@ -118,10 +118,10 @@
         .kutu-btn:hover:not(:disabled) { background: #334155; color: var(--accent-cyan); border-color: var(--accent-cyan); }
         .kutu-btn:disabled { opacity: 0.3; cursor: not-allowed; background: var(--bg-dark); }
         
-        /* YEŞİL FLAŞ EFEKTİ */
+        /* YEŞİL FLAŞ EFEKTİ (DÜZELTİLDİ: 2 SANİYE) */
         @keyframes yesil-flas {
             0% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
-            30% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.9); background-color: rgba(16, 185, 129, 0.25); border-color: var(--accent-green); color: var(--accent-green); }
+            15% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.95); background-color: rgba(16, 185, 129, 0.3); border-color: var(--accent-green); color: var(--accent-green); }
             100% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
         }
         .islem-basarili { animation: yesil-flas 2s ease-out !important; }
@@ -223,11 +223,15 @@
             .ana-baslik { font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .baslik-ayrac, .baslik-alt { display: none !important; }
             
-            .stok-satir { gap: 14px; width: 100%; padding: 18px 16px;}
+            .stok-satir { gap: 14px; width: 100%; padding: 18px 12px;}
             .malzeme-kod { font-size: 16px; }
             
-            /* MOBİLDE İKİ SATIRLI SAYILAR İÇİN CSS GRID */
-            .stok-sayilar { grid-template-columns: repeat(3, 1fr); gap: 12px 8px; }
+            /* DÜZELTİLDİ: MOBİLDE TEK SATIR (YAN YANA 6 KUTU) VE SIFIR KAYMA */
+            .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; }
+            .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 4px; }
+            .kutu-input { height: 32px !important; font-size: 13px !important; padding: 0 !important; }
+            .kutu-btn { height: 22px !important; font-size: 14px !important; border-radius: 4px !important; }
+            .kutu-input-raf { font-size: 11px !important; }
             
             .modal-content { padding: 22px 18px; width: 92%; }
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
@@ -327,7 +331,7 @@
         </div>
     </div>
 
-    <!-- YENİ MALZEME EKLEME MODALI (GÜNCELLEMELER ARTIK INLINE YAPILACAK) -->
+    <!-- YENİ MALZEME EKLEME MODALI -->
     <div id="YeniEkleModal" class="modal">
         <div class="modal-content">
             <h3 id="modalBaslik">YENİ MALZEME EKLE</h3>
@@ -557,14 +561,25 @@
                 let logMetni = `[CAT:${kategori}|MRK:${marka}] STOK GÜNCELLENDİ (Hızlı)<br>Toplam: ${top} | Raf: ${raf || '-'}`;
                 await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logMetni, kod: kod }]);
 
-                // Yeşil Flaş Animasyonunu Tetikle
-                const inputsToFlash = ['ikinci_el', 'acik', 'kapali', 'arizali', 'toplam', 'raf_no'];
-                inputsToFlash.forEach(prefix => {
-                    const el = document.getElementById(`${prefix}_${id}`);
-                    if (el) {
+                // DÜZELTME: SADECE DEĞİŞEN HÜCREYE YEŞİL FLAŞ
+                const inputsToCheck = [
+                    { prefix: 'ikinci_el', val: e.toString() },
+                    { prefix: 'acik', val: a.toString() },
+                    { prefix: 'kapali', val: k.toString() },
+                    { prefix: 'arizali', val: r.toString() },
+                    { prefix: 'toplam', val: top.toString() },
+                    { prefix: 'raf_no', val: raf }
+                ];
+
+                inputsToCheck.forEach(item => {
+                    const el = document.getElementById(`${item.prefix}_${id}`);
+                    if (el && el.getAttribute('data-orj') !== item.val) {
+                        // Değer değişmiş, parlat!
                         el.classList.remove('islem-basarili');
-                        void el.offsetWidth; // Reflow hilesi (Animasyonu baştan başlatır)
+                        void el.offsetWidth; // Animasyon sıfırlayıcı
                         el.classList.add('islem-basarili');
+                        // Yeni orjinal değeri kaydet ki bir sonraki sefer aynıysa parlamasın
+                        el.setAttribute('data-orj', item.val);
                     }
                 });
 
@@ -746,7 +761,6 @@
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'malzemeler' }, payload => {
                     const el = document.activeElement;
                     if (el && el.tagName === 'INPUT' && (el.id.startsWith('ikinci_el_') || el.id.startsWith('acik_') || el.id.startsWith('kapali_') || el.id.startsWith('arizali_') || el.id.startsWith('raf_no_'))) {
-                        // Kullanıcı veri girerken sistemi yenilemeyiz, emeği boşa gitmesin.
                         return;
                     }
                     stokGetir(true, true); 
@@ -835,7 +849,6 @@
                 let p1 = Promise.resolve({ data: [] }); let p2 = Promise.resolve({ data: [] });
                 let aramaOperatoru = 'ilike'; let aramaDegeri = '';
 
-                // KESİN NİŞANCI ARAMASI
                 if (arananInput) {
                     const buyukArama = arananInput.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I');
                     const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split('');
@@ -886,7 +899,7 @@
             }, beklemeSuresi); 
         }
 
-        // YENİ NESİL INLINE EKRANA YAZDIRMA
+        // YENİ NESİL KISA BAŞLIKLI INLINE EKRANA YAZDIRMA
         function ekranaYazdir(veriler, dahaFazlaVarMi = false) {
             mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
@@ -907,9 +920,13 @@
                 
                 let gosterilenKod = orjinalKod;
                 
-                const ikinciElBaslik = "İKİNCİ EL";
-                const acikKutuBaslik = isAltTablo ? "TESTLİ" : "A. KUTU";
-                const kapaliKutuBaslik = isAltTablo ? "KUTULU" : "K. KUTU";
+                // DÜZELTME: KISA BAŞLIKLAR
+                const ikinciElBaslik = "2.EL";
+                const acikKutuBaslik = isAltTablo ? "TESTLİ" : "A.KUTU";
+                const kapaliKutuBaslik = isAltTablo ? "KUTULU" : "K.KUTU"; 
+                const arizaliBaslik = "ARZ";
+                const toplamBaslik = "TOP";
+                const rafBaslik = isKasa ? "KASA" : "RAF";
                 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
                 const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket kategori-yesil-pulse";
@@ -933,7 +950,7 @@
                         <div class="stok-sayilar">
                             <div class="sayi-blogu">
                                 <div class="kutu-baslik">${ikinciElBaslik}</div>
-                                <input type="number" id="ikinci_el_${malzeme.id}" class="kutu-input" value="${malzeme.ikinci_el ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
+                                <input type="number" id="ikinci_el_${malzeme.id}" class="kutu-input" data-orj="${malzeme.ikinci_el ?? 0}" value="${malzeme.ikinci_el ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'ikinci_el', -1)" ${disabledDurum}>-</button>
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'ikinci_el', 1)" ${disabledDurum}>+</button>
@@ -942,7 +959,7 @@
 
                             <div class="sayi-blogu">
                                 <div class="kutu-baslik">${acikKutuBaslik}</div>
-                                <input type="number" id="acik_${malzeme.id}" class="kutu-input" value="${malzeme._acik_testli ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
+                                <input type="number" id="acik_${malzeme.id}" class="kutu-input" data-orj="${malzeme._acik_testli ?? 0}" value="${malzeme._acik_testli ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'acik', -1)" ${disabledDurum}>-</button>
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'acik', 1)" ${disabledDurum}>+</button>
@@ -951,7 +968,7 @@
 
                             <div class="sayi-blogu">
                                 <div class="kutu-baslik">${kapaliKutuBaslik}</div>
-                                <input type="number" id="kapali_${malzeme.id}" class="kutu-input" value="${malzeme._kapali_kutulu ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
+                                <input type="number" id="kapali_${malzeme.id}" class="kutu-input" data-orj="${malzeme._kapali_kutulu ?? 0}" value="${malzeme._kapali_kutulu ?? 0}" oninput="inlineToplamHesapla('${malzeme.id}')" ${readonlyAttr}>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'kapali', -1)" ${disabledDurum}>-</button>
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'kapali', 1)" ${disabledDurum}>+</button>
@@ -959,17 +976,8 @@
                             </div>
 
                             <div class="sayi-blogu">
-                                <div class="kutu-baslik" style="color:var(--accent-green);">TOPLAM</div>
-                                <input type="number" id="toplam_${malzeme.id}" class="kutu-input" value="${malzeme.toplam ?? 0}" readonly>
-                                <div class="buton-satiri">
-                                    <button class="kutu-btn" disabled>-</button>
-                                    <button class="kutu-btn" disabled>+</button>
-                                </div>
-                            </div>
-
-                            <div class="sayi-blogu">
-                                <div class="kutu-baslik">ARIZALI</div>
-                                <input type="number" id="arizali_${malzeme.id}" class="kutu-input" style="color:var(--accent-red);" value="${malzeme.arizali ?? 0}" ${readonlyAttr}>
+                                <div class="kutu-baslik">${arizaliBaslik}</div>
+                                <input type="number" id="arizali_${malzeme.id}" class="kutu-input" style="color:var(--accent-red);" data-orj="${malzeme.arizali ?? 0}" value="${malzeme.arizali ?? 0}" ${readonlyAttr}>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'arizali', -1)" ${disabledDurum}>-</button>
                                     <button class="kutu-btn" onclick="inlineSayiDegistir('${malzeme.id}', 'arizali', 1)" ${disabledDurum}>+</button>
@@ -977,8 +985,17 @@
                             </div>
 
                             <div class="sayi-blogu">
-                                <div class="kutu-baslik">${isKasa ? 'KASA NO' : 'RAF NO'}</div>
-                                <input type="text" id="raf_no_${malzeme.id}" class="kutu-input kutu-input-raf" value="${temizKarakter(malzeme.raf_no)}" ${readonlyAttr}>
+                                <div class="kutu-baslik" style="color:var(--accent-green);">${toplamBaslik}</div>
+                                <input type="number" id="toplam_${malzeme.id}" class="kutu-input" data-orj="${malzeme.toplam ?? 0}" value="${malzeme.toplam ?? 0}" readonly>
+                                <div class="buton-satiri">
+                                    <button class="kutu-btn" disabled>-</button>
+                                    <button class="kutu-btn" disabled>+</button>
+                                </div>
+                            </div>
+
+                            <div class="sayi-blogu">
+                                <div class="kutu-baslik">${rafBaslik}</div>
+                                <input type="text" id="raf_no_${malzeme.id}" class="kutu-input kutu-input-raf" data-orj="${temizKarakter(malzeme.raf_no)}" value="${temizKarakter(malzeme.raf_no)}" ${readonlyAttr}>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" disabled>-</button>
                                     <button class="kutu-btn" disabled>+</button>
@@ -1080,7 +1097,7 @@
             setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, 1500);
         }
 
-        // LOG FONKSİYONLARI BURADA DEVAM EDİYOR (Değiştirilmedi)
+        // LOG FONKSİYONLARI BURADA DEVAM EDİYOR
         function logAramaOnerileriniGuncelle() {
             const kriter = document.getElementById('logAramaKriteriDeğer').value;
             const aramaKutusu = document.getElementById('logAramaKutusu');
