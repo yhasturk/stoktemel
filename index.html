@@ -228,7 +228,9 @@
 
         /* MOBİL UYARLAMA KISMI */
         @media screen and (max-width: 650px) {
-            /* ÜSTTEN ALTTAN FERAH BOŞLUK (RESTORE EDİLDİ) */
+            /* Üstteki başlık boşluğu artırıldı */
+            .ust-bosluklu-container { padding-top: 30px !important; padding-bottom: 15px !important; }
+
             .stok-satir { padding: 18px 6px !important; gap: 10px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
@@ -249,13 +251,13 @@
             
             .malzeme-kod { font-size: 16px; margin: 0; }
             
-            /* MOBİL: KESİK ÇİZGİYİ AŞAĞI KAYDIRDIK, YAZILARA YER AÇTIK */
+            /* MOBİL: KESİK ÇİZGİ KUTULARIN ALTINA DOKUNMASIN DİYE AŞAĞI KAYDIRILDI */
             .stok-bilgi { 
                 display: flex; flex-direction: column; align-items: center; gap: 12px; 
-                padding-bottom: 20px !important; 
+                padding-bottom: 28px !important; 
                 margin-bottom: 15px !important; 
             }
-            .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; }
+            .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
             /* MOBİL BUTONU */
@@ -567,9 +569,7 @@
 
         async function inlineGuncelle(id, tablo, kod, marka, kategori, btnElement) {
             if (!btnElement) return;
-            const orjHTML = btnElement.innerHTML;
             btnElement.disabled = true;
-            btnElement.innerHTML = "KAYDEDİLİYOR...";
 
             islemKilitZamani = Date.now();
 
@@ -634,11 +634,9 @@
                 void btnElement.offsetWidth;
                 btnElement.classList.add('islem-basarili-buton');
 
-                btnElement.innerHTML = orjHTML;
                 btnElement.disabled = false;
             } else {
                 uyariGoster("Kayıt sırasında bir hata oluştu: " + error.message, "hata");
-                btnElement.innerHTML = orjHTML;
                 btnElement.disabled = false;
             }
         }
@@ -980,9 +978,9 @@
                 const disabledDurum = (aktifRol !== 'duzenleyici') ? 'disabled' : '';
                 const readonlyAttr = (aktifRol !== 'duzenleyici') ? 'readonly' : '';
                 
-                // MASAÜSTÜ VE MOBİL İÇİN TEK BİR BUTON KODU (Yerleri CSS ile ayarlanacak)
+                // MASAÜSTÜ VE MOBİL İÇİN TEK BİR BUTON KODU (İçinde "GÜNCELLE" yazıyor)
                 const guncelleBtnHTML = (aktifRol === 'duzenleyici') 
-                    ? `<button class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">STOK<br class="masaustu-gizle">GÜNCELLE</button>`
+                    ? `<button class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>SADECE İZLEME YETKİSİ</button>`;
 
                 tumKartlar += `
@@ -1159,7 +1157,7 @@
             setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, 1500);
         }
 
-        // LOG FONKSİYONLARI BURADA DEVAM EDİYOR
+        // LOG FONKSİYONLARI
         function logAramaOnerileriniGuncelle() {
             const kriter = document.getElementById('logAramaKriteriDeğer').value;
             const aramaKutusu = document.getElementById('logAramaKutusu');
