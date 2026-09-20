@@ -97,8 +97,8 @@
         
         .malzeme-kod { font-size: 20px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI - SON SÜTUN GENİŞLETİLDİ (1.7fr) */
-        .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 1.7fr; gap: 10px; width: 100%; }
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI - SON SÜTUN GENİŞLETİLDİ (2fr) */
+        .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
         
@@ -127,22 +127,22 @@
         }
         .islem-basarili { animation: yesil-flas 2s ease-out !important; }
 
-        /* BUTON TASARIMLARI */
+        /* BUTON TASARIMLARI (Birebir Eşit Genişlik - Font Küçüldü) */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
-            color: white; padding: 0 5px; font-size: 13px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer; 
+            color: white; padding: 0 2px; font-size: 11px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer; 
             box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s, box-shadow 0.2s; 
             letter-spacing: 1px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3;
         }
         .btn-guncelle-tam:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: var(--border-color); }
-        .btn-guncelle-pasif { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; box-shadow: none; font-size: 11px;}
+        .btn-guncelle-pasif { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; box-shadow: none; font-size: 10px;}
 
         /* SORULDU BUTONU TASARIMI */
         .btn-soruldu {
             width: 100%; height: 100%; min-height: 72px;
             background: #475569;
-            color: white; padding: 0 5px; font-size: 12px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
+            color: white; padding: 0 2px; font-size: 11px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
             transition: all 0.2s; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;
         }
 
@@ -288,8 +288,8 @@
             .mobil-gizle { display: none !important; }
 
             /* MOBİL BUTONU (GÜNCELLE ve SORULDU YAN YANA - YUKARI BOŞLUĞU DARALTILDI) */
-            .mobil-guncelle-btn-kutu { display: flex; width: 100%; margin-top: 4px; gap: 6px; }
-            .mobil-guncelle-btn-kutu .btn-guncelle-tam, .mobil-guncelle-btn-kutu .btn-soruldu { height: 48px; min-height: unset; font-size: 13px; }
+            .mobil-guncelle-btn-kutu { display: grid; grid-template-columns: 2.5fr 1fr; width: 100%; margin-top: 4px; gap: 6px; }
+            .mobil-guncelle-btn-kutu .btn-guncelle-tam, .mobil-guncelle-btn-kutu .btn-soruldu { height: 48px; min-height: unset; font-size: 12px; }
 
             /* MOBİLDE İNCE KUTULAR YAN YANA (ALTTAN BOŞLUK SIFIRLANDI) */
             .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
@@ -541,7 +541,7 @@
         let aramaLimiti = 50;
         
         let islemKilitZamani = 0;
-        let aktifSorulduZamanlayicilari = []; // Gecikmeli yüklemeler için sayaç hafızası
+        let aktifSorulduZamanlayicilari = []; 
 
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
@@ -606,7 +606,6 @@
             const k = parseInt(document.getElementById(`kapali_${id}`).value) || 0;
             const r = parseInt(document.getElementById(`arizali_${id}`).value) || 0;
             const top = e + a + k;
-            
             const rafInput = document.getElementById(`raf_no_${id}`);
             const raf = rafInput ? temizKarakter(rafInput.value.trim()) : '';
 
@@ -616,6 +615,20 @@
             const k_eski = parseInt(document.getElementById(`kapali_${id}`).getAttribute('data-orj')) || 0;
             const r_eski = parseInt(document.getElementById(`arizali_${id}`).getAttribute('data-orj')) || 0;
             const raf_eski = document.getElementById(`raf_no_${id}`).getAttribute('data-orj') || '';
+
+            // HİÇBİR ŞEY DEĞİŞMEDİYSE LOG VE VERİTABANI GÜNCELLEMESİNİ İPTAL ET
+            if (e === e_eski && a === a_eski && k === k_eski && r === r_eski && raf === raf_eski) {
+                const inputsToCheck = ['ikinci_el', 'acik', 'kapali', 'arizali', 'raf_no'];
+                inputsToCheck.forEach(prefix => {
+                    const el = document.getElementById(`${prefix}_${id}`);
+                    if (el) { el.classList.remove('islem-basarili'); void el.offsetWidth; el.classList.add('islem-basarili'); }
+                });
+                const elTop = document.getElementById(`toplam_${id}`);
+                if (elTop) { elTop.classList.remove('islem-basarili'); void elTop.offsetWidth; elTop.classList.add('islem-basarili'); }
+                btnElement.classList.remove('islem-basarili-buton'); void btnElement.offsetWidth; btnElement.classList.add('islem-basarili-buton');
+                btnElement.disabled = false;
+                return;
+            }
 
             const lblA = tablo === 'alt_kat' ? 'Testli' : 'Açık Kutu';
             const lblK = tablo === 'alt_kat' ? 'Kutulu' : 'Kapalı Kutu';
@@ -635,8 +648,6 @@
                 logMetni += `<br>` + degisimler.join(' | ') + rafMetni;
             } else if (raf !== raf_eski) {
                 logMetni += rafMetni;
-            } else {
-                logMetni += `<br>Sadece yenilendi.`; // Hiçbir sayı veya raf değişmediyse
             }
             
             let payload = { ikinci_el: e, arizali: r, toplam: top, raf_no: raf };
@@ -652,7 +663,6 @@
             const { error } = await sbClient.from(tablo).update(payload).eq('id', id);
 
             if (!error) {
-                // Log tablosuna detaylı kayıt ekle
                 await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logMetni, kod: kod }]);
 
                 const inputsToCheck = [
@@ -694,9 +704,9 @@
         
         // --- SENKRON SORULDU İŞLEMİ ---
         async function sorulduIsaretle(id, tablo) {
+            islemKilitZamani = Date.now(); // KARTIN KAYBOLMAMASI İÇİN YENİLEMEYİ 3 SN DURDURUR
             const suan = Date.now();
             
-            // Kullanıcının ekranında anında efekti başlat
             const kodEl = document.getElementById('kod_' + id);
             const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
             const btnMobil = document.getElementById('soruldu_btn_mobil_' + id);
@@ -705,13 +715,11 @@
             if(btnMasaustu) btnMasaustu.classList.add('sari-yan-son-btn');
             if(btnMobil) btnMobil.classList.add('sari-yan-son-btn');
             
-            // Veritabanını güncelle (Diğer cihazlar ve sonradan girenler için). 
-            // NOT: Bu işlem log tablosuna YAZMAZ, sadece malzemeler tablosundaki soruldu_vakti alanını günceller.
+            // Veritabanını güncelle (Loglara kesinlikle YAZMAZ)
             sbClient.from(tablo).update({ soruldu_vakti: suan }).eq('id', id).then(({error}) => {
                 if (error) console.warn("Lütfen Supabase'de 'soruldu_vakti' isimli int8 sütununu oluşturun:", error.message);
             });
 
-            // Geri sayımı bu bilgisayarda da kur
             setTimeout(() => {
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
                 if(btnMasaustu) btnMasaustu.classList.remove('sari-yan-son-btn');
@@ -1025,7 +1033,6 @@
             mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
             
-            // Temizlik işlemi: Önceki sayım zamanlayıcılarını sıfırla
             aktifSorulduZamanlayicilari.forEach(clearTimeout);
             aktifSorulduZamanlayicilari = [];
             
@@ -1044,7 +1051,6 @@
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
                 const orjinalKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
                 
-                // --- SONRADAN GİRENLER İÇİN SÜRE HESAPLAMA MANTIĞI ---
                 let isSoruldu = false;
                 let kalanSure = 0;
                 if (malzeme.soruldu_vakti) {
@@ -1143,28 +1149,20 @@
                                 </div>
                             </div>
                             
-                            <!-- MASAÜSTÜ: 7. SÜTUN İŞLEM ALANI (Genişlikler 1:1 yapıldı) -->
+                            <!-- MASAÜSTÜ: 7. SÜTUN İŞLEM ALANI -->
                             <div class="stok-buton-alani mobil-gizle">
                                 <div class="kutu-baslik" style="opacity:0; user-select:none;">İŞLEM</div>
-                                <div style="display: flex; gap: 6px; height: 100%; min-height: 72px;">
-                                    <div style="flex: 1;">
-                                        ${guncelleBtnHTML}
-                                    </div>
-                                    <div style="flex: 1;">
-                                        <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
-                                    </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; height: 100%; min-height: 72px; width: 100%;">
+                                    ${guncelleBtnHTML}
+                                    <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- MOBİL: TAM GENİŞLİK BUTONLAR (Genişlikler 2.5 : 1 Yapıldı - Yazı sığsın diye) -->
+                        <!-- MOBİL: TAM GENİŞLİK BUTONLAR -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
-                            <div style="flex: 2.5;">
-                                ${guncelleBtnHTML}
-                            </div>
-                            <div style="flex: 1;">
-                                <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
-                            </div>
+                            ${guncelleBtnHTML}
+                            <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
                         </div>
                     </div>
                 `;
@@ -1173,7 +1171,6 @@
             if (dahaFazlaVarMi) { tumKartlar += `<button class="btn-daha-fazla" onclick="dahaFazlaYukle()">⬇️ Daha Fazla Göster ⬇️</button>`; }
             liste.innerHTML = tumKartlar;
 
-            // DOM'a HTML işlendikten sonra sonradan girenler için arka plan sayaçlarını aktif et
             veriler.forEach(malzeme => {
                 if (malzeme.soruldu_vakti) {
                     const fark = suan - malzeme.soruldu_vakti;
@@ -1315,7 +1312,7 @@
                 log._gosterilenKategori = kayitKategori; log._gosterilenMarka = kayitMarka;
                 const islemRengi = hamIslem.includes('YENİ') ? 'var(--accent-green)' : 'var(--accent-blue)';
                 if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>"); else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
-                hamIslem = hamIslem.replace(/->/g, "→"); let islemParcalari = hamIslem.split('<br>'); let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`; let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
+                hamIslem = hamIslem.replace(/->/g, "➔"); let islemParcalari = hamIslem.split('<br>'); let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`; let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
                 const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket'; let orijinalLogKod = (log.kod || '').toLocaleUpperCase('tr-TR');
                 tumLogKartlari += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${tarih}</span><span class="log-kullanici">${user}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${etiketClass}">${kayitKategori}</span><span class="log-marka">${kayitMarka}</span></div><span class="log-kod-span" style="font-size:13.5px;">${orijinalLogKod}</span></div><div class="log-islem-detay" style="border-left-color: ${islemRengi}">${islemBaslik}${islemAltYazi}</div></div>`;
             });
@@ -1361,7 +1358,7 @@
                 try {
                     const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Sistem_Loglari', { views: [{ state: 'frozen', ySplit: 1 }] });
                     ws.columns = [ { header: 'TARİH', key: 'tarih', width: 20 }, { header: 'KULLANICI', key: 'kullanici', width: 25 }, { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İŞLEM DETAYI', key: 'islem', width: 90 } ];
-                    suankiLoglar.forEach(log => { const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const user = kullaniciAdiGetir(log.kullanici); let hamIslem = log.islem; if (hamIslem.startsWith('[CAT:')) { let bitisIndex = hamIslem.indexOf('] '); if (bitisIndex !== -1) { hamIslem = hamIslem.substring(bitisIndex + 2); } } let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/->/g, "→"); ws.addRow({ tarih: tarih, kullanici: user, kategori: log._gosterilenKategori || '-', marka: log._gosterilenMarka || '-', kod: (log.kod || '').toLocaleUpperCase('tr-TR'), islem: islemMetni }); });
+                    suankiLoglar.forEach(log => { const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const user = kullaniciAdiGetir(log.kullanici); let hamIslem = log.islem; if (hamIslem.startsWith('[CAT:')) { let bitisIndex = hamIslem.indexOf('] '); if (bitisIndex !== -1) { hamIslem = hamIslem.substring(bitisIndex + 2); } } let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/➔/g, "➔"); ws.addRow({ tarih: tarih, kullanici: user, kategori: log._gosterilenKategori || '-', marka: log._gosterilenMarka || '-', kod: (log.kod || '').toLocaleUpperCase('tr-TR'), islem: islemMetni }); });
                     ws.eachRow((row, rowNumber) => { row.eachCell((cell, colNumber) => { cell.font = { name: 'Calibri', size: 10 }; cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }; cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } }; if (rowNumber === 1) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } }; } else { if (colNumber === 2) cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF06B6D4' } }; if (colNumber === 5) cell.font = { name: 'Calibri', size: 10, bold: true }; } }); });
                     const buffer = await wb.xlsx.writeBuffer(); const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "sistem_loglari.xlsx"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
                 } catch (err) { console.error(err); alert("Excel dosyası oluşturulurken hata meydana geldi!"); } btn.disabled = false;
