@@ -144,6 +144,7 @@
             background: #475569;
             color: white; padding: 0 2px; font-size: 11px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
             transition: all 0.2s; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;
+            word-break: break-all;
         }
 
         /* Hover animasyonları sadece masaüstünde çalışsın (Mobilde tıklayınca buton kaymasın) */
@@ -254,12 +255,10 @@
 
         /* MOBİL UYARLAMA KISMI */
         @media screen and (max-width: 650px) {
-            /* Başlığı aşağı kaydırma ve çizgi iptali */
             .ust-bosluklu-container { padding-top: 15px !important; padding-bottom: 10px !important; }
             .ana-baslik { margin-top: 20px !important; font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .sabit-ust-alan { border-bottom: none !important; box-shadow: none !important; }
 
-            /* Kart alt ve üst dolgularını daralttık */
             .stok-satir { padding: 12px 6px !important; gap: 10px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
@@ -278,7 +277,6 @@
             .baslik-ayrac, .baslik-alt { display: none !important; }
             .malzeme-kod { font-size: 16px; margin: 0; }
             
-            /* MOBİL: KESİK ÇİZGİ ALT/ÜST BOŞLUKLARI DARALTILDI */
             .stok-bilgi { 
                 display: flex; flex-direction: column; align-items: center; gap: 8px; 
                 padding-bottom: 10px !important; 
@@ -287,11 +285,9 @@
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
-            /* MOBİL BUTONU (GÜNCELLE ve SORULDU YAN YANA - YUKARI BOŞLUĞU DARALTILDI) */
             .mobil-guncelle-btn-kutu { display: grid; grid-template-columns: 2.5fr 1fr; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam, .mobil-guncelle-btn-kutu .btn-soruldu { height: 48px; min-height: unset; font-size: 12px; }
 
-            /* MOBİLDE İNCE KUTULAR YAN YANA (ALTTAN BOŞLUK SIFIRLANDI) */
             .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
             .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 4px; }
             .kutu-input { height: 32px !important; font-size: 13px !important; padding: 0 !important; }
@@ -600,7 +596,6 @@
 
             islemKilitZamani = Date.now();
 
-            // Yeni değerleri al
             const e = parseInt(document.getElementById(`ikinci_el_${id}`).value) || 0;
             const a = parseInt(document.getElementById(`acik_${id}`).value) || 0;
             const k = parseInt(document.getElementById(`kapali_${id}`).value) || 0;
@@ -609,14 +604,12 @@
             const rafInput = document.getElementById(`raf_no_${id}`);
             const raf = rafInput ? temizKarakter(rafInput.value.trim()) : '';
 
-            // Eski değerleri data-orj'den çek
             const e_eski = parseInt(document.getElementById(`ikinci_el_${id}`).getAttribute('data-orj')) || 0;
             const a_eski = parseInt(document.getElementById(`acik_${id}`).getAttribute('data-orj')) || 0;
             const k_eski = parseInt(document.getElementById(`kapali_${id}`).getAttribute('data-orj')) || 0;
             const r_eski = parseInt(document.getElementById(`arizali_${id}`).getAttribute('data-orj')) || 0;
             const raf_eski = document.getElementById(`raf_no_${id}`).getAttribute('data-orj') || '';
 
-            // HİÇBİR ŞEY DEĞİŞMEDİYSE LOG VE VERİTABANI GÜNCELLEMESİNİ İPTAL ET
             if (e === e_eski && a === a_eski && k === k_eski && r === r_eski && raf === raf_eski) {
                 const inputsToCheck = ['ikinci_el', 'acik', 'kapali', 'arizali', 'raf_no'];
                 inputsToCheck.forEach(prefix => {
@@ -633,7 +626,6 @@
             const lblA = tablo === 'alt_kat' ? 'Testli' : 'Açık Kutu';
             const lblK = tablo === 'alt_kat' ? 'Kutulu' : 'Kapalı Kutu';
 
-            // Eski-Yeni kıyaslaması ile log metnini oluştur (Ok İşaretli Format)
             let degisimler = [];
             if (e !== e_eski) degisimler.push(`İkinci El (${e_eski} ➔ ${e})`);
             if (a !== a_eski) degisimler.push(`${lblA} (${a_eski} ➔ ${a})`);
@@ -702,29 +694,38 @@
             }
         }
         
-        // --- SENKRON SORULDU İŞLEMİ ---
+        // --- SENKRON SORULDU İŞLEMİ VE ONAY MEKANİZMASI ---
+        function sorulduOnayIste(id, tablo) {
+            uyariGoster("Bu ürünü 24 saat boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
+                sorulduIsaretle(id, tablo);
+            });
+        }
+
         async function sorulduIsaretle(id, tablo) {
-            islemKilitZamani = Date.now(); // KARTIN KAYBOLMAMASI İÇİN YENİLEMEYİ 3 SN DURDURUR
+            islemKilitZamani = Date.now(); 
             const suan = Date.now();
             
+            const tamIsim = kullaniciAdiGetir(aktifKullaniciEmail);
+            const ilkIsim = tamIsim.split(' ')[0]; // Giren kişinin sadece ilk ismini alır
+
             const kodEl = document.getElementById('kod_' + id);
             const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
             const btnMobil = document.getElementById('soruldu_btn_mobil_' + id);
             
             if(kodEl) kodEl.classList.add('sari-yan-son');
-            if(btnMasaustu) btnMasaustu.classList.add('sari-yan-son-btn');
-            if(btnMobil) btnMobil.classList.add('sari-yan-son-btn');
+            if(btnMasaustu) { btnMasaustu.classList.add('sari-yan-son-btn'); btnMasaustu.innerText = ilkIsim; }
+            if(btnMobil) { btnMobil.classList.add('sari-yan-son-btn'); btnMobil.innerText = ilkIsim; }
             
-            // Veritabanını güncelle (Loglara kesinlikle YAZMAZ)
-            sbClient.from(tablo).update({ soruldu_vakti: suan }).eq('id', id).then(({error}) => {
-                if (error) console.warn("Lütfen Supabase'de 'soruldu_vakti' isimli int8 sütununu oluşturun:", error.message);
+            // Veritabanını güncelle
+            sbClient.from(tablo).update({ soruldu_vakti: suan, soruldu_kisi: ilkIsim }).eq('id', id).then(({error}) => {
+                if (error) console.warn("Hata: Lütfen Supabase'de 'soruldu_kisi' (text) ve 'soruldu_vakti' (int8) sütunlarını oluşturun.");
             });
 
             setTimeout(() => {
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
-                if(btnMasaustu) btnMasaustu.classList.remove('sari-yan-son-btn');
-                if(btnMobil) btnMobil.classList.remove('sari-yan-son-btn');
-            }, 180000); // 3 Dakika
+                if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerText = 'SORULDU'; }
+                if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerText = 'SORULDU'; }
+            }, 120000); // 2 Dakika
         }
 
         function kategoriDegisti() {
@@ -774,6 +775,11 @@
             } else if (tip === 'onay') {
                 baslik.style.color = 'var(--accent-blue)'; baslik.innerText = "Onay Gerekli";
                 yeniBtnTamam.innerText = "Tamam"; yeniBtnGeri.innerText = "İptal";
+                yeniBtnTamam.onclick = () => { modal.style.display = 'none'; if(onTamamCallback) onTamamCallback(); };
+                yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
+            } else if (tip === 'soruldu_onay') {
+                baslik.style.color = 'var(--accent-orange)'; baslik.innerText = "Soruldu İşareti";
+                yeniBtnTamam.innerText = "EVET"; yeniBtnGeri.innerText = "HAYIR";
                 yeniBtnTamam.onclick = () => { modal.style.display = 'none'; if(onTamamCallback) onTamamCallback(); };
                 yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
             } else if (tip === 'basari') {
@@ -1053,11 +1059,14 @@
                 
                 let isSoruldu = false;
                 let kalanSure = 0;
+                let soranKisi = "SORULDU";
+
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
-                    if (gecenZaman < 180000) { 
+                    if (gecenZaman < 120000) {  // 2 DAKİKA KONTROLÜ
                         isSoruldu = true; 
-                        kalanSure = 180000 - gecenZaman; 
+                        kalanSure = 120000 - gecenZaman; 
+                        if(malzeme.soruldu_kisi) soranKisi = malzeme.soruldu_kisi;
                     }
                 }
                 
@@ -1154,7 +1163,7 @@
                                 <div class="kutu-baslik" style="opacity:0; user-select:none;">İŞLEM</div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; height: 100%; min-height: 72px; width: 100%;">
                                     ${guncelleBtnHTML}
-                                    <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
+                                    <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduOnayIste('${malzeme.id}', '${malzeme._tablo}')">${soranKisi}</button>
                                 </div>
                             </div>
                         </div>
@@ -1162,7 +1171,7 @@
                         <!-- MOBİL: TAM GENİŞLİK BUTONLAR -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
                             ${guncelleBtnHTML}
-                            <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
+                            <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduOnayIste('${malzeme.id}', '${malzeme._tablo}')">${soranKisi}</button>
                         </div>
                     </div>
                 `;
@@ -1174,15 +1183,15 @@
             veriler.forEach(malzeme => {
                 if (malzeme.soruldu_vakti) {
                     const fark = suan - malzeme.soruldu_vakti;
-                    if (fark < 180000) {
+                    if (fark < 120000) {
                         const timerId = setTimeout(() => {
                             const k = document.getElementById('kod_' + malzeme.id);
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
                             const bt = document.getElementById('soruldu_btn_mobil_' + malzeme.id);
                             if(k) k.classList.remove('sari-yan-son');
-                            if(bm) bm.classList.remove('sari-yan-son-btn');
-                            if(bt) bt.classList.remove('sari-yan-son-btn');
-                        }, 180000 - fark);
+                            if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerText = 'SORULDU'; }
+                            if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerText = 'SORULDU'; }
+                        }, 120000 - fark);
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
                 }
