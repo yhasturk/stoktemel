@@ -897,11 +897,11 @@
         function canliYayinBaslat() {
             sbClient.channel('stok-canli-takip')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'malzemeler' }, payload => {
-                    if (Date.now() - islemKilitZamani < 6000) return;
+                    if (Date.now() - islemKilitZamani < 3000) return;
                     stokGetir(true, true); 
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'alt_kat' }, payload => {
-                    if (Date.now() - islemKilitZamani < 6000) return;
+                    if (Date.now() - islemKilitZamani < 3000) return;
                     stokGetir(true, true); 
                 })
                 .subscribe();
