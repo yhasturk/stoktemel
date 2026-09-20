@@ -127,7 +127,7 @@
         }
         .islem-basarili { animation: yesil-flas 2s ease-out !important; }
 
-        /* BUTON TASARIMLARI (Birebir Eşit Genişlik - Font Küçüldü) */
+        /* BUTON TASARIMLARI */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
@@ -694,7 +694,6 @@
             }
         }
         
-        // --- SENKRON SORULDU İŞLEMİ VE ONAY MEKANİZMASI ---
         function sorulduOnayIste(id, tablo) {
             uyariGoster("Bu ürünü 24 saat boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
                 sorulduIsaretle(id, tablo);
@@ -706,7 +705,7 @@
             const suan = Date.now();
             
             const tamIsim = kullaniciAdiGetir(aktifKullaniciEmail);
-            const ilkIsim = tamIsim.split(' ')[0]; // Giren kişinin sadece ilk ismini alır
+            const ilkIsim = tamIsim.split(' ')[0]; 
 
             const kodEl = document.getElementById('kod_' + id);
             const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
@@ -716,7 +715,6 @@
             if(btnMasaustu) { btnMasaustu.classList.add('sari-yan-son-btn'); btnMasaustu.innerText = ilkIsim; }
             if(btnMobil) { btnMobil.classList.add('sari-yan-son-btn'); btnMobil.innerText = ilkIsim; }
             
-            // Veritabanını güncelle
             sbClient.from(tablo).update({ soruldu_vakti: suan, soruldu_kisi: ilkIsim }).eq('id', id).then(({error}) => {
                 if (error) console.warn("Hata: Lütfen Supabase'de 'soruldu_kisi' (text) ve 'soruldu_vakti' (int8) sütunlarını oluşturun.");
             });
@@ -725,7 +723,7 @@
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
                 if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerText = 'SORULDU'; }
                 if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerText = 'SORULDU'; }
-            }, 120000); // 2 Dakika
+            }, 120000); 
         }
 
         function kategoriDegisti() {
@@ -899,11 +897,11 @@
         function canliYayinBaslat() {
             sbClient.channel('stok-canli-takip')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'malzemeler' }, payload => {
-                    if (Date.now() - islemKilitZamani < 3000) return;
+                    if (Date.now() - islemKilitZamani < 6000) return;
                     stokGetir(true, true); 
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'alt_kat' }, payload => {
-                    if (Date.now() - islemKilitZamani < 3000) return;
+                    if (Date.now() - islemKilitZamani < 6000) return;
                     stokGetir(true, true); 
                 })
                 .subscribe();
@@ -1027,7 +1025,10 @@
                     const isKasaA = (temizKarakter(a.kategori) === 'KASALAR'); const isKasaB = (temizKarakter(b.kategori) === 'KASALAR');
                     if (isKasaA && !isKasaB) return 1; if (!isKasaA && isKasaB) return -1; 
                     let m1 = (a.marka || '').localeCompare(b.marka || '');
-                    if (m1 !== 0) return m1; return (a.kategori || '').localeCompare(b.kategori || '');
+                    if (m1 !== 0) return m1; 
+                    let kat1 = (a.kategori || '').localeCompare(b.kategori || '');
+                    if (kat1 !== 0) return kat1;
+                    return (a.kod || '').localeCompare(b.kod || ''); // KOD SIRALAMASI EKLENDİ
                 });
 
                 let gosterilecekVeri = birlesikVeri.slice(0, aramaLimiti);
@@ -1063,7 +1064,7 @@
 
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
-                    if (gecenZaman < 120000) {  // 2 DAKİKA KONTROLÜ
+                    if (gecenZaman < 120000) { 
                         isSoruldu = true; 
                         kalanSure = 120000 - gecenZaman; 
                         if(malzeme.soruldu_kisi) soranKisi = malzeme.soruldu_kisi;
