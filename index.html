@@ -127,7 +127,7 @@
         }
         .islem-basarili { animation: yesil-flas 2s ease-out !important; }
 
-        /* BUTON TASARIMLARI (MAVİ TONLU VE YEŞİL FLAŞLI) */
+        /* BUTON TASARIMLARI */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
@@ -135,28 +135,37 @@
             box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s, box-shadow 0.2s; 
             letter-spacing: 1px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3;
         }
-        .btn-guncelle-tam:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
         .btn-guncelle-tam:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: var(--border-color); }
         .btn-guncelle-pasif { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; box-shadow: none; font-size: 11px;}
 
-        /* SORULDU BUTONU TASARIMI (YENİ) */
+        /* SORULDU BUTONU TASARIMI */
         .btn-soruldu {
             width: 100%; height: 100%; min-height: 72px;
             background: #475569;
-            color: white; padding: 0 5px; font-size: 11.5px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
+            color: white; padding: 0 5px; font-size: 12px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
             transition: all 0.2s; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;
         }
-        .btn-soruldu:hover { background: #64748b; transform: translateY(-2px); }
 
-        /* SARI FLAŞ EFEKTİ (MALZEME KODU İÇİN) */
+        /* Hover animasyonları sadece masaüstünde çalışsın (Mobilde tıklayınca buton kaymasın) */
+        @media (hover: hover) and (pointer: fine) {
+            .btn-guncelle-tam:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
+            .btn-soruldu:hover:not(.sari-yan-son-btn) { background: #64748b; transform: translateY(-2px); }
+        }
+
+        /* SARI FLAŞ EFEKTİ (MALZEME KODU VE BUTON İÇİN) */
         @keyframes pulse-sari-metin {
             0% { color: #fff; text-shadow: 0 0 0px rgba(250, 204, 21, 0); }
             50% { color: var(--accent-yellow); text-shadow: 0 0 15px rgba(250, 204, 21, 0.9); }
             100% { color: #fff; text-shadow: 0 0 0px rgba(250, 204, 21, 0); }
         }
-        .sari-yan-son {
-            animation: pulse-sari-metin 1.2s infinite ease-in-out !important;
+        .sari-yan-son { animation: pulse-sari-metin 1.2s infinite ease-in-out !important; }
+
+        @keyframes pulse-sari-bg {
+            0% { background-color: #475569; color: white; box-shadow: 0 0 0px rgba(250, 204, 21, 0); }
+            50% { background-color: var(--accent-yellow); color: #000; box-shadow: 0 0 15px rgba(250, 204, 21, 0.9); border-color: var(--accent-yellow); }
+            100% { background-color: #475569; color: white; box-shadow: 0 0 0px rgba(250, 204, 21, 0); }
         }
+        .sari-yan-son-btn { animation: pulse-sari-bg 1.2s infinite ease-in-out !important; }
 
         /* BUTON FLAŞ ANİMASYONU (Maviden Yeşile) */
         @keyframes yesil-flas-btn {
@@ -245,13 +254,13 @@
 
         /* MOBİL UYARLAMA KISMI */
         @media screen and (max-width: 650px) {
-            /* Üstteki başlık boşluğu artırıldı */
-            .ust-bosluklu-container { padding-top: 55px !important; padding-bottom: 15px !important; }
-            
-            /* ARAMA BÖLÜMÜNÜN ALTINDAKİ YATAY ÇİZGİ KÖKÜNDEN KALDIRILDI */
+            /* Başlığı aşağı kaydırma ve çizgi iptali */
+            .ust-bosluklu-container { padding-top: 15px !important; padding-bottom: 10px !important; }
+            .ana-baslik { margin-top: 20px !important; font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .sabit-ust-alan { border-bottom: none !important; box-shadow: none !important; }
 
-            .stok-satir { padding: 18px 6px !important; gap: 10px; border-radius: 10px; }
+            /* Kart alt ve üst dolgularını daralttık */
+            .stok-satir { padding: 12px 6px !important; gap: 10px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
             .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
@@ -266,26 +275,24 @@
             #aramaKutusu::placeholder { font-size: 14px !important; font-weight: normal; }
             .buton-grup button { height: 28px !important; font-size: 11px !important; padding: 0 4px !important; border-radius: 6px !important;}
             
-            .ana-baslik { font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .baslik-ayrac, .baslik-alt { display: none !important; }
-            
             .malzeme-kod { font-size: 16px; margin: 0; }
             
-            /* MOBİL: KESİK ÇİZGİ KUTULARIN ALTINA DOKUNMASIN DİYE AŞAĞI KAYDIRILDI */
+            /* MOBİL: KESİK ÇİZGİ ALT/ÜST BOŞLUKLARI DARALTILDI */
             .stok-bilgi { 
-                display: flex; flex-direction: column; align-items: center; gap: 12px; 
-                padding-bottom: 28px !important; 
-                margin-bottom: 15px !important; 
+                display: flex; flex-direction: column; align-items: center; gap: 8px; 
+                padding-bottom: 10px !important; 
+                margin-bottom: 8px !important; 
             }
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
-            /* MOBİL BUTONU */
-            .mobil-guncelle-btn-kutu { display: flex; width: 100%; margin-top: 10px; gap: 6px; }
+            /* MOBİL BUTONU (GÜNCELLE ve SORULDU YAN YANA - YUKARI BOŞLUĞU DARALTILDI) */
+            .mobil-guncelle-btn-kutu { display: flex; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam, .mobil-guncelle-btn-kutu .btn-soruldu { height: 48px; min-height: unset; font-size: 13px; }
 
-            /* MOBİLDE İNCE KUTULAR YAN YANA */
-            .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; }
+            /* MOBİLDE İNCE KUTULAR YAN YANA (ALTTAN BOŞLUK SIFIRLANDI) */
+            .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
             .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 4px; }
             .kutu-input { height: 32px !important; font-size: 13px !important; padding: 0 !important; }
             .kutu-btn { height: 22px !important; font-size: 14px !important; border-radius: 4px !important; }
@@ -534,6 +541,7 @@
         let aramaLimiti = 50;
         
         let islemKilitZamani = 0;
+        let aktifSorulduZamanlayicilari = []; // Gecikmeli yüklemeler için sayaç hafızası
 
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
@@ -568,7 +576,6 @@
             input.value = val;
         }
 
-        // HIZLI DÜZENLEME (INLINE) FONKSİYONLARI
         function inlineSayiDegistir(id, alan, artis) {
             const input = document.getElementById(`${alan}_${id}`);
             if(!input) return;
@@ -657,22 +664,32 @@
             }
         }
         
-        // SORULDU BUTONU FONKSİYONU
-        function sorulduIsaretle(id) {
-            const el = document.getElementById('kod_' + id);
-            if(el) {
-                el.classList.add('sari-yan-son');
-                if(el.dataset.blinkTimer) {
-                    clearTimeout(parseInt(el.dataset.blinkTimer));
-                }
-                const timer = setTimeout(() => {
-                    el.classList.remove('sari-yan-son');
-                    el.dataset.blinkTimer = '';
-                }, 180000); // 3 DAKİKA
-                el.dataset.blinkTimer = timer;
-            }
+        // --- SENKRON SORULDU İŞLEMİ ---
+        async function sorulduIsaretle(id, tablo) {
+            const suan = Date.now();
+            
+            // Kullanıcının ekranında anında efekti başlat
+            const kodEl = document.getElementById('kod_' + id);
+            const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
+            const btnMobil = document.getElementById('soruldu_btn_mobil_' + id);
+            
+            if(kodEl) kodEl.classList.add('sari-yan-son');
+            if(btnMasaustu) btnMasaustu.classList.add('sari-yan-son-btn');
+            if(btnMobil) btnMobil.classList.add('sari-yan-son-btn');
+            
+            // Veritabanını güncelle (Diğer cihazlar ve sonradan girenler için)
+            // Not: supabase'de soruldu_vakti isimli bir int8 sütunu açmış olmalısınız.
+            sbClient.from(tablo).update({ soruldu_vakti: suan }).eq('id', id).then(({error}) => {
+                if (error) console.warn("Lütfen Supabase'de 'soruldu_vakti' isimli int8 sütununu oluşturun:", error.message);
+            });
+
+            // Geri sayımı bu bilgisayarda da kur
+            setTimeout(() => {
+                if(kodEl) kodEl.classList.remove('sari-yan-son');
+                if(btnMasaustu) btnMasaustu.classList.remove('sari-yan-son-btn');
+                if(btnMobil) btnMobil.classList.remove('sari-yan-son-btn');
+            }, 180000); // 3 Dakika
         }
-        // HIZLI DÜZENLEME BİTİŞ
 
         function kategoriDegisti() {
             const secilen = document.getElementById('inputKategori').value;
@@ -976,10 +993,13 @@
             }, beklemeSuresi); 
         }
 
-        // MASAÜSTÜ/MOBİL EKRANA YAZDIRMA 
         function ekranaYazdir(veriler, dahaFazlaVarMi = false) {
             mevcutEkranVerileri = veriler; 
             const liste = document.getElementById('listeGövdesi');
+            
+            // Temizlik işlemi: Önceki sayım zamanlayıcılarını sıfırla
+            aktifSorulduZamanlayicilari.forEach(clearTimeout);
+            aktifSorulduZamanlayicilari = [];
             
             if(!veriler || veriler.length === 0) {
                 liste.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Kayıt bulunamadı.</div>';
@@ -987,6 +1007,7 @@
             }
 
             let tumKartlar = '';
+            const suan = Date.now();
 
             veriler.forEach(malzeme => {
                 const kategoriBuyuk = temizKarakter(malzeme.kategori);
@@ -995,7 +1016,19 @@
                 const formatliMarka = temizKarakter(malzeme.marka || '-');
                 const orjinalKod = (malzeme.kod || '').toLocaleUpperCase('tr-TR');
                 
-                let gosterilenKod = orjinalKod;
+                // --- SONRADAN GİRENLER İÇİN SÜRE HESAPLAMA MANTIĞI ---
+                let isSoruldu = false;
+                let kalanSure = 0;
+                if (malzeme.soruldu_vakti) {
+                    const gecenZaman = suan - malzeme.soruldu_vakti;
+                    if (gecenZaman < 180000) { 
+                        isSoruldu = true; 
+                        kalanSure = 180000 - gecenZaman; 
+                    }
+                }
+                
+                const kodSariClass = isSoruldu ? 'sari-yan-son' : '';
+                const btnSariClass = isSoruldu ? 'sari-yan-son-btn' : '';
                 
                 const ikinciElBaslik = "2.EL";
                 const acikKutuBaslik = isAltTablo ? "TESTLİ" : "A.KUTU";
@@ -1010,7 +1043,6 @@
                 const disabledDurum = (aktifRol !== 'duzenleyici') ? 'disabled' : '';
                 const readonlyAttr = (aktifRol !== 'duzenleyici') ? 'readonly' : '';
                 
-                // GÜNCELLE BUTONU HTML
                 const guncelleBtnHTML = (aktifRol === 'duzenleyici') 
                     ? `<button class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
@@ -1019,10 +1051,9 @@
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="bilgi-sol mobil-gizle"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
-                            <div class="bilgi-orta"><span class="malzeme-kod" id="kod_${malzeme.id}" title="${orjinalKod}">${gosterilenKod}</span></div>
+                            <div class="bilgi-orta"><span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span></div>
                             <div class="bilgi-sag mobil-gizle"><span class="marka-etiket">${formatliMarka}</span></div>
                             
-                            <!-- Sadece Mobilde Görünecek Alt Satır (Masaüstünde Gizli) -->
                             <div class="masaustu-gizle">
                                 <span class="${etiketClass}">${kategoriBuyuk || '-'}</span>
                                 <span class="marka-etiket">${formatliMarka}</span>
@@ -1084,27 +1115,27 @@
                                 </div>
                             </div>
                             
-                            <!-- MASAÜSTÜ: 7. SÜTUN OLARAK BUTON GRUBU (3'e 1 oranında) -->
+                            <!-- MASAÜSTÜ: 7. SÜTUN İŞLEM ALANI (Genişlikler 1:1 yapıldı) -->
                             <div class="stok-buton-alani mobil-gizle">
                                 <div class="kutu-baslik" style="opacity:0; user-select:none;">İŞLEM</div>
                                 <div style="display: flex; gap: 6px; height: 100%; min-height: 72px;">
-                                    <div style="flex: 3;">
+                                    <div style="flex: 1;">
                                         ${guncelleBtnHTML}
                                     </div>
                                     <div style="flex: 1;">
-                                        <button class="btn-soruldu" onclick="sorulduIsaretle('${malzeme.id}')">SOR</button>
+                                        <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- MOBİL: AŞAĞIDA TAM GENİŞLİK YAN YANA BUTONLAR (3'e 1 oranında) -->
+                        <!-- MOBİL: TAM GENİŞLİK BUTONLAR (Genişlikler 2.5 : 1 Yapıldı - Yazı sığsın diye) -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
-                            <div style="flex: 3;">
+                            <div style="flex: 2.5;">
                                 ${guncelleBtnHTML}
                             </div>
                             <div style="flex: 1;">
-                                <button class="btn-soruldu" onclick="sorulduIsaretle('${malzeme.id}')">SORULDU</button>
+                                <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" onclick="sorulduIsaretle('${malzeme.id}', '${malzeme._tablo}')">SORULDU</button>
                             </div>
                         </div>
                     </div>
@@ -1113,6 +1144,24 @@
             
             if (dahaFazlaVarMi) { tumKartlar += `<button class="btn-daha-fazla" onclick="dahaFazlaYukle()">⬇️ Daha Fazla Göster ⬇️</button>`; }
             liste.innerHTML = tumKartlar;
+
+            // DOM'a HTML işlendikten sonra sonradan girenler için arka plan sayaçlarını aktif et
+            veriler.forEach(malzeme => {
+                if (malzeme.soruldu_vakti) {
+                    const fark = suan - malzeme.soruldu_vakti;
+                    if (fark < 180000) {
+                        const timerId = setTimeout(() => {
+                            const k = document.getElementById('kod_' + malzeme.id);
+                            const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
+                            const bt = document.getElementById('soruldu_btn_mobil_' + malzeme.id);
+                            if(k) k.classList.remove('sari-yan-son');
+                            if(bm) bm.classList.remove('sari-yan-son-btn');
+                            if(bt) bt.classList.remove('sari-yan-son-btn');
+                        }, 180000 - fark);
+                        aktifSorulduZamanlayicilari.push(timerId);
+                    }
+                }
+            });
         }
 
         function yeniKayitModalAc() {
@@ -1201,7 +1250,6 @@
             setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, 1500);
         }
 
-        // LOG FONKSİYONLARI
         function logAramaOnerileriniGuncelle() {
             const kriter = document.getElementById('logAramaKriteriDeğer').value;
             const aramaKutusu = document.getElementById('logAramaKutusu');
