@@ -127,7 +127,7 @@
         
         .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI - SON SÜTUN GENİŞLETİLDİ (2.2fr) */
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.2fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
@@ -156,7 +156,7 @@
         }
         .islem-basarili { animation: yesil-flas 3s ease-out !important; }
 
-        /* BUTON TASARIMLARI (Birebir Eşit Genişlik - Font Küçüldü) */
+        /* BUTON TASARIMLARI */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
@@ -176,15 +176,14 @@
             word-break: break-all;
         }
         .btn-soruldu:disabled { cursor: default; opacity: 0.7; }
-        .soran-ayrac { display: block; } /* Masaüstünde satır atlamasını sağlar */
+        .soran-ayrac { display: block; }
 
-        /* Hover animasyonları sadece masaüstünde çalışsın */
         @media (hover: hover) and (pointer: fine) {
             .btn-guncelle-tam:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.35); }
             .btn-soruldu:hover:not(.sari-yan-son-btn):not(:disabled) { background: #64748b; transform: translateY(-2px); }
         }
 
-        /* SARI FLAŞ EFEKTİ (MALZEME KODU VE BUTON İÇİN) */
+        /* SARI FLAŞ EFEKTİ */
         @keyframes pulse-sari-metin {
             0% { color: var(--text-main); text-shadow: 0 0 0px rgba(250, 204, 21, 0); }
             50% { color: var(--accent-yellow); text-shadow: 0 0 15px rgba(250, 204, 21, 0.9); }
@@ -324,13 +323,12 @@
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
-            /* MOBİL BUTONU - FLEX ROW İLE SORULDU SOLDA, GÜNCELLE SAĞDA YAPILDI */
-            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row; width: 100%; margin-top: 4px; gap: 6px; }
+            /* MOBİL BUTONU - FLEX ROW-REVERSE İLE SORULDU SOLDA, GÜNCELLE SAĞDA YAPILDI */
+            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
-            /* Mobil görünümde iç içe flex'i bozup yan yana yazdırmak için row kullanıldı */
             .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 48px; min-height: unset; font-size: 12px; flex-direction: row; gap: 4px;}
             
-            /* MOBİL İÇİN AYRAÇ (TİRE) EKLENDİ */
+            /* MOBİL İÇİN AYRAÇ (TİRE) */
             .soran-ayrac { display: inline; }
             .soran-ayrac::before { content: " - "; }
 
@@ -767,7 +765,7 @@
         }
         
         function sorulduOnayIste(id, tablo, mevcutSoranlarStr) {
-            uyariGoster("Bu ürünü 24 saat boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
+            uyariGoster("Bu ürünü 1 dakika boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
                 sorulduIsaretle(id, tablo, mevcutSoranlarStr);
             });
         }
@@ -779,7 +777,6 @@
             const tamIsim = kullaniciAdiGetir(aktifKullaniciEmail);
             const ilkIsim = tamIsim.split(' ')[0]; 
 
-            // Mantık: Listede zaten varsa onu listeden çıkar, sonra en sona ekle. Liste 2'yi geçerse en baştakini sil.
             let soranDizisi = mevcutSoranlarStr ? mevcutSoranlarStr.split(',') : [];
             if (soranDizisi.includes(ilkIsim)) {
                 soranDizisi = soranDizisi.filter(isim => isim !== ilkIsim);
@@ -790,7 +787,6 @@
             }
             const yeniSoranlarStr = soranDizisi.join(',');
 
-            // Buton içini görsel olarak hazırlama
             let displayHTML = `<span>${soranDizisi[0]}</span>`;
             if (soranDizisi.length > 1) {
                 displayHTML = `<span>${soranDizisi[0]}</span><span class="soran-ayrac"></span><span>${soranDizisi[1]}</span>`;
@@ -812,7 +808,7 @@
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
                 if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerHTML = '<span>SORULDU</span>'; }
                 if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerHTML = '<span>SORULDU</span>'; }
-            }, 86400000); 
+            }, 60000); 
         }
 
         function kategoriDegisti() {
@@ -1220,9 +1216,9 @@
 
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
-                    if (gecenZaman < 86400000) { 
+                    if (gecenZaman < 60000) { 
                         isSoruldu = true; 
-                        kalanSure = 86400000 - gecenZaman; 
+                        kalanSure = 60000 - gecenZaman; 
                         if(malzeme.soruldu_kisi) {
                             mevcutSoranlarStr = malzeme.soruldu_kisi;
                             let diz = mevcutSoranlarStr.split(',');
@@ -1349,7 +1345,7 @@
             veriler.forEach(malzeme => {
                 if (malzeme.soruldu_vakti) {
                     const fark = suan - malzeme.soruldu_vakti;
-                    if (fark < 86400000) {
+                    if (fark < 60000) {
                         const timerId = setTimeout(() => {
                             const k = document.getElementById('kod_' + malzeme.id);
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
@@ -1357,7 +1353,7 @@
                             if(k) k.classList.remove('sari-yan-son');
                             if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerHTML = '<span>SORULDU</span>'; }
                             if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerHTML = '<span>SORULDU</span>'; }
-                        }, 86400000 - fark);
+                        }, 60000 - fark);
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
                 }
@@ -1507,7 +1503,7 @@
 
         function excelDokumuAl() {
             const aranan = document.getElementById('aramaKutusu').value.trim(); const kategori = document.getElementById('kategoriFiltre').value.trim(); const marka = document.getElementById('markaFiltre').value.trim();
-            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?"; if (!aranan && !kategori && !marka) { uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?"; }
+            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?"; if (!aranan && !kategori && !marka) { uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İstiyor musunuz?"; }
             uyariGoster(uyariMesaji, "onay", async () => {
                 const btn = document.querySelector('.btn-excel'); btn.disabled = true; let allData = []; const limit = 1000; 
                 const altKategoriler = ['SÜRÜCÜ', 'MOTOR']; let searchMalzemeler = !kategori || !altKategoriler.includes(kategori); let searchAltKat = !kategori || altKategoriler.includes(kategori);
