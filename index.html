@@ -25,9 +25,9 @@
             --accent-yellow: #fbbf24; 
         }
 
-        /* AÇIK TEMA RENKLERİ (OKUNABİLİRLİK ARTIRILDI) */
+        /* AÇIK TEMA RENKLERİ (YUMUŞATILDI VE OKUNABİLİRLİK ARTIRILDI) */
         body.light-theme {
-            --bg-dark: #f1f5f9; /* Daha mat ve göz yormayan açık gri */
+            --bg-dark: #f1f5f9; 
             --bg-card: #ffffff;       
             --border-color: #cbd5e1;  
             --text-main: #0f172a;     
@@ -38,7 +38,6 @@
         body.light-theme .kutu-input { color: #0f172a; background: #f8fafc; border-color: #cbd5e1; }
         body.light-theme .kutu-btn { color: #0f172a; background: #e2e8f0; border-color: #cbd5e1; }
         body.light-theme .kutu-btn:hover:not(:disabled) { background: #cbd5e1; color:var(--accent-cyan); border-color:var(--accent-cyan); }
-        body.light-theme .kutu-input[readonly] { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.3);}
         body.light-theme .sayi-input-grup input { color: #0f172a; }
         body.light-theme .sayi-input-grup button { color: #0f172a; background: #e2e8f0; }
         body.light-theme .sayi-input-grup button:hover { background: #cbd5e1; color: #0f172a; }
@@ -52,7 +51,6 @@
         body.light-theme .istatistik-kutu:nth-child(1) { color: #059669 !important; border-color: #059669 !important; }
         body.light-theme .istatistik-kutu:nth-child(2) { color: #0284c7 !important; border-color: #0284c7 !important; }
         
-        /* AÇIK TEMA MARKA VE KATEGORİ RENKLERİ (Koyu kiremit ve lacivert) */
         body.light-theme .marka-etiket, body.light-theme .log-marka { background-color: #f1f5f9; color: #c2410c; border-color: #cbd5e1; }
         body.light-theme .kategori-etiket, body.light-theme .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
 
@@ -129,7 +127,7 @@
         
         .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI */
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI - SON SÜTUN GENİŞLETİLDİ (2.2fr) */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.2fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
@@ -142,7 +140,6 @@
 
         .kutu-input { width: 100%; height: 38px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); text-align: center; border-radius: 8px; font-weight: 800; font-size: 16px; outline: none; transition: all 0.3s; }
         .kutu-input:focus:not([readonly]) { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
-        .kutu-input[readonly] { color: var(--accent-orange); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
         .kutu-input:disabled { opacity: 0.6; cursor: not-allowed; }
         .kutu-input-raf { color: var(--accent-cyan); font-size: 14px; text-transform: uppercase; }
 
@@ -159,7 +156,7 @@
         }
         .islem-basarili { animation: yesil-flas 3s ease-out !important; }
 
-        /* BUTON TASARIMLARI */
+        /* BUTON TASARIMLARI (Birebir Eşit Genişlik - Font Küçüldü) */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
@@ -175,10 +172,11 @@
             width: 100%; height: 100%; min-height: 72px;
             background: #475569;
             color: white; padding: 0 2px; font-size: 11px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer;
-            transition: all 0.2s; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.2;
+            transition: all 0.2s; letter-spacing: 0.5px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.2;
             word-break: break-all;
         }
         .btn-soruldu:disabled { cursor: default; opacity: 0.7; }
+        .soran-ayrac { display: block; } /* Masaüstünde satır atlamasını sağlar */
 
         /* Hover animasyonları sadece masaüstünde çalışsın */
         @media (hover: hover) and (pointer: fine) {
@@ -326,9 +324,15 @@
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
-            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 4px; gap: 6px; }
+            /* MOBİL BUTONU - FLEX ROW İLE SORULDU SOLDA, GÜNCELLE SAĞDA YAPILDI */
+            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
-            .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
+            /* Mobil görünümde iç içe flex'i bozup yan yana yazdırmak için row kullanıldı */
+            .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 48px; min-height: unset; font-size: 12px; flex-direction: row; gap: 4px;}
+            
+            /* MOBİL İÇİN AYRAÇ (TİRE) EKLENDİ */
+            .soran-ayrac { display: inline; }
+            .soran-ayrac::before { content: " - "; }
 
             .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
             .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 4px; }
@@ -356,7 +360,6 @@
 <body>
 
     <script>
-        // Tema bilgisini okur, butonu ona göre şekillendiririz
         const kayitliTema = localStorage.getItem('stok_tema');
         if(kayitliTema === 'light') { document.body.classList.add('light-theme'); }
         
@@ -599,6 +602,7 @@
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ BULUT',
             'fazlisen@gmail.com': 'FAZLI ŞEN',
+            'info@temelotomasyon.com': 'MUSTAFA TEMEL',
             'koksaldur@gmail.com': 'KÖKSAL DUR',
             'serhatenesoz@gmail.com': 'SERHAT ÖZ',
             'talhacadir79@gmail.com': 'TALHA ÇADIR',
@@ -762,35 +766,52 @@
             }
         }
         
-        function sorulduOnayIste(id, tablo) {
+        function sorulduOnayIste(id, tablo, mevcutSoranlarStr) {
             uyariGoster("Bu ürünü 24 saat boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
-                sorulduIsaretle(id, tablo);
+                sorulduIsaretle(id, tablo, mevcutSoranlarStr);
             });
         }
 
-        async function sorulduIsaretle(id, tablo) {
+        async function sorulduIsaretle(id, tablo, mevcutSoranlarStr) {
             islemKilitZamani = Date.now(); 
             const suan = Date.now();
             
             const tamIsim = kullaniciAdiGetir(aktifKullaniciEmail);
             const ilkIsim = tamIsim.split(' ')[0]; 
 
+            // Mantık: Listede zaten varsa onu listeden çıkar, sonra en sona ekle. Liste 2'yi geçerse en baştakini sil.
+            let soranDizisi = mevcutSoranlarStr ? mevcutSoranlarStr.split(',') : [];
+            if (soranDizisi.includes(ilkIsim)) {
+                soranDizisi = soranDizisi.filter(isim => isim !== ilkIsim);
+            }
+            soranDizisi.push(ilkIsim);
+            if (soranDizisi.length > 2) {
+                soranDizisi.shift(); 
+            }
+            const yeniSoranlarStr = soranDizisi.join(',');
+
+            // Buton içini görsel olarak hazırlama
+            let displayHTML = `<span>${soranDizisi[0]}</span>`;
+            if (soranDizisi.length > 1) {
+                displayHTML = `<span>${soranDizisi[0]}</span><span class="soran-ayrac"></span><span>${soranDizisi[1]}</span>`;
+            }
+
             const kodEl = document.getElementById('kod_' + id);
             const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
             const btnMobil = document.getElementById('soruldu_btn_mobil_' + id);
             
             if(kodEl) kodEl.classList.add('sari-yan-son');
-            if(btnMasaustu) { btnMasaustu.classList.add('sari-yan-son-btn'); btnMasaustu.innerText = ilkIsim; }
-            if(btnMobil) { btnMobil.classList.add('sari-yan-son-btn'); btnMobil.innerText = ilkIsim; }
+            if(btnMasaustu) { btnMasaustu.classList.add('sari-yan-son-btn'); btnMasaustu.innerHTML = displayHTML; }
+            if(btnMobil) { btnMobil.classList.add('sari-yan-son-btn'); btnMobil.innerHTML = displayHTML; }
             
-            sbClient.from(tablo).update({ soruldu_vakti: suan, soruldu_kisi: ilkIsim }).eq('id', id).then(({error}) => {
+            sbClient.from(tablo).update({ soruldu_vakti: suan, soruldu_kisi: yeniSoranlarStr }).eq('id', id).then(({error}) => {
                 if (error) console.warn("Hata: Lütfen Supabase'de 'soruldu_kisi' (text) ve 'soruldu_vakti' (int8) sütunlarını oluşturun.");
             });
 
             setTimeout(() => {
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
-                if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerText = 'SORULDU'; }
-                if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerText = 'SORULDU'; }
+                if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerHTML = '<span>SORULDU</span>'; }
+                if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerHTML = '<span>SORULDU</span>'; }
             }, 86400000); 
         }
 
@@ -1194,20 +1215,29 @@
                 
                 let isSoruldu = false;
                 let kalanSure = 0;
-                let soranKisi = "SORULDU";
+                let soranKisiHTML = "<span>SORULDU</span>";
+                let mevcutSoranlarStr = "";
 
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
                     if (gecenZaman < 86400000) { 
                         isSoruldu = true; 
                         kalanSure = 86400000 - gecenZaman; 
-                        if(malzeme.soruldu_kisi) soranKisi = malzeme.soruldu_kisi;
+                        if(malzeme.soruldu_kisi) {
+                            mevcutSoranlarStr = malzeme.soruldu_kisi;
+                            let diz = mevcutSoranlarStr.split(',');
+                            if(diz.length === 1) {
+                                soranKisiHTML = `<span>${diz[0]}</span>`;
+                            } else if(diz.length > 1) {
+                                soranKisiHTML = `<span>${diz[0]}</span><span class="soran-ayrac"></span><span>${diz[1]}</span>`;
+                            }
+                        }
                     }
                 }
                 
                 const kodSariClass = isSoruldu ? 'sari-yan-son' : '';
                 const btnSariClass = isSoruldu ? 'sari-yan-son-btn' : '';
-                const sorBtnAttr = (!sorabilirMi) ? 'disabled' : `onclick="sorulduOnayIste('${malzeme.id}', '${malzeme._tablo}')"`;
+                const sorBtnAttr = (!sorabilirMi) ? 'disabled' : `onclick="sorulduOnayIste('${malzeme.id}', '${malzeme._tablo}', '${mevcutSoranlarStr}')"`;
                 
                 const ikinciElBaslik = "2.EL";
                 const acikKutuBaslik = isAltTablo ? "TESTLİ" : "A.KUTU";
@@ -1277,7 +1307,7 @@
                             </div>
 
                             <div class="sayi-blogu">
-                                <div class="kutu-baslik" style="color:var(--accent-green);">${toplamBaslik}</div>
+                                <div class="kutu-baslik">${toplamBaslik}</div>
                                 <input type="number" id="toplam_${malzeme.id}" class="kutu-input" data-orj="${malzeme.toplam ?? 0}" value="${malzeme.toplam ?? 0}" readonly>
                                 <div class="buton-satiri">
                                     <button class="kutu-btn" disabled>-</button>
@@ -1299,7 +1329,7 @@
                                 <div class="kutu-baslik" style="opacity:0; user-select:none;">İŞLEM</div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; height: 100%; min-height: 72px; width: 100%;">
                                     ${guncelleBtnHTML}
-                                    <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisi}</button>
+                                    <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisiHTML}</button>
                                 </div>
                             </div>
                         </div>
@@ -1307,7 +1337,7 @@
                         <!-- MOBİL: TAM GENİŞLİK BUTONLAR -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
                             ${guncelleBtnHTML}
-                            <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisi}</button>
+                            <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisiHTML}</button>
                         </div>
                     </div>
                 `;
@@ -1325,8 +1355,8 @@
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
                             const bt = document.getElementById('soruldu_btn_mobil_' + malzeme.id);
                             if(k) k.classList.remove('sari-yan-son');
-                            if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerText = 'SORULDU'; }
-                            if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerText = 'SORULDU'; }
+                            if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerHTML = '<span>SORULDU</span>'; }
+                            if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerHTML = '<span>SORULDU</span>'; }
                         }, 86400000 - fark);
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
