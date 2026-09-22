@@ -25,9 +25,9 @@
             --accent-yellow: #fbbf24; 
         }
 
-        /* AÇIK TEMA RENKLERİ (YUMUŞATILDI) */
+        /* AÇIK TEMA RENKLERİ (OKUNABİLİRLİK ARTIRILDI) */
         body.light-theme {
-            --bg-dark: #e2e8f0; /* Daha mat ve göz yormayan gri */
+            --bg-dark: #f1f5f9; /* Daha mat ve göz yormayan açık gri */
             --bg-card: #ffffff;       
             --border-color: #cbd5e1;  
             --text-main: #0f172a;     
@@ -35,7 +35,7 @@
         }
         body.light-theme .malzeme-kod { color: #0f172a; }
         body.light-theme .log-kod-span { color: #0f172a; }
-        body.light-theme .kutu-input { color: #0f172a; background: #f1f5f9; border-color: #cbd5e1; }
+        body.light-theme .kutu-input { color: #0f172a; background: #f8fafc; border-color: #cbd5e1; }
         body.light-theme .kutu-btn { color: #0f172a; background: #e2e8f0; border-color: #cbd5e1; }
         body.light-theme .kutu-btn:hover:not(:disabled) { background: #cbd5e1; color:var(--accent-cyan); border-color:var(--accent-cyan); }
         body.light-theme .kutu-input[readonly] { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.3);}
@@ -51,6 +51,10 @@
         body.light-theme .istatistik-kutu { background: #ffffff !important; }
         body.light-theme .istatistik-kutu:nth-child(1) { color: #059669 !important; border-color: #059669 !important; }
         body.light-theme .istatistik-kutu:nth-child(2) { color: #0284c7 !important; border-color: #0284c7 !important; }
+        
+        /* AÇIK TEMA MARKA VE KATEGORİ RENKLERİ (Koyu kiremit ve lacivert) */
+        body.light-theme .marka-etiket, body.light-theme .log-marka { background-color: #f1f5f9; color: #c2410c; border-color: #cbd5e1; }
+        body.light-theme .kategori-etiket, body.light-theme .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
 
         * { box-sizing: border-box; }
         
@@ -94,7 +98,6 @@
         .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
         .btn-excel { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
         .btn-log { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2); }
-        /* TEMA BUTONU RENGİ ANTRASİT/GRİ YAPILDI */
         .btn-tema { background: linear-gradient(135deg, #475569 0%, #334155 100%); box-shadow: 0 4px 10px rgba(71, 85, 105, 0.2); }
         .btn-cikis { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
         
@@ -126,7 +129,7 @@
         
         .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI - SON SÜTUN GENİŞLETİLDİ (2.2fr) */
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.2fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
@@ -148,15 +151,15 @@
         .kutu-btn:hover:not(:disabled) { background: #334155; color: var(--accent-cyan); border-color: var(--accent-cyan); }
         .kutu-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; border-color: var(--border-color); color: var(--text-muted); }
         
-        /* YEŞİL FLAŞ EFEKTİ (HÜCRELER İÇİN 3 SN) */
+        /* HIZLI ÇAKAR YEŞİL FLAŞ EFEKTİ (HÜCRELER İÇİN 3 SN) */
         @keyframes yesil-flas {
-            0% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
-            10% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.95); background-color: rgba(16, 185, 129, 0.3); border-color: var(--accent-green); color: var(--accent-green); }
-            100% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
+            0%, 100% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
+            10%, 30%, 50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.9); background-color: rgba(16, 185, 129, 0.4); border-color: var(--accent-green); color: var(--accent-green); }
+            20%, 40%, 60% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
         }
         .islem-basarili { animation: yesil-flas 3s ease-out !important; }
 
-        /* BUTON TASARIMLARI (Birebir Eşit Genişlik - Font Küçüldü) */
+        /* BUTON TASARIMLARI */
         .btn-guncelle-tam { 
             width: 100%; height: 100%; min-height: 72px; 
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
@@ -204,11 +207,11 @@
         }
         .sari-yan-son-btn { animation: pulse-sari-bg 1.2s infinite ease-in-out !important; }
 
-        /* BUTON FLAŞ ANİMASYONU (Maviden Yeşile 3 SN) */
+        /* HIZLI ÇAKAR BUTON FLAŞ ANİMASYONU (3 SN) */
         @keyframes yesil-flas-btn {
-            0% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
-            10% { background: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.95); }
-            100% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
+            0%, 100% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
+            10%, 30%, 50% { background: #34d399; box-shadow: 0 0 20px rgba(16, 185, 129, 0.9); }
+            20%, 40%, 60% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); }
         }
         .islem-basarili-buton { animation: yesil-flas-btn 3s ease-out !important; }
 
@@ -292,7 +295,6 @@
             
             .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
             
-            /* DÜZELTME: MOBİL BUTON TAŞMA SORUNU ÇÖZÜLDÜ */
             .buton-grup { 
                 grid-column: 1 / 3; 
                 order: -1; 
@@ -324,7 +326,6 @@
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
             .mobil-gizle { display: none !important; }
 
-            /* MOBİL BUTONU - FLEX ROW-REVERSE İLE SORULDU SOLDA, GÜNCELLE SAĞDA YAPILDI */
             .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
             .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
@@ -355,8 +356,16 @@
 <body>
 
     <script>
+        // Tema bilgisini okur, butonu ona göre şekillendiririz
         const kayitliTema = localStorage.getItem('stok_tema');
         if(kayitliTema === 'light') { document.body.classList.add('light-theme'); }
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnTema = document.getElementById('btnTema');
+            if(btnTema) {
+                btnTema.innerText = document.body.classList.contains('light-theme') ? 'Koyu' : 'Açık';
+            }
+        });
     </script>
 
     <div id="authEkrani">
@@ -415,7 +424,7 @@
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+Yeni</button>
                         <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
                         <button class="btn-log" onclick="logModalAc()">Log</button>
-                        <button class="btn-tema" onclick="temaDegistir()">Tema</button>
+                        <button id="btnTema" class="btn-tema" onclick="temaDegistir()">Tema</button>
                         <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
                     </div>
                 </div>
@@ -603,6 +612,11 @@
             body.classList.toggle('light-theme');
             const isLight = body.classList.contains('light-theme');
             localStorage.setItem('stok_tema', isLight ? 'light' : 'dark');
+            
+            const btnTema = document.getElementById('btnTema');
+            if(btnTema) {
+                btnTema.innerText = isLight ? 'Koyu' : 'Açık';
+            }
         }
 
         function kullaniciAdiGetir(email) {
@@ -1290,7 +1304,7 @@
                             </div>
                         </div>
                         
-                        <!-- MOBİL: TAM GENİŞLİK BUTONLAR (SORULDU SOLDA) -->
+                        <!-- MOBİL: TAM GENİŞLİK BUTONLAR -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
                             ${guncelleBtnHTML}
                             <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisi}</button>
