@@ -25,7 +25,7 @@
             --accent-yellow: #fbbf24; 
         }
 
-        /* AÇIK TEMA RENKLERİ (YUMUŞATILDI VE OKUNABİLİRLİK ARTIRILDI) */
+        /* AÇIK TEMA RENKLERİ */
         body.light-theme {
             --bg-dark: #f1f5f9; 
             --bg-card: #ffffff;       
@@ -38,7 +38,6 @@
         body.light-theme .kutu-input { color: #0f172a; background: #f8fafc; border-color: #cbd5e1; }
         body.light-theme .kutu-btn { color: #0f172a; background: #e2e8f0; border-color: #cbd5e1; }
         body.light-theme .kutu-btn:hover:not(:disabled) { background: #cbd5e1; color:var(--accent-cyan); border-color:var(--accent-cyan); }
-        body.light-theme .kutu-input[readonly] { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.3);}
         body.light-theme .sayi-input-grup input { color: #0f172a; }
         body.light-theme .sayi-input-grup button { color: #0f172a; background: #e2e8f0; }
         body.light-theme .sayi-input-grup button:hover { background: #cbd5e1; color: #0f172a; }
@@ -141,7 +140,6 @@
 
         .kutu-input { width: 100%; height: 38px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); text-align: center; border-radius: 8px; font-weight: 800; font-size: 16px; outline: none; transition: all 0.3s; }
         .kutu-input:focus:not([readonly]) { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
-        .kutu-input[readonly] { color: var(--accent-orange); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
         .kutu-input:disabled { opacity: 0.6; cursor: not-allowed; }
         .kutu-input-raf { color: var(--accent-cyan); font-size: 14px; text-transform: uppercase; }
 
@@ -150,7 +148,7 @@
         .kutu-btn:hover:not(:disabled) { background: #334155; color: var(--accent-cyan); border-color: var(--accent-cyan); }
         .kutu-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; border-color: var(--border-color); color: var(--text-muted); }
         
-        /* HIZLI ÇAKAR YEŞİL FLAŞ EFEKTİ */
+        /* HIZLI ÇAKAR YEŞİL FLAŞ EFEKTİ (HÜCRELER İÇİN 3 SN) */
         @keyframes yesil-flas {
             0%, 100% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
             10%, 30%, 50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.9); background-color: rgba(16, 185, 129, 0.4); border-color: var(--accent-green); color: var(--accent-green); }
@@ -765,7 +763,7 @@
         }
         
         function sorulduOnayIste(id, tablo, mevcutSoranlarStr) {
-            uyariGoster("Bu ürünü 24 saat boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
+            uyariGoster("Bu ürünü 1 dakika boyunca soruldu olarak işaretlemek istiyor musunuz?", "soruldu_onay", () => {
                 sorulduIsaretle(id, tablo, mevcutSoranlarStr);
             });
         }
@@ -808,7 +806,7 @@
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
                 if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerHTML = '<span>SORULDU</span>'; }
                 if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerHTML = '<span>SORULDU</span>'; }
-            }, 86400000); 
+            }, 60000); 
         }
 
         function kategoriDegisti() {
@@ -1031,6 +1029,7 @@
                     <div id="istatistikAlani" style="margin-bottom: 25px; font-weight: bold; color: var(--accent-cyan);">İstatistikler Hesaplanıyor...</div>
                     <span style="font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7;">🔍</span>
                     <strong style="color:var(--text-main);">Sistem hazır.</strong><br><br>Lütfen aramak istediğiniz malzeme kodunu yukarıya yazın veya filtreleri seçin.
+                    <div id="top3Alani"></div>
                 </div>`;
 
             try {
@@ -1088,6 +1087,71 @@
                         </div>
                     `;
                 }
+
+                // -------------------------------------------------------------
+                // YENİ ÖZELLİK: SON 1 HAFTA - EN ÇOK İŞLEM YAPAN 3 KULLANICI
+                // -------------------------------------------------------------
+                let logVerileri = [];
+                let logBaslangic = 0;
+                let logDevam = true;
+                const logLimit = 1000;
+                
+                const yediGunOnce = new Date();
+                yediGunOnce.setDate(yediGunOnce.getDate() - 7);
+                const tarihFiltresi = yediGunOnce.toISOString();
+
+                while(logDevam) {
+                    const { data, error } = await sbClient.from('log_kayitlari')
+                        .select('kullanici')
+                        .gte('tarih', tarihFiltresi)
+                        .range(logBaslangic, logBaslangic + logLimit - 1);
+                        
+                    if (error) break;
+                    if (data && data.length > 0) {
+                        logVerileri = logVerileri.concat(data);
+                        logBaslangic += logLimit;
+                        if (data.length < logLimit) logDevam = false;
+                    } else {
+                        logDevam = false;
+                    }
+                }
+
+                let kullaniciSayilari = {};
+                logVerileri.forEach(log => {
+                    if (log.kullanici) {
+                        let email = log.kullanici.toLowerCase().trim();
+                        kullaniciSayilari[email] = (kullaniciSayilari[email] || 0) + 1;
+                    }
+                });
+
+                let siraliKullanicilar = Object.keys(kullaniciSayilari).map(email => {
+                    return { isim: kullaniciAdiGetir(email), sayi: kullaniciSayilari[email] };
+                });
+
+                siraliKullanicilar.sort((a, b) => b.sayi - a.sayi);
+                let top3 = siraliKullanicilar.slice(0, 3);
+
+                let top3HTML = '';
+                if (top3.length > 0) {
+                    top3HTML = `
+                        <div style="margin-top: 35px; padding-top: 25px; border-top: 1px dashed var(--border-color);">
+                            <div style="font-size: 13px; font-weight: 800; color: var(--accent-orange); margin-bottom: 15px; letter-spacing: 0.5px;">SON 1 HAFTA - EN ÇOK STOK HAREKET</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; text-align: left;">
+                    `;
+                    top3.forEach((kisi, index) => {
+                        top3HTML += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                                <span style="font-weight: 700; color: var(--text-main); font-size: 13.5px;">${index + 1}- ${kisi.isim}</span>
+                                <span style="font-size: 12.5px; font-weight: 700; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.1); padding: 4px 10px; border-radius: 6px;">${kisi.sayi} İŞLEM</span>
+                            </div>
+                        `;
+                    });
+                    top3HTML += `</div></div>`;
+                }
+
+                const top3Alan = document.getElementById('top3Alani');
+                if (top3Alan) top3Alan.innerHTML = top3HTML;
+
             } catch (e) {
                 console.error(e);
             }
@@ -1216,9 +1280,9 @@
 
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
-                    if (gecenZaman < 86400000) { 
+                    if (gecenZaman < 60000) { 
                         isSoruldu = true; 
-                        kalanSure = 86400000 - gecenZaman; 
+                        kalanSure = 60000 - gecenZaman; 
                         if(malzeme.soruldu_kisi) {
                             mevcutSoranlarStr = malzeme.soruldu_kisi;
                             let diz = mevcutSoranlarStr.split(',');
@@ -1345,7 +1409,7 @@
             veriler.forEach(malzeme => {
                 if (malzeme.soruldu_vakti) {
                     const fark = suan - malzeme.soruldu_vakti;
-                    if (fark < 86400000) {
+                    if (fark < 60000) {
                         const timerId = setTimeout(() => {
                             const k = document.getElementById('kod_' + malzeme.id);
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
@@ -1353,7 +1417,7 @@
                             if(k) k.classList.remove('sari-yan-son');
                             if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerHTML = '<span>SORULDU</span>'; }
                             if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerHTML = '<span>SORULDU</span>'; }
-                        }, 86400000 - fark);
+                        }, 60000 - fark);
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
                 }
