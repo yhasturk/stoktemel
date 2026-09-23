@@ -148,7 +148,7 @@
         .kutu-btn:hover:not(:disabled) { background: #334155; color: var(--accent-cyan); border-color: var(--accent-cyan); }
         .kutu-btn:disabled { opacity: 0.3; cursor: not-allowed; background: transparent; border-color: var(--border-color); color: var(--text-muted); }
         
-        /* HIZLI ÇAKAR YEŞİL FLAŞ EFEKTİ (HÜCRELER İÇİN 3 SN) */
+        /* HIZLI ÇAKAR YEŞİL FLAŞ EFEKTİ */
         @keyframes yesil-flas {
             0%, 100% { box-shadow: 0 0 0px rgba(16, 185, 129, 0); background-color: var(--bg-dark); border-color: var(--border-color); }
             10%, 30%, 50% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.9); background-color: rgba(16, 185, 129, 0.4); border-color: var(--accent-green); color: var(--accent-green); }
@@ -281,6 +281,17 @@
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: var(--text-main); letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
         .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); padding: 4px 0 4px 12px; border-left: 4px solid; }
 
+        /* ========================================================
+           ANA SAYFA KARŞILAMA VE İSTATİSTİK ALANI SINIFLARI 
+           ======================================================== */
+        .karsilama-kutu { text-align:center; color:var(--text-muted); padding:30px 15px; font-size: 16px; border: 2px dashed var(--border-color); border-radius: 16px; margin: 10px auto; width: 100%; box-sizing: border-box; background: rgba(30, 41, 59, 0.5); }
+        .buyutec-simge { font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7; }
+        .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
+        .istatistik-kutu-deger { font-size: 24px; font-weight: 900; }
+        .istatistik-kutu-baslik { font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; }
+        .top3-konteyner { margin-top: 35px; padding-top: 25px; border-top: 1px dashed var(--border-color); }
+        .top3-baslik { font-size: 13px; font-weight: 800; color: var(--accent-orange); margin-bottom: 15px; letter-spacing: 0.5px; }
+
         /* MOBİL UYARLAMA KISMI */
         @media screen and (max-width: 650px) {
             .ust-bosluklu-container { padding-top: 15px !important; padding-bottom: 10px !important; }
@@ -350,6 +361,20 @@
             .log-kart { padding: 14px; }
             .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+            /* MOBİL ANA SAYFA SIKIŞTIRMA (Taşmayı Önlemek İçin) */
+            .karsilama-kutu { padding: 12px 8px !important; margin: 5px auto !important; font-size: 12px !important;}
+            #istatistikAlani { margin-bottom: 12px !important; }
+            .istatistik-kutu { padding: 8px 5px !important; }
+            .istatistik-kutu-deger { font-size: 18px !important; }
+            .istatistik-kutu-baslik { font-size: 9px !important; margin-bottom: 2px !important;}
+            .buyutec-simge { font-size: 24px !important; margin-bottom: 6px !important; }
+            .sistem-hazir-metin { margin-bottom: 4px !important; font-size: 13px !important; }
+            .top3-konteyner { margin-top: 12px !important; padding-top: 12px !important; }
+            .top3-baslik { font-size: 11px !important; margin-bottom: 10px !important; }
+            .top3-satir { padding: 8px 12px !important; }
+            .top3-satir span:first-child { font-size: 12px !important; }
+            .top3-satir span:last-child { font-size: 11px !important; padding: 3px 6px !important;}
         }
     </style>
 </head>
@@ -1025,10 +1050,11 @@
         async function baslat() {
             const liste = document.getElementById('listeGövdesi');
             liste.innerHTML = `
-                <div style="text-align:center; color:var(--text-muted); padding:30px 15px; font-size: 16px; border: 2px dashed var(--border-color); border-radius: 16px; margin: 10px auto; width: 100%; box-sizing: border-box; background: rgba(30, 41, 59, 0.5);">
+                <div class="karsilama-kutu">
                     <div id="istatistikAlani" style="margin-bottom: 25px; font-weight: bold; color: var(--accent-cyan);">İstatistikler Hesaplanıyor...</div>
-                    <span style="font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7;">🔍</span>
-                    <strong style="color:var(--text-main);">Sistem hazır.</strong><br><br>Lütfen aramak istediğiniz malzeme kodunu yukarıya yazın veya filtreleri seçin.
+                    <span class="buyutec-simge">🔍</span>
+                    <strong class="sistem-hazir-metin">Sistem hazır.</strong>
+                    Malzeme kodu yazın veya filtreleri seçin.
                     <div id="top3Alani"></div>
                 </div>`;
 
@@ -1077,20 +1103,17 @@
                     istAlan.innerHTML = `
                         <div style="display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 500px; margin: 0 auto;">
                             <div class="istatistik-kutu" style="flex: 1; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); padding: 15px 5px; border-radius: 12px; color: var(--accent-green); display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                <div style="font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center;">Toplam Malzeme</div>
-                                <div style="font-size: 24px; font-weight: 900;">${toplamMalzeme}</div>
+                                <div class="istatistik-kutu-baslik">Toplam Malzeme</div>
+                                <div class="istatistik-kutu-deger">${toplamMalzeme}</div>
                             </div>
                             <div class="istatistik-kutu" style="flex: 1; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent-cyan); padding: 15px 5px; border-radius: 12px; color: var(--accent-cyan); display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                <div style="font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center;">Toplam Çeşit</div>
-                                <div style="font-size: 24px; font-weight: 900;">${kodSet.size}</div>
+                                <div class="istatistik-kutu-baslik">Toplam Çeşit</div>
+                                <div class="istatistik-kutu-deger">${kodSet.size}</div>
                             </div>
                         </div>
                     `;
                 }
 
-                // -------------------------------------------------------------
-                // YENİ ÖZELLİK: SON 1 HAFTA - EN ÇOK İŞLEM YAPAN 3 KULLANICI
-                // -------------------------------------------------------------
                 let logVerileri = [];
                 let logBaslangic = 0;
                 let logDevam = true;
@@ -1134,13 +1157,13 @@
                 let top3HTML = '';
                 if (top3.length > 0) {
                     top3HTML = `
-                        <div style="margin-top: 35px; padding-top: 25px; border-top: 1px dashed var(--border-color);">
-                            <div style="font-size: 13px; font-weight: 800; color: var(--accent-orange); margin-bottom: 15px; letter-spacing: 0.5px;">SON 1 HAFTA - EN ÇOK STOK HAREKET</div>
+                        <div class="top3-konteyner">
+                            <div class="top3-baslik">SON 1 HAFTA - EN ÇOK STOK HAREKET</div>
                             <div style="display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; text-align: left;">
                     `;
                     top3.forEach((kisi, index) => {
                         top3HTML += `
-                            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+                            <div class="top3-satir" style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color);">
                                 <span style="font-weight: 700; color: var(--text-main); font-size: 13.5px;">${index + 1}- ${kisi.isim}</span>
                                 <span style="font-size: 12.5px; font-weight: 700; color: var(--accent-cyan); background: rgba(6, 182, 212, 0.1); padding: 4px 10px; border-radius: 6px;">${kisi.sayi} İŞLEM</span>
                             </div>
