@@ -808,7 +808,7 @@
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
                 if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerHTML = '<span>SORULDU</span>'; }
                 if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerHTML = '<span>SORULDU</span>'; }
-            }, 60000); 
+            }, 86400000); 
         }
 
         function kategoriDegisti() {
@@ -1216,9 +1216,9 @@
 
                 if (malzeme.soruldu_vakti) {
                     const gecenZaman = suan - malzeme.soruldu_vakti;
-                    if (gecenZaman < 60000) { 
+                    if (gecenZaman < 86400000) { 
                         isSoruldu = true; 
-                        kalanSure = 60000 - gecenZaman; 
+                        kalanSure = 86400000 - gecenZaman; 
                         if(malzeme.soruldu_kisi) {
                             mevcutSoranlarStr = malzeme.soruldu_kisi;
                             let diz = mevcutSoranlarStr.split(',');
@@ -1345,7 +1345,7 @@
             veriler.forEach(malzeme => {
                 if (malzeme.soruldu_vakti) {
                     const fark = suan - malzeme.soruldu_vakti;
-                    if (fark < 60000) {
+                    if (fark < 86400000) {
                         const timerId = setTimeout(() => {
                             const k = document.getElementById('kod_' + malzeme.id);
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
@@ -1353,7 +1353,7 @@
                             if(k) k.classList.remove('sari-yan-son');
                             if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerHTML = '<span>SORULDU</span>'; }
                             if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerHTML = '<span>SORULDU</span>'; }
-                        }, 60000 - fark);
+                        }, 86400000 - fark);
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
                 }
