@@ -127,8 +127,8 @@
         
         .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI */
-        .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.2fr; gap: 10px; width: 100%; }
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI - BUTON ALANI GENİŞLETİLDİ (2.8fr) */
+        .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.8fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
         
@@ -791,7 +791,7 @@
                 }
 
                 if (stokDegistiMi) {
-                    const tarihHTML = `<br><span style="font-size:8.5px; font-weight:500; white-space:nowrap; letter-spacing:-0.3px;">(En son: ${yeniTarih})</span>`;
+                    const tarihHTML = `<br><span style="font-size:10px; font-weight:500; white-space:nowrap; letter-spacing:-0.2px;">(En son: ${yeniTarih})</span>`;
                     const btnM = document.getElementById(`btn_guncelle_masaustu_${id}`);
                     const btnMob = document.getElementById(`btn_guncelle_mobil_${id}`);
                     if (btnM) btnM.innerHTML = `GÜNCELLE${tarihHTML}`;
@@ -1180,7 +1180,7 @@
                 if (top3.length > 0) {
                     top3HTML = `
                         <div class="top3-konteyner">
-                            <div class="top3-baslik">SON 1 HAFTA - EN ÇOK STOK HAREKET</div>
+                            <div class="top3-baslik">SON 1 HA HAFTA - EN ÇOK STOK HAREKET</div>
                             <div style="display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; text-align: left;">
                     `;
                     top3.forEach((kisi, index) => {
@@ -1359,7 +1359,7 @@
                 
                 let tarihHTML = "";
                 if (malzeme.guncelleme_tarihi) {
-                    tarihHTML = `<br><span style="font-size:8.5px; font-weight:500; white-space:nowrap; letter-spacing:-0.3px;">(En son: ${malzeme.guncelleme_tarihi})</span>`;
+                    tarihHTML = `<br><span style="font-size:10px; font-weight:500; white-space:nowrap; letter-spacing:-0.2px;">(En son: ${malzeme.guncelleme_tarihi})</span>`;
                 }
                 
                 const guncelleBtnMasaustu = (aktifRol === 'duzenleyici') 
