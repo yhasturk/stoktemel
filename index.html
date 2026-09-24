@@ -648,7 +648,7 @@
             
             const btnTema = document.getElementById('btnTema');
             if(btnTema) {
-                btnTema.innerText = isLight ? 'Koyu' : 'Açık';
+                btnTema.innerText = document.body.classList.contains('light-theme') ? 'Koyu' : 'Açık';
             }
         }
 
@@ -791,7 +791,7 @@
                 }
 
                 if (stokDegistiMi) {
-                    const tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(${yeniTarih})</span>`;
+                    const tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(En son: ${yeniTarih})</span>`;
                     const btnM = document.getElementById(`btn_guncelle_masaustu_${id}`);
                     const btnMob = document.getElementById(`btn_guncelle_mobil_${id}`);
                     if (btnM) btnM.innerHTML = `GÜNCELLE${tarihHTML}`;
@@ -1359,7 +1359,7 @@
                 
                 let tarihHTML = "";
                 if (malzeme.guncelleme_tarihi) {
-                    tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(${malzeme.guncelleme_tarihi})</span>`;
+                    tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(En son: ${malzeme.guncelleme_tarihi})</span>`;
                 }
                 
                 const guncelleBtnMasaustu = (aktifRol === 'duzenleyici') 
