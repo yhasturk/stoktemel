@@ -162,7 +162,7 @@
             background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
             color: white; padding: 0 2px; font-size: 11px; font-weight: 800; border: none; border-radius: 10px; cursor: pointer; 
             box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2); transition: transform 0.2s, box-shadow 0.2s; 
-            letter-spacing: 1px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3;
+            letter-spacing: 1px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.3;
         }
         .btn-guncelle-tam:disabled { opacity: 0.5; cursor: not-allowed; transform: none; background: var(--border-color); box-shadow: none; color: var(--text-muted); }
         .btn-guncelle-pasif { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; box-shadow: none; font-size: 10px;}
@@ -390,6 +390,14 @@
                 btnTema.innerText = document.body.classList.contains('light-theme') ? 'Koyu' : 'Açık';
             }
         });
+        
+        function gununTarihiGGAA() {
+            const date = new Date();
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const y = date.getFullYear();
+            return d + '.' + m + '.' + y;
+        }
     </script>
 
     <div id="authEkrani">
@@ -736,6 +744,12 @@
             }
             
             let payload = { ikinci_el: e, arizali: r, toplam: top, raf_no: raf };
+            
+            let stokDegistiMi = (e !== e_eski || a !== a_eski || k !== k_eski);
+            let yeniTarih = gununTarihiGGAA();
+            if (stokDegistiMi) {
+                payload.guncelleme_tarihi = yeniTarih;
+            }
 
             if (tablo === 'alt_kat') {
                 payload.testli = a;
@@ -774,6 +788,14 @@
                     void elTop.offsetWidth;
                     elTop.classList.add('islem-basarili');
                     elTop.setAttribute('data-orj', top.toString());
+                }
+
+                if (stokDegistiMi) {
+                    const tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(${yeniTarih})</span>`;
+                    const btnM = document.getElementById(`btn_guncelle_masaustu_${id}`);
+                    const btnMob = document.getElementById(`btn_guncelle_mobil_${id}`);
+                    if (btnM) btnM.innerHTML = `GÜNCELLE${tarihHTML}`;
+                    if (btnMob) btnMob.innerHTML = `GÜNCELLE${tarihHTML}`;
                 }
 
                 btnElement.classList.remove('islem-basarili-buton');
@@ -1335,8 +1357,17 @@
                 const disabledDurum = (aktifRol !== 'duzenleyici') ? 'disabled' : '';
                 const readonlyAttr = (aktifRol !== 'duzenleyici') ? 'readonly' : '';
                 
-                const guncelleBtnHTML = (aktifRol === 'duzenleyici') 
-                    ? `<button class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE</button>`
+                let tarihHTML = "";
+                if (malzeme.guncelleme_tarihi) {
+                    tarihHTML = `<br><span style="font-size:9.5px; font-weight:500;">(${malzeme.guncelleme_tarihi})</span>`;
+                }
+                
+                const guncelleBtnMasaustu = (aktifRol === 'duzenleyici') 
+                    ? `<button id="btn_guncelle_masaustu_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
+                    : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
+
+                const guncelleBtnMobil = (aktifRol === 'duzenleyici') 
+                    ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
                 tumKartlar += `
@@ -1411,7 +1442,7 @@
                             <div class="stok-buton-alani mobil-gizle">
                                 <div class="kutu-baslik" style="opacity:0; user-select:none;">İŞLEM</div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; height: 100%; min-height: 72px; width: 100%;">
-                                    ${guncelleBtnHTML}
+                                    ${guncelleBtnMasaustu}
                                     <button id="soruldu_btn_masaustu_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisiHTML}</button>
                                 </div>
                             </div>
@@ -1419,7 +1450,7 @@
                         
                         <!-- MOBİL: TAM GENİŞLİK BUTONLAR -->
                         <div class="mobil-guncelle-btn-kutu masaustu-gizle">
-                            ${guncelleBtnHTML}
+                            ${guncelleBtnMobil}
                             <button id="soruldu_btn_mobil_${malzeme.id}" class="btn-soruldu ${btnSariClass}" ${sorBtnAttr}>${soranKisiHTML}</button>
                         </div>
                     </div>
@@ -1509,7 +1540,8 @@
             if(btn) { btn.disabled = true; btn.innerHTML = 'Kaydediliyor...'; }
             
             const toplam = ikinci_el + ui_acik + ui_kapali;
-            let payload = { kategori, marka, kod, ikinci_el, arizali, toplam, raf_no };
+            const yeniTarih = gununTarihiGGAA();
+            let payload = { kategori, marka, kod, ikinci_el, arizali, toplam, raf_no, guncelleme_tarihi: yeniTarih };
             if (hedefTablo === 'alt_kat') { payload.testli = ui_acik; payload.kutulu = ui_kapali; } else { payload.acik_kutu = ui_acik; payload.kapali_kutu = ui_kapali; }
             
             const lblA = hedefTablo === 'alt_kat' ? 'Testli' : 'Açık Kutu';
