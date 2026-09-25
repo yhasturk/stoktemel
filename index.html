@@ -303,12 +303,13 @@
             
             .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
             
+            /* MOBİL BUTON GRUBU - SABİT 5'Lİ GRID YERİNE ESNEK (FLEX) YAPIYA GEÇİLDİ */
             .buton-grup { 
                 grid-column: 1 / 3; 
                 order: -1; 
                 width: 100%; 
-                display: grid !important; 
-                grid-template-columns: repeat(5, 1fr); 
+                display: flex !important; 
+                flex-wrap: nowrap;
                 gap: 4px; 
                 min-width: 0 !important; 
             }
@@ -453,9 +454,10 @@
                     </div>
                     
                     <div class="buton-grup">
+                        <!-- YENİ VE LOG BUTONLARI VARSAYILAN OLARAK GİZLENDİ -->
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+Yeni</button>
                         <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
-                        <button class="btn-log" onclick="logModalAc()">Log</button>
+                        <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
                         <button id="btnTema" class="btn-tema" onclick="temaDegistir()">Tema</button>
                         <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
                     </div>
@@ -1045,11 +1047,18 @@
                 const { data: yetkiData } = await sbClient.from('kullanicilar').select('*').eq('email', aktifKullaniciEmail).single();
                 if(!yetkiData || yetkiData.onayli === false) { await sbClient.auth.signOut(); document.getElementById('authMesaj').innerText = "Hesabınız henüz yönetici tarafından onaylanmadı."; return; }
                 let dbRol = yetkiData.rol ? yetkiData.rol.toLowerCase().trim() : 'okuyucu';
+                
                 if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
                     aktifRol = 'duzenleyici';
-                    document.getElementById('btnYeniEkle').style.display = 'block';
+                    // DÜZENLEYİCİ İSE YENİ VE LOG BUTONLARINI GÖSTER
+                    document.getElementById('btnYeniEkle').style.display = 'flex';
+                    document.getElementById('btnLogGoruntule').style.display = 'flex';
                     markalariArkaPlandaCek(); 
-                } else { aktifRol = 'okuyucu'; }
+                } else { 
+                    aktifRol = 'okuyucu'; 
+                    // OKUYUCU İSE BUTONLAR GİZLİ KALACAK
+                }
+                
                 document.getElementById('authEkrani').style.display = 'none';
                 document.getElementById('anaUygulama').style.display = 'block';
                 baslat(); canliYayinBaslat(); 
