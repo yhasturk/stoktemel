@@ -714,6 +714,7 @@
             const r_eski = parseInt(document.getElementById(`arizali_${id}`).getAttribute('data-orj')) || 0;
             const raf_eski = document.getElementById(`raf_no_${id}`).getAttribute('data-orj') || '';
 
+            // EĞER HİÇBİR DEĞİŞİKLİK YOKSA
             if (e === e_eski && a === a_eski && k === k_eski && r === r_eski && raf === raf_eski) {
                 const inputsToCheck = ['ikinci_el', 'acik', 'kapali', 'arizali', 'raf_no'];
                 inputsToCheck.forEach(prefix => {
@@ -722,8 +723,15 @@
                 });
                 const elTop = document.getElementById(`toplam_${id}`);
                 if (elTop) { elTop.classList.remove('islem-basarili'); void elTop.offsetWidth; elTop.classList.add('islem-basarili'); }
-                btnElement.classList.remove('islem-basarili-buton'); void btnElement.offsetWidth; btnElement.classList.add('islem-basarili-buton');
-                btnElement.disabled = false;
+                
+                btnElement.classList.remove('islem-basarili-buton'); 
+                void btnElement.offsetWidth; 
+                btnElement.classList.add('islem-basarili-buton');
+                
+                // Hiçbir değişiklik yoksa bile buton spamlanmasın diye 5 saniye bekleme
+                setTimeout(() => {
+                    btnElement.disabled = false;
+                }, 5000);
                 return;
             }
 
@@ -805,7 +813,11 @@
                 void btnElement.offsetWidth;
                 btnElement.classList.add('islem-basarili-buton');
 
-                btnElement.disabled = false;
+                // 5 Saniye Bekleme (Cooldown)
+                setTimeout(() => {
+                    btnElement.disabled = false;
+                }, 5000);
+
             } else {
                 uyariGoster("Kayıt sırasında bir hata oluştu: " + error.message, "hata");
                 btnElement.disabled = false;
@@ -1050,13 +1062,11 @@
                 
                 if (dbRol === 'düzenleyici' || dbRol === 'duzenleyici') {
                     aktifRol = 'duzenleyici';
-                    // DÜZENLEYİCİ İSE YENİ VE LOG BUTONLARINI GÖSTER
                     document.getElementById('btnYeniEkle').style.display = 'flex';
                     document.getElementById('btnLogGoruntule').style.display = 'flex';
                     markalariArkaPlandaCek(); 
                 } else { 
                     aktifRol = 'okuyucu'; 
-                    // OKUYUCU İSE BUTONLAR GİZLİ KALACAK
                 }
                 
                 document.getElementById('authEkrani').style.display = 'none';
