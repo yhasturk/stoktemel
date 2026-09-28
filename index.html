@@ -83,14 +83,14 @@
 
         .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 1px; font-weight: 900; width: 100%; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(59, 130, 246, 0.25); }
 
-        .header { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%;}
+        .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%;}
         .header input { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); height: 42px; padding: 0 14px; border-radius: 10px; font-size: 14px; outline: none; text-transform: uppercase; width: 100%; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .header input::placeholder { text-transform: none; color: var(--text-muted); font-weight: 600; }
         .header input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
-        #aramaKutusu { flex: 2; min-width: 150px; }
+        #aramaKutusu { flex: 1.2; min-width: 120px; }
         
-        .buton-grup { display: flex; gap: 8px; flex: 2; min-width: 380px;}
-        .buton-grup button { flex: 1; height: 42px; padding: 0 6px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; color: #fff; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s; }
+        .buton-grup { display: flex; gap: 6px; flex: 1.5; min-width: 280px;}
+        .buton-grup button { flex: 1; height: 42px; padding: 0 4px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; color: #fff; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s; }
         @media (hover: hover) { .buton-grup button:hover { transform: translateY(-2px); } }
         
         .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
@@ -216,9 +216,9 @@
         .btn-daha-fazla:hover { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); }
 
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
-        .header .custom-select-wrapper { min-width: 120px; }
+        .header .custom-select-wrapper { min-width: 100px; }
         .custom-select-input { width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; text-transform: uppercase; }
-        .header .custom-select-input { height: 42px; padding: 0 14px; font-weight: 600; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .header .custom-select-input { height: 42px; padding: 0 10px; font-weight: 600; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .custom-select-input[readonly] { cursor: pointer; caret-color: transparent; }
         .custom-select-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         
@@ -301,11 +301,12 @@
             .stok-satir { padding: 12px 6px !important; gap: 10px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
-            .header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; }
+            /* MOBİL HEADER - 3'LÜ IZGARA (GRID) YENİDEN DÜZENLENDİ */
+            .header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; align-items: stretch; }
             
-            /* MOBİL BUTON GRUBU - SABİT 5'Lİ GRID YERİNE ESNEK (FLEX) YAPIYA GEÇİLDİ */
+            /* MOBİL BUTON GRUBU */
             .buton-grup { 
-                grid-column: 1 / 3; 
+                grid-column: 1 / 4; 
                 order: -1; 
                 width: 100%; 
                 display: flex !important; 
@@ -321,9 +322,12 @@
                 letter-spacing: -0.5px;
             }
             
-            #aramaKutusu { grid-column: 1 / 3; width: 100%; height: 42px !important; font-size: 15px !important; text-align: left; padding: 0 14px !important; border-radius: 10px;}
-            .header .custom-select-wrapper { height: 34px !important; }
-            .header .custom-select-input { height: 34px !important; font-size: 13px !important; text-align: center; border-radius: 8px; padding: 0 8px !important; }
+            /* ANA ARAMA KUTUSU (1. SATIR) */
+            #aramaKutusu { grid-column: 1 / 4; width: 100%; height: 42px !important; font-size: 14px !important; text-align: left; padding: 0 14px !important; border-radius: 10px;}
+            
+            /* ALT 3'LÜ FİLTRE GRUBU (KATEGORİ, MARKA, RAF/KASA) */
+            .header .custom-select-wrapper { height: 34px !important; min-width: 0 !important;}
+            .header .custom-select-input { height: 34px !important; font-size: 11px !important; text-align: center; border-radius: 8px; padding: 0 4px !important; letter-spacing: -0.5px;}
             
             #wrapper-markaFiltre .custom-select-options, #wrapper-inputMarka .custom-select-options, #wrapper-logMarkaSecici .custom-select-options, #wrapper-kategoriFiltre .custom-select-options, #wrapper-logKategoriSecici .custom-select-options, #wrapper-inputKategori .custom-select-options, #wrapper-logAramaKriteri .custom-select-options, #wrapper-logKullaniciSecici .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; }
             #wrapper-markaFiltre .custom-select-option, #wrapper-inputMarka .custom-select-option, #wrapper-logMarkaSecici .custom-select-option, #wrapper-kategoriFiltre .custom-select-option, #wrapper-logKategoriSecici .custom-select-option, #wrapper-inputKategori .custom-select-option, #wrapper-logAramaKriteri .custom-select-option, #wrapper-logKullaniciSecici .custom-select-option { font-size: 11.5px; }
@@ -431,10 +435,11 @@
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
 
                 <div class="header">
+                    <!-- ARAMA KUTUSU DARALTILDI -->
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
                     
                     <div class="custom-select-wrapper" id="wrapper-kategoriFiltre">
-                        <input type="text" id="kategoriFiltre" class="custom-select-input" autocomplete="off" placeholder="KATEGORİLER" readonly onclick="gosterCustom('kategoriFiltre')">
+                        <input type="text" id="kategoriFiltre" class="custom-select-input" autocomplete="off" placeholder="KATEGORİ" readonly onclick="gosterCustom('kategoriFiltre')">
                         <div class="custom-select-options" id="options-kategoriFiltre">
                             <div class="custom-select-option" onclick="secCustomKategori(this, 'kategoriFiltre', '')">TÜM KATEGORİLER</div>
                             <div class="custom-select-option" onclick="secCustomKategori(this, 'kategoriFiltre', 'PLC')">PLC</div>
@@ -449,12 +454,16 @@
                     </div>
 
                     <div class="custom-select-wrapper" id="wrapper-markaFiltre">
-                        <input type="text" id="markaFiltre" class="custom-select-input" autocomplete="off" placeholder="YÜKLENİYOR..." oninput="this.value = temizKarakter(this.value); filtreleCustom('markaFiltre'); stokGetir()" onfocus="gosterCustom('markaFiltre')" onclick="gosterCustom('markaFiltre')">
+                        <input type="text" id="markaFiltre" class="custom-select-input" autocomplete="off" placeholder="MARKA" oninput="this.value = temizKarakter(this.value); filtreleCustom('markaFiltre'); stokGetir()" onfocus="gosterCustom('markaFiltre')" onclick="gosterCustom('markaFiltre')">
                         <div class="custom-select-options" id="options-markaFiltre"></div>
                     </div>
                     
+                    <!-- YENİ RAF VE KASA ARAMA KUTUSU EKLENDİ -->
+                    <div class="custom-select-wrapper" id="wrapper-rafFiltre">
+                        <input type="text" id="rafFiltre" class="custom-select-input" autocomplete="off" placeholder="RAF/KASA" oninput="this.value = temizKarakter(this.value); stokGetir()">
+                    </div>
+                    
                     <div class="buton-grup">
-                        <!-- YENİ VE LOG BUTONLARI VARSAYILAN OLARAK GİZLENDİ -->
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+Yeni</button>
                         <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
                         <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
@@ -714,7 +723,6 @@
             const r_eski = parseInt(document.getElementById(`arizali_${id}`).getAttribute('data-orj')) || 0;
             const raf_eski = document.getElementById(`raf_no_${id}`).getAttribute('data-orj') || '';
 
-            // EĞER HİÇBİR DEĞİŞİKLİK YOKSA
             if (e === e_eski && a === a_eski && k === k_eski && r === r_eski && raf === raf_eski) {
                 const inputsToCheck = ['ikinci_el', 'acik', 'kapali', 'arizali', 'raf_no'];
                 inputsToCheck.forEach(prefix => {
@@ -728,7 +736,6 @@
                 void btnElement.offsetWidth; 
                 btnElement.classList.add('islem-basarili-buton');
                 
-                // Hiçbir değişiklik yoksa bile buton spamlanmasın diye 5 saniye bekleme
                 setTimeout(() => {
                     btnElement.disabled = false;
                 }, 5000);
@@ -813,7 +820,6 @@
                 void btnElement.offsetWidth;
                 btnElement.classList.add('islem-basarili-buton');
 
-                // 5 Saniye Bekleme (Cooldown)
                 setTimeout(() => {
                     btnElement.disabled = false;
                 }, 5000);
@@ -1085,8 +1091,6 @@
             if (data && data.length > 0) { data.forEach(item => { if (item.marka) tumMarkalarSet.add(temizKarakter(item.marka).trim()); }); }
             tumMarkalarSet.delete(''); tumMarkalarSet.delete('-');
             markaOnerileriniDoldur([...tumMarkalarSet].sort());
-            document.getElementById('markaFiltre').placeholder = "MARKA SEÇ VEYA YAZ...";
-            document.getElementById('logMarkaSecici').placeholder = "MARKA ARA VEYA SEÇ...";
         }
 
         async function baslat() {
@@ -1244,8 +1248,9 @@
                 const arananInput = document.getElementById('aramaKutusu').value.trim();
                 const kategori = document.getElementById('kategoriFiltre').value.trim();
                 const marka = document.getElementById('markaFiltre').value.trim();
+                const rafInput = document.getElementById('rafFiltre').value.trim();
 
-                if (!arananInput && !kategori && !marka) { baslat(); return; }
+                if (!arananInput && !kategori && !marka && !rafInput) { baslat(); return; }
                 if (!mevcutLimitiKoru) {
                     aramaLimiti = 50;
                     document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
@@ -1270,12 +1275,25 @@
                         aramaOperatoru = 'ilike';
                     }
                 }
+                
+                let rafSorguDegeri = '';
+                let rafOperatoru = '';
+                if (rafInput) {
+                    if (rafInput.includes('*')) {
+                        rafOperatoru = 'ilike';
+                        rafSorguDegeri = rafInput.replace(/\*/g, '%');
+                    } else {
+                        rafOperatoru = 'ilike'; 
+                        rafSorguDegeri = rafInput;
+                    }
+                }
 
                 if (searchMalzemeler) {
                     let sorgu1 = sbClient.from('malzemeler').select('*').limit(aramaLimiti);
                     if (kategori) sorgu1 = sorgu1.ilike('kategori', kategori);
                     if (marka) sorgu1 = sorgu1.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu1 = sorgu1.filter('kod', aramaOperatoru, aramaDegeri);
+                    if (rafInput) sorgu1 = sorgu1.filter('raf_no', rafOperatoru, rafSorguDegeri);
                     p1 = sorgu1;
                 }
 
@@ -1284,6 +1302,7 @@
                     if (kategori) sorgu2 = sorgu2.ilike('kategori', kategori);
                     if (marka) sorgu2 = sorgu2.ilike('marka', `%${marka}%`);
                     if (arananInput) sorgu2 = sorgu2.filter('kod', aramaOperatoru, aramaDegeri);
+                    if (rafInput) sorgu2 = sorgu2.filter('raf_no', rafOperatoru, rafSorguDegeri);
                     p2 = sorgu2;
                 }
 
@@ -1641,16 +1660,32 @@
         }
 
         function excelDokumuAl() {
-            const aranan = document.getElementById('aramaKutusu').value.trim(); const kategori = document.getElementById('kategoriFiltre').value.trim(); const marka = document.getElementById('markaFiltre').value.trim();
-            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?"; if (!aranan && !kategori && !marka) { uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?"; }
+            const aranan = document.getElementById('aramaKutusu').value.trim(); 
+            const kategori = document.getElementById('kategoriFiltre').value.trim(); 
+            const marka = document.getElementById('markaFiltre').value.trim();
+            const rafInput = document.getElementById('rafFiltre').value.trim();
+            
+            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?"; 
+            if (!aranan && !kategori && !marka && !rafInput) { uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?"; }
+            
             uyariGoster(uyariMesaji, "onay", async () => {
                 const btn = document.querySelector('.btn-excel'); btn.disabled = true; let allData = []; const limit = 1000; 
                 const altKategoriler = ['SÜRÜCÜ', 'MOTOR']; let searchMalzemeler = !kategori || !altKategoriler.includes(kategori); let searchAltKat = !kategori || altKategoriler.includes(kategori);
                 let aramaOperatoru = 'ilike'; let aramaDegeri = '';
-                if (aranan) { const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split(''); if (safKarakterler.length > 0) { aramaDegeri = safKarakterler.join('[- /.]*'); aramaOperatoru = 'imatch'; } else { aramaDegeri = `%${buyukArama}%`; aramaOperatoru = 'ilike'; } }
-                if (searchMalzemeler) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'malzemeler')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
-                if (searchAltKat) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'alt_kat')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
+                
+                if (aranan) { 
+                    const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); 
+                    const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split(''); 
+                    if (safKarakterler.length > 0) { aramaDegeri = safKarakterler.join('[- /.]*'); aramaOperatoru = 'imatch'; } else { aramaDegeri = `%${buyukArama}%`; aramaOperatoru = 'ilike'; } 
+                }
+                
+                let rafSorguDegeri = ''; let rafOperatoru = '';
+                if (rafInput) { if (rafInput.includes('*')) { rafOperatoru = 'ilike'; rafSorguDegeri = rafInput.replace(/\*/g, '%'); } else { rafOperatoru = 'ilike'; rafSorguDegeri = rafInput; } }
+                
+                if (searchMalzemeler) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); if (rafInput) sorgu = sorgu.filter('raf_no', rafOperatoru, rafSorguDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'malzemeler')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
+                if (searchAltKat) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); if (rafInput) sorgu = sorgu.filter('raf_no', rafOperatoru, rafSorguDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'alt_kat')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
                 if (allData.length === 0) { btn.disabled = false; alert("Döküm alınacak kayıt bulunamadı!"); return; }
+                
                 try {
                     const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Stok_Listesi', { views: [{ state: 'frozen', ySplit: 1 }] });
                     ws.columns = [ { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İKİNCİ EL', key: 'ikinci_el', width: 16 }, { header: 'AÇIK KUTU / TESTLİ', key: 'acik_testli', width: 20 }, { header: 'KAPALI KUTU / KUTULU', key: 'kapali_kutulu', width: 22 }, { header: 'ARIZALI', key: 'arizali', width: 16 }, { header: 'TOPLAM', key: 'toplam', width: 16 }, { header: 'RAF / KASA NO', key: 'raf_no', width: 18 } ];
