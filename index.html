@@ -1436,7 +1436,8 @@
                 let kodEylemleri = "";
                 if (aktifRol === 'duzenleyici') {
                     const guvenliKod = orjinalKod.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                    kodEylemleri = `ontouchstart="kodDokunmaBasladi(event, '${guvenliKod}')" ontouchmove="kodDokunmaIptal(event)" ontouchend="kodDokunmaIptal(event)" ontouchcancel="kodDokunmaIptal(event)" onclick="kodTiklandi(event, '${guvenliKod}')"`;
+                    // Kopyalama pop-up'ını engellemek için CSS ve JS eklendi
+                    kodEylemleri = `ontouchstart="kodDokunmaBasladi(event, '${guvenliKod}')" ontouchmove="kodDokunmaIptal(event)" ontouchend="kodDokunmaIptal(event)" ontouchcancel="kodDokunmaIptal(event)" onclick="kodTiklandi(event, '${guvenliKod}')" oncontextmenu="event.preventDefault();" style="-webkit-touch-callout: none; -webkit-user-select: none; user-select: none;"`;
                 }
 
                 tumKartlar += `
