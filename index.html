@@ -402,6 +402,32 @@
             const y = date.getFullYear();
             return d + '.' + m + '.' + y;
         }
+
+        // GOOGLE GÖRSELLER İÇİN GİZLİ ARAMA FONKSİYONLARI (SADECE DÜZENLEYİCİ)
+        let kodBasiliTutanTimer = null;
+        let dokunmatikAktif = false;
+
+        function kodDokunmaBasladi(e, kod) {
+            dokunmatikAktif = true;
+            if(kodBasiliTutanTimer) clearTimeout(kodBasiliTutanTimer);
+            kodBasiliTutanTimer = setTimeout(() => {
+                window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(kod), '_blank');
+            }, 1000);
+        }
+
+        function kodDokunmaIptal(e) {
+            if(kodBasiliTutanTimer) clearTimeout(kodBasiliTutanTimer);
+        }
+
+        function kodTiklandi(e, kod) {
+            if(dokunmatikAktif) {
+                // Mobilden tıklama geldiyse (kısa dokunma kazası) yok say.
+                setTimeout(() => { dokunmatikAktif = false; }, 500);
+                return;
+            }
+            // Masaüstü doğrudan tıklama
+            window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(kod), '_blank');
+        }
     </script>
 
     <div id="authEkrani">
@@ -434,7 +460,6 @@
                 <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
 
                 <div class="header">
-                    <!-- ARAMA KUTUSU DARALTILDI -->
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
                     
                     <div class="custom-select-wrapper" id="wrapper-kategoriFiltre">
@@ -457,7 +482,6 @@
                         <div class="custom-select-options" id="options-markaFiltre"></div>
                     </div>
                     
-                    <!-- YENİ RAF VE KASA ARAMA KUTUSU EKLENDİ -->
                     <div class="custom-select-wrapper" id="wrapper-rafFiltre">
                         <input type="text" id="rafFiltre" class="custom-select-input" autocomplete="off" placeholder="RAF/KASA" oninput="this.value = temizKarakter(this.value); stokGetir()">
                     </div>
@@ -1196,7 +1220,6 @@
                     return { isim: kullaniciAdiGetir(email), sayi: kullaniciSayilari[email] };
                 });
 
-                // LİMİT 3'TEN 5'E ÇIKARTILDI
                 siraliKullanicilar.sort((a, b) => b.sayi - a.sayi);
                 let topListe = siraliKullanicilar.slice(0, 5);
 
@@ -1409,11 +1432,18 @@
                     ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
+                // GOOGLE GÖRSELLER ARAMA KISAYOLU (SADECE DÜZENLEYİCİ)
+                let kodEylemleri = "";
+                if (aktifRol === 'duzenleyici') {
+                    const guvenliKod = orjinalKod.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    kodEylemleri = `ontouchstart="kodDokunmaBasladi(event, '${guvenliKod}')" ontouchmove="kodDokunmaIptal(event)" ontouchend="kodDokunmaIptal(event)" ontouchcancel="kodDokunmaIptal(event)" onclick="kodTiklandi(event, '${guvenliKod}')"`;
+                }
+
                 tumKartlar += `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="bilgi-sol mobil-gizle"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
-                            <div class="bilgi-orta"><span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span></div>
+                            <div class="bilgi-orta"><span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}" ${kodEylemleri}>${orjinalKod}</span></div>
                             <div class="bilgi-sag mobil-gizle"><span class="marka-etiket">${formatliMarka}</span></div>
                             
                             <div class="masaustu-gizle">
@@ -1632,7 +1662,7 @@
 
         function loglariCiz(logDizisi, ozelMesajIsmi = '', ozelKategoriMesaji = '') {
             suankiLoglar = logDizisi; const logGövdesi = document.getElementById('logGövdesi');
-            if(logDizisi.length === 0) { if (ozelMesajIsmi) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi bir işlem bulunmamaktadır.</div>`; } else if (ozelKategoriMesaji) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelKategoriMesaji} kategorisinde herhangi bir kayıt bulunmamaktadır.</div>`; } else { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>'; } return; }
+            if(logDizisi.length === 0) { if (ozelMesajIsmi) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi işlem bulunmamaktadır.</div>`; } else if (ozelKategoriMesaji) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelKategoriMesaji} kategorisinde herhangi bir kayıt bulunmamaktadır.</div>`; } else { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>'; } return; }
             let tumLogKartlari = '';
             logDizisi.forEach(log => {
                 const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const user = kullaniciAdiGetir(log.kullanici);
