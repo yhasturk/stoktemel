@@ -54,6 +54,9 @@
         body.light-theme .marka-etiket, body.light-theme .log-marka { background-color: #f1f5f9; color: #c2410c; border-color: #cbd5e1; }
         body.light-theme .kategori-etiket, body.light-theme .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
 
+        body.light-theme .btn-ikon { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
+        body.light-theme .btn-ikon:hover { border-color: var(--accent-cyan); color: #0f172a; }
+
         * { box-sizing: border-box; }
         
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', system-ui, -apple-system, sans-serif; padding: 0; margin: 0; overflow-x: hidden; width: 100%; -webkit-font-smoothing: antialiased; transition: background-color 0.3s, color 0.3s; }
@@ -113,7 +116,7 @@
         /* MASAÜSTÜ: TEK SATIR BAŞLIK DÜZENİ */
         .stok-bilgi { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; border-bottom: 1px dashed var(--border-color); padding-bottom: 18px; margin-bottom: 15px; }
         .bilgi-sol { text-align: left; }
-        .bilgi-orta { text-align: center; }
+        .bilgi-orta { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .bilgi-sag { text-align: right; }
         .masaustu-gizle { display: none; }
         
@@ -125,7 +128,10 @@
         
         .kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; border: 1px solid var(--border-color) !important; animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3); }
         
-        .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0 15px; transition: color 0.3s, text-shadow 0.3s;}
+        /* MALZEME KODU VE YAN BUTONLAR */
+        .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0; transition: color 0.3s, text-shadow 0.3s; text-align: center;}
+        .btn-ikon { background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 16px; flex-shrink: 0; padding: 0; outline: none; }
+        .btn-ikon:hover { border-color: var(--accent-cyan); color: var(--text-main); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         
         /* MASAÜSTÜ: 7'Lİ GRID YAPI - BUTON ALANI GENİŞLETİLDİ (2.8fr) */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.8fr; gap: 10px; width: 100%; }
@@ -333,6 +339,8 @@
 
             .baslik-ayrac, .baslik-alt { display: none !important; }
             .malzeme-kod { font-size: 16px; margin: 0; }
+            .btn-ikon { width: 30px; height: 30px; font-size: 14px; }
+            .bilgi-orta { gap: 6px; }
             
             .stok-bilgi { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-bottom: 10px !important; margin-bottom: 8px !important; }
             .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
@@ -403,30 +411,22 @@
             return d + '.' + m + '.' + y;
         }
 
-        // GOOGLE GÖRSELLER İÇİN GİZLİ ARAMA FONKSİYONLARI (SADECE DÜZENLEYİCİ)
-        let kodBasiliTutanTimer = null;
-        let dokunmatikAktif = false;
-
-        function kodDokunmaBasladi(e, kod) {
-            dokunmatikAktif = true;
-            if(kodBasiliTutanTimer) clearTimeout(kodBasiliTutanTimer);
-            kodBasiliTutanTimer = setTimeout(() => {
-                window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(kod), '_blank');
-            }, 1000);
-        }
-
-        function kodDokunmaIptal(e) {
-            if(kodBasiliTutanTimer) clearTimeout(kodBasiliTutanTimer);
-        }
-
-        function kodTiklandi(e, kod) {
-            if(dokunmatikAktif) {
-                // Mobilden tıklama geldiyse (kısa dokunma kazası) yok say.
-                setTimeout(() => { dokunmatikAktif = false; }, 500);
-                return;
-            }
-            // Masaüstü doğrudan tıklama
-            window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(kod), '_blank');
+        function koduKopyala(metin, btnId) {
+            navigator.clipboard.writeText(metin).then(() => {
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    const eskiIcerik = btn.innerHTML;
+                    btn.innerHTML = '✅';
+                    btn.style.borderColor = 'var(--accent-green)';
+                    setTimeout(() => {
+                        btn.innerHTML = eskiIcerik;
+                        btn.style.borderColor = '';
+                    }, 1500);
+                }
+            }).catch(err => {
+                console.error('Kopyalama başarısız!', err);
+                uyariGoster("Kopyalama başarısız oldu.", "hata");
+            });
         }
     </script>
 
@@ -1432,19 +1432,20 @@
                     ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
-                // GOOGLE GÖRSELLER ARAMA KISAYOLU (SADECE DÜZENLEYİCİ)
-                let kodEylemleri = "";
+                // İKİLİ YARDIMCI BUTONLAR (SADECE DÜZENLEYİCİ)
+                let solButon = "";
+                let sagButon = "";
                 if (aktifRol === 'duzenleyici') {
                     const guvenliKod = orjinalKod.replace(/'/g, "\\'").replace(/"/g, "&quot;");
-                    // Kopyalama pop-up'ını engellemek için CSS ve JS eklendi
-                    kodEylemleri = `ontouchstart="kodDokunmaBasladi(event, '${guvenliKod}')" ontouchmove="kodDokunmaIptal(event)" ontouchend="kodDokunmaIptal(event)" ontouchcancel="kodDokunmaIptal(event)" onclick="kodTiklandi(event, '${guvenliKod}')" oncontextmenu="event.preventDefault();" style="-webkit-touch-callout: none; -webkit-user-select: none; user-select: none;"`;
+                    solButon = `<button class="btn-ikon" onclick="window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent('${guvenliKod}'), '_blank')" title="Google Görseller'de Ara">🖼️</button>`;
+                    sagButon = `<button id="btn_kopya_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_${malzeme.id}')" title="Kodu Kopyala">📋</button>`;
                 }
 
                 tumKartlar += `
                     <div class="${satirClass}">
                         <div class="stok-bilgi">
                             <div class="bilgi-sol mobil-gizle"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
-                            <div class="bilgi-orta"><span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}" ${kodEylemleri}>${orjinalKod}</span></div>
+                            <div class="bilgi-orta">${solButon}<span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>${sagButon}</div>
                             <div class="bilgi-sag mobil-gizle"><span class="marka-etiket">${formatliMarka}</span></div>
                             
                             <div class="masaustu-gizle">
