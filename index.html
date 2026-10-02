@@ -330,7 +330,8 @@
             .ana-baslik { margin-top: 20px !important; font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .sabit-ust-alan { border-bottom: none !important; box-shadow: none !important; }
 
-            .stok-satir { padding: 12px 6px !important; gap: 10px; border-radius: 10px; }
+            /* Tüm boşluklar sıkıştırıldı */
+            .stok-satir { padding: 8px 6px !important; gap: 6px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
             /* MOBİL HEADER - 3'LÜ IZGARA (GRID) YENİDEN DÜZENLENDİ */
@@ -368,8 +369,8 @@
             
             /* YENİ MOBİL BAŞLIK GÖRÜNÜMÜ */
             .masaustu-gorunum { display: none !important; }
-            .mobil-gorunum { display: flex !important; flex-direction: column; gap: 10px; width: 100%; }
-            .mobil-ust-satir { display: flex; justify-content: center; align-items: center; width: 100%; }
+            .mobil-gorunum { display: flex !important; flex-direction: column; gap: 4px; width: 100%; }
+            .mobil-ust-satir { display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 2px;}
             .mobil-alt-satir { display: flex; justify-content: space-between; align-items: center; width: 100%; }
             .mobil-alt-sol { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
             
@@ -388,20 +389,23 @@
             .mobil-alt-sag { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
             
             .malzeme-kod { font-size: 18px; margin: 0; }
-            .stok-baslik-konteyner { padding-bottom: 10px !important; margin-bottom: 10px !important; }
+            /* Başlık konteyneri alt boşluğu ve margin azaltıldı */
+            .stok-baslik-konteyner { padding-bottom: 6px !important; margin-bottom: 4px !important; }
             .btn-ikon { width: 26px; height: 26px; padding: 4px; }
 
-            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 4px; gap: 6px; }
-            .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
-            .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 48px; min-height: unset; font-size: 12px; flex-direction: row; gap: 4px;}
+            /* MOBİL GÜNCELLE-SORULDU BUTONLARI */
+            .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 2px; gap: 6px; }
+            .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 38px; min-height: unset; font-size: 12px; }
+            .mobil-guncelle-btn-kutu .btn-soruldu { flex: 1; height: 38px; min-height: unset; font-size: 12px; flex-direction: row; gap: 4px;}
             
             .soran-ayrac { display: inline; }
             .soran-ayrac::before { content: " - "; }
 
+            /* MOBİL VERİ KUTULARI YÜKSEKLİĞİ VE BOŞLUKLARI SIKIŞTIRILDI */
             .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
-            .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 4px; }
-            .kutu-input { height: 32px !important; font-size: 13px !important; padding: 0 !important; }
-            .kutu-btn { height: 22px !important; font-size: 14px !important; border-radius: 4px !important; }
+            .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 2px; }
+            .kutu-input { height: 26px !important; font-size: 13px !important; padding: 0 !important; }
+            .kutu-btn { height: 20px !important; font-size: 14px !important; border-radius: 4px !important; }
             .kutu-input-raf { font-size: 11px !important; }
             
             .modal-content { padding: 22px 18px; width: 92%; }
@@ -1676,9 +1680,6 @@
                             
                             <!-- Mobil Görünüm -->
                             <div class="mobil-gorunum">
-                                <div class="mobil-ust-satir">
-                                    <span class="malzeme-kod ${kodSariClass}" id="kod_m_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
-                                </div>
                                 <div class="mobil-alt-satir">
                                     <div class="mobil-alt-sol">
                                         <span class="${etiketClass}">${kategoriBuyuk || '-'}</span>
@@ -1687,6 +1688,9 @@
                                     <div class="mobil-alt-sag">
                                         ${mobilButonGrup}
                                     </div>
+                                </div>
+                                <div class="mobil-ust-satir">
+                                    <span class="malzeme-kod ${kodSariClass}" id="kod_m_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
                                 </div>
                             </div>
                         </div>
