@@ -1611,7 +1611,6 @@
                     ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
-                // İKİLİ YARDIMCI BUTONLAR + DÜZENLEME KALEMİ + SİL (SADECE DÜZENLEYİCİ)
                 let solButonGrup = "";
                 let sagButonGrup = "";
                 let mobilButonGrup = "";
@@ -1621,12 +1620,9 @@
                     const guvenliMarka = formatliMarka.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                     
                     const btnGoogle = `<button class="btn-ikon" onclick="window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent('${guvenliKod}'), '_blank')" title="Google Görseller'de Ara"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>`;
-                    
                     const btnKopya = `<button id="btn_kopya_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_${malzeme.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
                     const btnKopyaM = `<button id="btn_kopya_m_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_m_${malzeme.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
-                    
                     const btnDuzenle = `<button class="btn-ikon" onclick="editModalAc('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Hızlı Düzenle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
-                    
                     const btnSil = `<button class="btn-ikon btn-sil" onclick="silOnayIste('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Ürünü Sil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>`;
 
                     solButonGrup = `<div class="islem-buton-grup">${btnGoogle}${btnKopya}</div>`;
@@ -1759,6 +1755,199 @@
                         aktifSorulduZamanlayicilari.push(timerId);
                     }
                 }
+            });
+        }
+
+        function yeniKayitModalAc() {
+            document.getElementById('inputKategori').value = '';
+            document.getElementById('wrapper-inputKategori').classList.remove('disabled');
+            kategoriDegisti(); 
+            document.getElementById('inputMarka').value = '';
+            document.getElementById('inputKod').value = '';
+            document.getElementById('inputIkinciEl').value = 0;
+            document.getElementById('inputAcikKutu').value = 0;
+            document.getElementById('inputKapaliKutu').value = 0;
+            document.getElementById('inputArizali').value = 0;
+            document.getElementById('inputRafNo').value = '';
+            document.getElementById('YeniEkleModal').style.display = 'flex';
+        }
+
+        async function yeniVeriKaydet() {
+            if(aktifRol !== 'duzenleyici') return;
+
+            const kategori = temizKarakter(document.getElementById('inputKategori').value.trim()); 
+            const marka = temizKarakter(document.getElementById('inputMarka').value.trim());
+            const kod = document.getElementById('inputKod').value.trim().toLocaleUpperCase('tr-TR'); 
+            const raf_no = temizKarakter(document.getElementById('inputRafNo').value.trim());
+
+            const eAdet = parseInt(document.getElementById('inputIkinciEl').value) || 0;
+            const aAdet = parseInt(document.getElementById('inputAcikKutu').value) || 0;
+            const kAdet = parseInt(document.getElementById('inputKapaliKutu').value) || 0;
+            const rAdet = parseInt(document.getElementById('inputArizali').value) || 0;
+            const toplamAdetGiris = eAdet + aAdet + kAdet + rAdet;
+            
+            const hedefTablo = (kategori === 'SÜRÜCÜ' || kategori === 'MOTOR') ? 'alt_kat' : 'malzemeler';
+
+            let bosAlanlar = [];
+            if (!kategori) bosAlanlar.push("Kategori");
+            if (!marka) bosAlanlar.push("Marka");
+            if (!kod) bosAlanlar.push("Malzeme Kodu");
+
+            if (bosAlanlar.length > 0) {
+                uyariGoster("Lütfen aşağıdaki zorunlu alanları doldurun:<br><br><b style='color:var(--accent-blue);'>" + bosAlanlar.join("<br>") + "</b>", 'hata');
+                return;
+            }
+            if (toplamAdetGiris <= 0) {
+                uyariGoster("Yeni malzeme eklerken adetlerinden <b style='color:var(--accent-blue);'>en az birini</b> girmelisiniz.", 'hata');
+                return;
+            }
+
+            if (kategori !== 'KASALAR' && hedefTablo !== 'alt_kat') {
+                const { data: mevcutData } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod).neq('kategori', 'KASALAR');
+                if (mevcutData && mevcutData.length > 0) { uyariGoster("Bu kod zaten sisteme kayıtlı!", 'hata'); return; }
+            }
+
+            if (!raf_no) {
+                const msgRaf = kategori === 'KASALAR' ? "Kasa" : "Raf";
+                uyariGoster(`${msgRaf} numarasını boş bıraktınız.<br>Yine de devam etmek istiyor musunuz?`, 'onay', () => { gercekYeniVeriKaydet(kategori, marka, kod, eAdet, aAdet, kAdet, rAdet, raf_no, hedefTablo); });
+                return;
+            }
+            gercekYeniVeriKaydet(kategori, marka, kod, eAdet, aAdet, kAdet, rAdet, raf_no, hedefTablo);
+        }
+
+        async function gercekYeniVeriKaydet(kategori, marka, kod, ikinci_el, ui_acik, ui_kapali, arizali, raf_no, hedefTablo) {
+            const btn = document.getElementById('btnModalKaydet');
+            if(btn) { btn.disabled = true; btn.innerHTML = 'Kaydediliyor...'; }
+            
+            const toplam = ikinci_el + ui_acik + ui_kapali;
+            const yeniTarih = gununTarihiGGAA();
+            let payload = { kategori, marka, kod, ikinci_el, arizali, toplam, raf_no, guncelleme_tarihi: yeniTarih };
+            if (hedefTablo === 'alt_kat') { payload.testli = ui_acik; payload.kutulu = ui_kapali; } else { payload.acik_kutu = ui_acik; payload.kapali_kutu = ui_kapali; }
+            
+            const lblA = hedefTablo === 'alt_kat' ? 'Testli' : 'Açık Kutu';
+            const lblK = hedefTablo === 'alt_kat' ? 'Kutulu' : 'Kapalı Kutu';
+
+            const { error } = await sbClient.from(hedefTablo).insert([payload]);
+
+            if (!error) {
+                let logMetni = `[CAT:${kategori}|MRK:${marka}] YENİ KAYIT<br>İkinci El (${ikinci_el}) - ${lblA} (${ui_acik})<br>${lblK} (${ui_kapali}) - Arızalı (${arizali})`;
+                await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logMetni, kod: kod }]);
+                
+                if(marka) { tumMarkalarSet.add(marka); markaOnerileriniDoldur([...tumMarkalarSet].sort()); }
+
+                document.getElementById('YeniEkleModal').style.display = 'none';
+                uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => { stokGetir(true, true); });
+            } else {
+                if (error.message && (error.message.includes('duplicate key') || error.message.includes('unique constraint'))) {
+                    uyariGoster("<b>Veritabanı Engelledi!</b><br>Bu kod sistemde zaten var.", 'hata');
+                } else { uyariGoster("<b>Kayıt sırasında hata oluştu:</b><br>" + (error.message || "Bilinmeyen Hata"), 'hata'); }
+            }
+            setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, 1500);
+        }
+
+        function logAramaOnerileriniGuncelle() {
+            const kriter = document.getElementById('logAramaKriteriDeğer').value;
+            const aramaKutusu = document.getElementById('logAramaKutusu');
+            const kullaniciSeciciWrapper = document.getElementById('wrapper-logKullaniciSecici');
+            const kategoriSeciciWrapper = document.getElementById('wrapper-logKategoriSecici');
+            const markaSeciciWrapper = document.getElementById('wrapper-logMarkaSecici');
+            aramaKutusu.value = ''; aramaKutusu.style.display = 'none'; kullaniciSeciciWrapper.style.display = 'none'; kategoriSeciciWrapper.style.display = 'none'; markaSeciciWrapper.style.display = 'none';
+            if (kriter === 'kullanici') { kullaniciSeciciWrapper.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"]; let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim)); const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; logdakiKullanicilar.forEach(u => { if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) { gosterilecekKullanicilar.push(u); } }); let html = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; gosterilecekKullanicilar.forEach(u => { html += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`; }); document.getElementById('options-logKullaniciSecici').innerHTML = html;
+            } else if (kriter === 'kategori') { kategoriSeciciWrapper.style.display = 'block'; document.getElementById('logKategoriSecici').value = ''; 
+            } else if (kriter === 'marka') { markaSeciciWrapper.style.display = 'block'; document.getElementById('logMarkaSecici').value = ''; 
+            } else { aramaKutusu.style.display = 'block'; }
+            logIciAra(); 
+        }
+
+        async function logModalAc() {
+            document.getElementById('logAramaKriteri').value = 'Malzeme Koduna Göre'; document.getElementById('logAramaKriteriDeğer').value = 'kod'; document.getElementById('logAramaKutusu').style.display = 'block'; document.getElementById('wrapper-logKullaniciSecici').style.display = 'none'; document.getElementById('wrapper-logKategoriSecici').style.display = 'none'; document.getElementById('wrapper-logMarkaSecici').style.display = 'none'; document.getElementById('logAramaKutusu').value = ''; document.getElementById('LogModal').style.display = 'flex';
+            const logGövdesi = document.getElementById('logGövdesi'); logGövdesi.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Kayıtlar çekiliyor...</div>';
+            const { data: logData, error: logError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(500);
+            if (logError || !logData) { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px;">Kayıtlar alınamadı!</div>'; return; }
+            const p1 = sbClient.from('malzemeler').select('kod, kategori, marka'); const p2 = sbClient.from('alt_kat').select('kod, kategori, marka'); const [r1, r2] = await Promise.all([p1, p2]);
+            const malzemeMap = {}; [...(r1.data||[]), ...(r2.data||[])].forEach(m => { let mark = temizKarakter(m.marka || '-'); let kat = temizKarakter(m.kategori || '-'); let k = (m.kod || '').toLocaleUpperCase('tr-TR'); if(!malzemeMap[k] || kat === 'KASALAR') malzemeMap[k] = { kategori: kat, marka: mark }; });
+            const { data: userDbData } = await sbClient.from('kullanicilar').select('email'); let tumEmailler = userDbData ? userDbData.map(u => u.email) : [];
+            tumLoglar = logData.map(log => { if(log.kullanici && !tumEmailler.includes(log.kullanici)) tumEmailler.push(log.kullanici); let logIciKat = ''; let logIciMarka = ''; if (log.islem.startsWith('[CAT:')) { let bitisIndex = log.islem.indexOf('] '); if (bitisIndex !== -1) { let icerik = log.islem.substring(5, bitisIndex).split('|MRK:'); logIciKat = temizKarakter(icerik[0]); logIciMarka = temizKarakter(icerik[1]); } } const mapInfo = malzemeMap[(log.kod||'').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' }; return { ...log, _mapKategori: mapInfo.kategori, _mapMarka: mapInfo.marka, _logIciKategori: logIciKat, _logIciMarka: logIciMarka }; });
+            logAramaOnerileriniGuncelle(); loglariCiz(tumLoglar);
+        }
+
+        function loglariCiz(logDizisi, ozelMesajIsmi = '', ozelKategoriMesaji = '') {
+            suankiLoglar = logDizisi; const logGövdesi = document.getElementById('logGövdesi');
+            if(logDizisi.length === 0) { if (ozelMesajIsmi) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelMesajIsmi} 'e ait herhangi işlem bulunmamaktadır.</div>`; } else if (ozelKategoriMesaji) { logGövdesi.innerHTML = `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${ozelKategoriMesaji} kategorisinde herhangi bir kayıt bulunmamaktadır.</div>`; } else { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Arama kriterine uygun log bulunamadı.</div>'; } return; }
+            let tumLogKartlari = '';
+            logDizisi.forEach(log => {
+                const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const user = kullaniciAdiGetir(log.kullanici);
+                let hamIslem = log.islem; let kayitKategori = log._mapKategori; let kayitMarka = log._mapMarka;
+                if (hamIslem.startsWith('[CAT:')) { let bitisIndex = hamIslem.indexOf('] '); if (bitisIndex !== -1) { kayitKategori = log._logIciKategori || log._mapKategori; kayitMarka = log._logIciMarka || log._mapMarka; hamIslem = hamIslem.substring(bitisIndex + 2); } }
+                log._gosterilenKategori = kayitKategori; log._gosterilenMarka = kayitMarka;
+                const islemRengi = hamIslem.includes('YENİ') ? 'var(--accent-green)' : 'var(--accent-blue)';
+                if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>"); else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
+                hamIslem = hamIslem.replace(/->/g, "➔"); let islemParcalari = hamIslem.split('<br>'); let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`; let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
+                const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket'; let orijinalLogKod = (log.kod || '').toLocaleUpperCase('tr-TR');
+                tumLogKartlari += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${tarih}</span><span class="log-kullanici">${user}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${etiketClass}">${kayitKategori}</span><span class="log-marka">${kayitMarka}</span></div><span class="log-kod-span" style="font-size:13.5px;">${orijinalLogKod}</span></div><div class="log-islem-detay" style="border-left-color: ${islemRengi}">${islemBaslik}${islemAltYazi}</div></div>`;
+            });
+            logGövdesi.innerHTML = tumLogKartlari;
+        }
+
+        function logIciAra() {
+            const kriter = document.getElementById('logAramaKriteriDeğer').value; let aranan = ''; let arananKullaniciAd = ''; let arananKategoriAd = '';
+            if (kriter === 'kullanici') { aranan = document.getElementById('logKullaniciSecici').value; if(aranan) arananKullaniciAd = aranan; } else if (kriter === 'kategori') { aranan = document.getElementById('logKategoriSecici').value.trim(); if(aranan) arananKategoriAd = aranan; } else if (kriter === 'marka') { aranan = document.getElementById('logMarkaSecici').value.trim(); } else { aranan = document.getElementById('logAramaKutusu').value.trim().toLocaleUpperCase('tr-TR'); }
+            if (!aranan) { loglariCiz(tumLoglar); return; }
+            const filtrelenmis = tumLoglar.filter(log => {
+                if (kriter === 'kod') { const arananTemiz = aranan.replace(/[^A-Z0-9]/g, ''); const temizKod = temizKarakter(log.kod || '').replace(/[^A-Z0-9]/g, ''); let searchIndex = 0; for (let i = 0; i < temizKod.length; i++) { let charK = temizKod[i]; let charA = arananTemiz[searchIndex]; if ((charK === 'I' || charK === 'İ') && (charA === 'I' || charA === 'İ')) { searchIndex++; } else if (charK === charA) { searchIndex++; } if (searchIndex === arananTemiz.length) return true; } return false; } 
+                else if (kriter === 'marka') { return temizKarakter(log._gosterilenMarka || '').includes(aranan); } else if (kriter === 'kategori') { return (log._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === aranan; } else if (kriter === 'kullanici') { return temizKarakter(kullaniciAdiGetir(log.kullanici)) === aranan; } return false;
+            });
+            loglariCiz(filtrelenmis, arananKullaniciAd, arananKategoriAd);
+        }
+
+        function excelDokumuAl() {
+            const aranan = document.getElementById('aramaKutusu').value.trim(); 
+            const kategori = document.getElementById('kategoriFiltre').value.trim(); 
+            const marka = document.getElementById('markaFiltre').value.trim();
+            const rafInput = document.getElementById('rafFiltre').value.trim();
+            
+            let uyariMesaji = "Şu anki kriterlere uygun güncel tabloyu (.xlsx olarak) indirmek istiyor musunuz?"; 
+            if (!aranan && !kategori && !marka && !rafInput) { uyariMesaji = "Herhangi bir filtre seçilmediği için TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?"; }
+            
+            uyariGoster(uyariMesaji, "onay", async () => {
+                const btn = document.querySelector('.btn-excel'); btn.disabled = true; let allData = []; const limit = 1000; 
+                const altKategoriler = ['SÜRÜCÜ', 'MOTOR']; let searchMalzemeler = !kategori || !altKategoriler.includes(kategori); let searchAltKat = !kategori || altKategoriler.includes(kategori);
+                let aramaOperatoru = 'ilike'; let aramaDegeri = '';
+                
+                if (aranan) { 
+                    const buyukArama = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); 
+                    const safKarakterler = buyukArama.replace(/[^A-Z0-9]/g, '').split(''); 
+                    if (safKarakterler.length > 0) { aramaDegeri = safKarakterler.join('[- /.]*'); aramaOperatoru = 'imatch'; } else { aramaDegeri = `%${buyukArama}%`; aramaOperatoru = 'ilike'; } 
+                }
+                
+                let rafSorguDegeri = ''; let rafOperatoru = '';
+                if (rafInput) { if (rafInput.includes('*')) { rafOperatoru = 'ilike'; rafSorguDegeri = rafInput.replace(/\*/g, '%'); } else { rafOperatoru = 'ilike'; rafSorguDegeri = rafInput; } }
+                
+                if (searchMalzemeler) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('malzemeler').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); if (rafInput) sorgu = sorgu.filter('raf_no', rafOperatoru, rafSorguDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'malzemeler')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
+                if (searchAltKat) { let baslangic = 0; let devam = true; while(devam) { let sorgu = sbClient.from('alt_kat').select('*').order('kategori', { ascending: true }).order('marka', { ascending: true }).range(baslangic, baslangic + limit - 1); if (kategori) sorgu = sorgu.ilike('kategori', kategori); if (marka) sorgu = sorgu.ilike('marka', `%${marka}%`); if (aranan) sorgu = sorgu.filter('kod', aramaOperatoru, aramaDegeri); if (rafInput) sorgu = sorgu.filter('raf_no', rafOperatoru, rafSorguDegeri); let { data, error } = await sorgu; if (error) { alert("Hata: " + error.message); btn.disabled = false; return; } if (data && data.length > 0) { allData = allData.concat(verileriNormallestir(data, 'alt_kat')); baslangic += limit; if (data.length < limit) devam = false; } else { devam = false; } } }
+                if (allData.length === 0) { btn.disabled = false; alert("Döküm alınacak kayıt bulunamadı!"); return; }
+                
+                try {
+                    const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Stok_Listesi', { views: [{ state: 'frozen', ySplit: 1 }] });
+                    ws.columns = [ { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İKİNCİ EL', key: 'ikinci_el', width: 16 }, { header: 'AÇIK KUTU / TESTLİ', key: 'acik_testli', width: 20 }, { header: 'KAPALI KUTU / KUTULU', key: 'kapali_kutulu', width: 22 }, { header: 'ARIZALI', key: 'arizali', width: 16 }, { header: 'TOPLAM', key: 'toplam', width: 16 }, { header: 'RAF / KASA NO', key: 'raf_no', width: 18 } ];
+                    allData.forEach(m => { ws.addRow({ kategori: temizKarakter(m.kategori) || '', marka: temizKarakter(m.marka) || '-', kod: (m.kod || '').toLocaleUpperCase('tr-TR'), ikinci_el: m.ikinci_el ?? 0, acik_testli: m._acik_testli ?? 0, kapali_kutulu: m._kapali_kutulu ?? 0, arizali: m.arizali ?? 0, toplam: m.toplam ?? 0, raf_no: temizKarakter(m.raf_no) || '' }); });
+                    ws.eachRow((row, rowNumber) => { row.eachCell((cell, colNumber) => { cell.font = { name: 'Calibri', size: 10 }; cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }; cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } }; if (rowNumber === 1) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } }; } else { if (colNumber === 3) cell.font = { name: 'Calibri', size: 10, bold: true }; if (colNumber === 8) cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF059669' } }; } }); });
+                    const buffer = await wb.xlsx.writeBuffer(); const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "STOK_TEMEL_HIBER_LISTESI.xlsx"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                } catch (err) { console.error(err); alert("Excel dosyası oluşturulurken hata meydana geldi!"); }
+                btn.disabled = false; 
+            });
+        }
+
+        function logExcelDokumuAl() {
+            uyariGoster("Şu an ekranda listelenen log kayıtlarını Excel formatında indirmek istiyor musunuz?", "onay", async () => {
+                if (!suankiLoglar || suankiLoglar.length === 0) { alert("Döküm alınacak kayıt bulunamadı!"); return; } const btn = document.querySelector('.log-arama-konteyner .btn-excel'); btn.disabled = true;
+                try {
+                    const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Sistem_Loglari', { views: [{ state: 'frozen', ySplit: 1 }] });
+                    ws.columns = [ { header: 'TARİH', key: 'tarih', width: 20 }, { header: 'KULLANICI', key: 'kullanici', width: 25 }, { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İŞLEM DETAYI', key: 'islem', width: 90 } ];
+                    suankiLoglar.forEach(log => { const tarih = new Date(log.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const user = kullaniciAdiGetir(log.kullanici); let hamIslem = log.islem; if (hamIslem.startsWith('[CAT:')) { let bitisIndex = hamIslem.indexOf('] '); if (bitisIndex !== -1) { hamIslem = hamIslem.substring(bitisIndex + 2); } } let islemMetni = hamIslem.replace(/<br>/g, " | ").replace(/➔/g, "➔"); ws.addRow({ tarih: tarih, kullanici: user, kategori: log._gosterilenKategori || '-', marka: log._gosterilenMarka || '-', kod: (log.kod || '').toLocaleUpperCase('tr-TR'), islem: islemMetni }); });
+                    ws.eachRow((row, rowNumber) => { row.eachCell((cell, colNumber) => { cell.font = { name: 'Calibri', size: 10 }; cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true }; cell.border = { top: { style: 'thin', color: { argb: 'FF000000' } }, left: { style: 'thin', color: { argb: 'FF000000' } }, bottom: { style: 'thin', color: { argb: 'FF000000' } }, right: { style: 'thin', color: { argb: 'FF000000' } } }; if (rowNumber === 1) { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } }; cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF000000' } }; } else { if (colNumber === 2) cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF06B6D4' } }; if (colNumber === 5) cell.font = { name: 'Calibri', size: 10, bold: true }; } }); });
+                    const buffer = await wb.xlsx.writeBuffer(); const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "sistem_loglari.xlsx"; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                } catch (err) { console.error(err); alert("Excel dosyası oluşturulurken hata meydana geldi!"); } btn.disabled = false;
             });
         }
     </script>
