@@ -113,13 +113,6 @@
         
         @keyframes pulse-etiket { 0% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; } 50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(234, 88, 12, 0.85); opacity: 1; } 100% { transform: scale(1); box-shadow: 0 0 8px rgba(234, 88, 12, 0.4); opacity: 0.9; } }
         
-        /* MASAÜSTÜ: TEK SATIR BAŞLIK DÜZENİ */
-        .stok-bilgi { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; border-bottom: 1px dashed var(--border-color); padding-bottom: 18px; margin-bottom: 15px; }
-        .bilgi-sol { text-align: left; }
-        .bilgi-orta { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
-        .bilgi-sag { text-align: right; }
-        .masaustu-gizle { display: none; }
-        
         .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px; }
         .kategori-etiket, .log-kategori-etiket { background-color: rgba(6, 182, 212, 0.08); color: var(--accent-cyan); }
         .marka-etiket, .log-marka { background-color: var(--bg-dark); color: var(--accent-yellow); }
@@ -131,12 +124,22 @@
         /* MALZEME KODU VE YAN BUTONLAR */
         .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0; transition: color 0.3s, text-shadow 0.3s; text-align: center;}
         
-        /* Masaüstü İkon Boyutu (24x24) */
+        /* İKON BUTON STANDARTLARI */
         .btn-ikon { background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; padding: 3px; outline: none; }
         .btn-ikon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; }
         .btn-ikon:hover { border-color: var(--accent-cyan); color: var(--text-main); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .btn-sil:hover { border-color: var(--accent-red) !important; color: var(--accent-red) !important; }
+        .islem-buton-grup { display: flex; gap: 6px; align-items: center; }
+
+        /* MASAÜSTÜ: BAŞLIK BÖLÜMÜ */
+        .stok-baslik-konteyner { width: 100%; border-bottom: 1px dashed var(--border-color); padding-bottom: 15px; margin-bottom: 15px; }
+        .masaustu-gorunum { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; }
+        .bilgi-sol { text-align: left; }
+        .bilgi-orta { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+        .bilgi-sag { text-align: right; }
+        .mobil-gorunum { display: none; }
         
-        /* MASAÜSTÜ: 7'Lİ GRID YAPI - BUTON ALANI GENİŞLETİLDİ (2.8fr) */
+        /* MASAÜSTÜ: 7'Lİ GRID YAPI */
         .stok-sayilar { display: grid; grid-template-columns: repeat(6, 1fr) 2.8fr; gap: 10px; width: 100%; }
         .sayi-blogu { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .stok-buton-alani { display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: flex-end; }
@@ -341,15 +344,18 @@
             #wrapper-markaFiltre .custom-select-option, #wrapper-inputMarka .custom-select-option, #wrapper-logMarkaSecici .custom-select-option, #wrapper-kategoriFiltre .custom-select-option, #wrapper-logKategoriSecici .custom-select-option, #wrapper-inputKategori .custom-select-option, #wrapper-logAramaKriteri .custom-select-option, #wrapper-logKullaniciSecici .custom-select-option { font-size: 11.5px; }
 
             .baslik-ayrac, .baslik-alt { display: none !important; }
-            .malzeme-kod { font-size: 16px; margin: 0; }
             
-            /* Mobil İkon Boyutu (26x26) - KORUNDU */
+            /* YENİ MOBİL BAŞLIK GÖRÜNÜMÜ */
+            .masaustu-gorunum { display: none !important; }
+            .mobil-gorunum { display: flex !important; flex-direction: column; gap: 10px; width: 100%; }
+            .mobil-ust-satir { display: flex; justify-content: center; align-items: center; width: 100%; }
+            .mobil-alt-satir { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+            .mobil-alt-sol { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+            .mobil-alt-sag { display: flex; gap: 6px; align-items: center; justify-content: flex-end; }
+            
+            .malzeme-kod { font-size: 18px; margin: 0; }
+            .stok-baslik-konteyner { padding-bottom: 10px !important; margin-bottom: 10px !important; }
             .btn-ikon { width: 26px; height: 26px; padding: 4px; }
-            .bilgi-orta { gap: 6px; }
-            
-            .stok-bilgi { display: flex; flex-direction: column; align-items: center; gap: 8px; padding-bottom: 10px !important; margin-bottom: 8px !important; }
-            .masaustu-gizle { display: flex !important; justify-content: space-between; width: 100%; margin-top: 5px; margin-bottom: 5px; }
-            .mobil-gizle { display: none !important; }
 
             .mobil-guncelle-btn-kutu { display: flex; flex-direction: row-reverse; width: 100%; margin-top: 4px; gap: 6px; }
             .mobil-guncelle-btn-kutu .btn-guncelle-tam { flex: 1; height: 48px; min-height: unset; font-size: 12px; }
@@ -932,10 +938,12 @@
             }
 
             const kodEl = document.getElementById('kod_' + id);
+            const kodElM = document.getElementById('kod_m_' + id);
             const btnMasaustu = document.getElementById('soruldu_btn_masaustu_' + id);
             const btnMobil = document.getElementById('soruldu_btn_mobil_' + id);
             
             if(kodEl) kodEl.classList.add('sari-yan-son');
+            if(kodElM) kodElM.classList.add('sari-yan-son');
             if(btnMasaustu) { btnMasaustu.classList.add('sari-yan-son-btn'); btnMasaustu.innerHTML = displayHTML; }
             if(btnMobil) { btnMobil.classList.add('sari-yan-son-btn'); btnMobil.innerHTML = displayHTML; }
             
@@ -945,9 +953,27 @@
 
             setTimeout(() => {
                 if(kodEl) kodEl.classList.remove('sari-yan-son');
+                if(kodElM) kodElM.classList.remove('sari-yan-son');
                 if(btnMasaustu) { btnMasaustu.classList.remove('sari-yan-son-btn'); btnMasaustu.innerHTML = '<span>SORULDU</span>'; }
                 if(btnMobil) { btnMobil.classList.remove('sari-yan-son-btn'); btnMobil.innerHTML = '<span>SORULDU</span>'; }
             }, 60000); 
+        }
+
+        function silOnayIste(id, tablo, kod, marka, kategori) {
+            uyariGoster(`<b style="color:var(--accent-orange); font-size:18px;">${kod}</b><br>Bu ürünü stok listesinden tamamen silmek istediğinize emin misiniz?<br><br><span style="font-size:12px; color:var(--accent-red); font-weight:bold;">Bu işlem geri alınamaz!</span>`, "sil_onay", async () => {
+                await gercekSil(id, tablo, kod, marka, kategori);
+            });
+        }
+
+        async function gercekSil(id, tablo, kod, marka, kategori) {
+            const { error } = await sbClient.from(tablo).delete().eq('id', id);
+            if (!error) {
+                let logMetni = `[CAT:${kategori}|MRK:${marka}] ÜRÜN SİLİNDİ`;
+                await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logMetni, kod: kod }]);
+                uyariGoster("Ürün başarıyla silindi.", "basari", () => { stokGetir(true, true); });
+            } else {
+                uyariGoster("Silme işlemi sırasında hata oluştu: " + error.message, "hata");
+            }
         }
 
         function kategoriDegisti() {
@@ -987,6 +1013,7 @@
             const yeniBtnGeri = btnGeri.cloneNode(true); btnGeri.parentNode.replaceChild(yeniBtnGeri, btnGeri);
 
             yeniBtnGeri.style.display = '';
+            yeniBtnTamam.style.background = ''; // Stili sıfırla (silme butonu kırmızısını temizle)
             modal.style.display = 'flex';
 
             if (tip === 'hata') {
@@ -1008,6 +1035,12 @@
                 baslik.style.color = 'var(--accent-green)'; baslik.innerText = "İşlem Başarılı";
                 yeniBtnTamam.innerText = "Tamam"; yeniBtnGeri.style.display = 'none'; 
                 yeniBtnTamam.onclick = () => { modal.style.display = 'none'; if(onTamamCallback) onTamamCallback(); };
+            } else if (tip === 'sil_onay') {
+                baslik.style.color = 'var(--accent-red)'; baslik.innerText = "SİLME ONAYI";
+                yeniBtnTamam.innerText = "SİL"; yeniBtnGeri.innerText = "İptal";
+                yeniBtnTamam.style.background = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+                yeniBtnTamam.onclick = () => { modal.style.display = 'none'; if(onTamamCallback) onTamamCallback(); };
+                yeniBtnGeri.onclick = () => { modal.style.display = 'none'; };
             }
         }
 
@@ -1017,8 +1050,6 @@
             document.getElementById('options-markaFiltre').innerHTML = `<div class="custom-select-option" onclick="secCustomTum('markaFiltre')">TÜM MARKALAR</div>` + html.replace(/TARGET_ID/g, 'markaFiltre');
             document.getElementById('options-logMarkaSecici').innerHTML = `<div class="custom-select-option" onclick="secCustomTum('logMarkaSecici')">TÜM MARKALAR</div>` + html.replace(/TARGET_ID/g, 'logMarkaSecici');
             document.getElementById('options-inputMarka').innerHTML = html.replace(/TARGET_ID/g, 'inputMarka');
-            
-            // YENİ EKLENEN: Düzenleme ekranı için marka önerileri
             document.getElementById('options-duzenleMarka').innerHTML = html.replace(/TARGET_ID/g, 'duzenleMarka');
         }
 
@@ -1568,31 +1599,57 @@
                     ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
-                // İKİLİ YARDIMCI BUTONLAR + DÜZENLEME KALEMİ (SADECE DÜZENLEYİCİ)
-                let solButon = "";
-                let sagButon = "";
+                // İKİLİ YARDIMCI BUTONLAR + DÜZENLEME KALEMİ + SİL (SADECE DÜZENLEYİCİ)
+                let solButonGrup = "";
+                let sagButonGrup = "";
+                let mobilButonGrup = "";
+
                 if (aktifRol === 'duzenleyici') {
                     const guvenliKod = orjinalKod.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                     const guvenliMarka = formatliMarka.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                     
-                    solButon = `<button class="btn-ikon" onclick="window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent('${guvenliKod}'), '_blank')" title="Google Görseller'de Ara"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>`;
+                    const btnGoogle = `<button class="btn-ikon" onclick="window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent('${guvenliKod}'), '_blank')" title="Google Görseller'de Ara"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>`;
                     
-                    sagButon = `<div style="display:flex; gap:4px;">
-                        <button id="btn_kopya_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_${malzeme.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
-                        <button class="btn-ikon" onclick="editModalAc('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Hızlı Düzenle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
-                    </div>`;
+                    const btnKopya = `<button id="btn_kopya_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_${malzeme.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
+                    const btnKopyaM = `<button id="btn_kopya_m_${malzeme.id}" class="btn-ikon" onclick="koduKopyala('${guvenliKod}', 'btn_kopya_m_${malzeme.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
+                    
+                    const btnDuzenle = `<button class="btn-ikon" onclick="editModalAc('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Hızlı Düzenle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
+                    
+                    const btnSil = `<button class="btn-ikon btn-sil" onclick="silOnayIste('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Ürünü Sil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>`;
+
+                    solButonGrup = `<div class="islem-buton-grup">${btnGoogle}${btnKopya}</div>`;
+                    sagButonGrup = `<div class="islem-buton-grup">${btnDuzenle}${btnSil}</div>`;
+                    mobilButonGrup = `${btnGoogle}${btnKopyaM}${btnDuzenle}${btnSil}`;
                 }
 
                 tumKartlar += `
                     <div class="${satirClass}">
-                        <div class="stok-bilgi">
-                            <div class="bilgi-sol mobil-gizle"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
-                            <div class="bilgi-orta">${solButon}<span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>${sagButon}</div>
-                            <div class="bilgi-sag mobil-gizle"><span class="marka-etiket">${formatliMarka}</span></div>
+                        <div class="stok-baslik-konteyner">
+                            <!-- Masaüstü Görünüm -->
+                            <div class="masaustu-gorunum">
+                                <div class="bilgi-sol"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
+                                <div class="bilgi-orta">
+                                    ${solButonGrup}
+                                    <span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
+                                    ${sagButonGrup}
+                                </div>
+                                <div class="bilgi-sag"><span class="marka-etiket">${formatliMarka}</span></div>
+                            </div>
                             
-                            <div class="masaustu-gizle">
-                                <span class="${etiketClass}">${kategoriBuyuk || '-'}</span>
-                                <span class="marka-etiket">${formatliMarka}</span>
+                            <!-- Mobil Görünüm -->
+                            <div class="mobil-gorunum">
+                                <div class="mobil-ust-satir">
+                                    <span class="malzeme-kod ${kodSariClass}" id="kod_m_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
+                                </div>
+                                <div class="mobil-alt-satir">
+                                    <div class="mobil-alt-sol">
+                                        <span class="${etiketClass}">${kategoriBuyuk || '-'}</span>
+                                        <span class="marka-etiket">${formatliMarka}</span>
+                                    </div>
+                                    <div class="mobil-alt-sag">
+                                        ${mobilButonGrup}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1679,9 +1736,11 @@
                     if (fark < 60000) {
                         const timerId = setTimeout(() => {
                             const k = document.getElementById('kod_' + malzeme.id);
+                            const kM = document.getElementById('kod_m_' + malzeme.id);
                             const bm = document.getElementById('soruldu_btn_masaustu_' + malzeme.id);
                             const bt = document.getElementById('soruldu_btn_mobil_' + malzeme.id);
                             if(k) k.classList.remove('sari-yan-son');
+                            if(kM) kM.classList.remove('sari-yan-son');
                             if(bm) { bm.classList.remove('sari-yan-son-btn'); bm.innerHTML = '<span>SORULDU</span>'; }
                             if(bt) { bt.classList.remove('sari-yan-son-btn'); bt.innerHTML = '<span>SORULDU</span>'; }
                         }, 60000 - fark);
