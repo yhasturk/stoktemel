@@ -769,7 +769,8 @@
             'wasdecrinberat@gmail.com': 'BERAT KANAT',
             'yhasturk@gmail.com': 'YASİN HASTÜRK',
             'ylmzsukru1998@gmail.com': 'ŞÜKRÜ YILMAZ',
-            'semragenc2590@gmail.com': 'SEMRA GENÇ'
+            'semragenc2590@gmail.com': 'SEMRA GENÇ',
+            'yns.dgn60@icloud.com': 'YUNUS DOĞAN'
         };
 
         function temaDegistir() {
@@ -1894,7 +1895,7 @@
             const kategoriSeciciWrapper = document.getElementById('wrapper-logKategoriSecici');
             const markaSeciciWrapper = document.getElementById('wrapper-logMarkaSecici');
             aramaKutusu.value = ''; aramaKutusu.style.display = 'none'; kullaniciSeciciWrapper.style.display = 'none'; kategoriSeciciWrapper.style.display = 'none'; markaSeciciWrapper.style.display = 'none';
-            if (kriter === 'kullanici') { kullaniciSeciciWrapper.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ"]; let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim)); const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; logdakiKullanicilar.forEach(u => { if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) { gosterilecekKullanicilar.push(u); } }); let html = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; gosterilecekKullanicilar.forEach(u => { html += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`; }); document.getElementById('options-logKullaniciSecici').innerHTML = html;
+            if (kriter === 'kullanici') { kullaniciSeciciWrapper.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const ozelSiralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN"]; let gosterilecekKullanicilar = ozelSiralama.map(isim => temizKarakter(isim)); const logdakiKullanicilar = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; logdakiKullanicilar.forEach(u => { if(u && u !== 'BİLİNMEYEN' && u !== 'BILINMEYEN' && !gosterilecekKullanicilar.includes(u)) { gosterilecekKullanicilar.push(u); } }); let html = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; gosterilecekKullanicilar.forEach(u => { html += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`; }); document.getElementById('options-logKullaniciSecici').innerHTML = html;
             } else if (kriter === 'kategori') { kategoriSeciciWrapper.style.display = 'block'; document.getElementById('logKategoriSecici').value = ''; 
             } else if (kriter === 'marka') { markaSeciciWrapper.style.display = 'block'; document.getElementById('logMarkaSecici').value = ''; 
             } else { aramaKutusu.style.display = 'block'; }
