@@ -1757,8 +1757,7 @@
                     ? `<button id="btn_guncelle_mobil_${malzeme.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${malzeme.id}', '${malzeme._tablo}', '${orjinalKod}', '${formatliMarka}', '${kategoriBuyuk}', this)">GÜNCELLE${tarihHTML}</button>`
                     : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
 
-                let solButonGrup = "";
-                let sagButonGrup = "";
+                let masaustuButonGrup = "";
                 let mobilButonGrup = "";
 
                 if (aktifRol === 'duzenleyici') {
@@ -1771,8 +1770,7 @@
                     const btnDuzenle = `<button class="btn-ikon" onclick="editModalAc('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Hızlı Düzenle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
                     const btnSil = `<button class="btn-ikon btn-sil" onclick="silOnayIste('${malzeme.id}', '${malzeme._tablo}', '${guvenliKod}', '${guvenliMarka}', '${kategoriBuyuk}')" title="Ürünü Sil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>`;
 
-                    solButonGrup = `<div class="islem-buton-grup">${btnGoogle}${btnKopya}</div>`;
-                    sagButonGrup = `<div class="islem-buton-grup">${btnDuzenle}${btnSil}</div>`;
+                    masaustuButonGrup = `<div class="islem-buton-grup">${btnGoogle}${btnKopya}${btnDuzenle}${btnSil}</div>`;
                     mobilButonGrup = `${btnGoogle}${btnKopyaM}${btnDuzenle}${btnSil}`;
                 }
 
@@ -1781,13 +1779,16 @@
                         <div class="stok-baslik-konteyner">
                             <!-- Masaüstü Görünüm -->
                             <div class="masaustu-gorunum">
-                                <div class="bilgi-sol"><span class="${etiketClass}">${kategoriGorselHTML}</span></div>
-                                <div class="bilgi-orta">
-                                    ${solButonGrup}
-                                    <span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
-                                    ${sagButonGrup}
+                                <div class="bilgi-sol" style="display: flex; gap: 8px; align-items: center;">
+                                    <span class="${etiketClass}">${kategoriGorselHTML}</span>
+                                    <span class="marka-etiket">${formatliMarka}</span>
                                 </div>
-                                <div class="bilgi-sag"><span class="marka-etiket">${formatliMarka}</span></div>
+                                <div class="bilgi-orta">
+                                    <span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
+                                </div>
+                                <div class="bilgi-sag" style="display: flex; justify-content: flex-end;">
+                                    ${masaustuButonGrup}
+                                </div>
                             </div>
                             
                             <!-- Mobil Görünüm -->
