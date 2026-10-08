@@ -81,7 +81,9 @@
 
         #anaUygulama { display: none; width: 100%; }
 
-        .sabit-ust-alan { position: sticky; top: 0; z-index: 1000; background-color: var(--bg-dark); border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5); width: 100%; transition: background-color 0.3s, border-color 0.3s; }
+        /* YENİLİK 1: GLASSMORPHISM EFEKTİ (Cam Bulanıklığı) */
+        .sabit-ust-alan { position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5); width: 100%; transition: background-color 0.3s, border-color 0.3s; }
+        body.light-theme .sabit-ust-alan { background: rgba(241, 245, 249, 0.85); border-bottom: 1px solid rgba(0,0,0,0.05); }
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
         .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 1px; font-weight: 900; width: 100%; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(59, 130, 246, 0.25); }
@@ -105,6 +107,28 @@
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
 
+        /* YENİLİK 2: İSKELET YÜKLEME (SKELETON) */
+        @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+        .skeleton-kutu {
+            background: #1e293b;
+            background-image: linear-gradient(to right, #1e293b 0%, #334155 20%, #1e293b 40%, #1e293b 100%);
+            background-repeat: no-repeat; background-size: 800px 100%; 
+            animation: shimmer 1.2s infinite linear forwards;
+            border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        body.light-theme .skeleton-kutu {
+            background: #f1f5f9;
+            background-image: linear-gradient(to right, #f1f5f9 0%, #e2e8f0 20%, #f1f5f9 40%, #f1f5f9 100%);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* YENİLİK 3: TOAST BİLDİRİMLERİ CSS */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
+        .toast-mesaj { min-width: 250px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); color: #fff; padding: 14px 20px; border-radius: 10px; border-left: 4px solid var(--accent-green); box-shadow: 0 10px 25px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s; opacity: 0; pointer-events: auto;}
+        body.light-theme .toast-mesaj { background: rgba(255, 255, 255, 0.95); color: #0f172a; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .toast-goster { transform: translateX(0); opacity: 1; }
+        .toast-hata { border-left-color: var(--accent-red); }
+
         /* GÖRÜNÜM GİZLEME SINIFLARI (KRİTİK) */
         .masaustu-gizle { display: none !important; }
         .mobil-gizle { display: flex; }
@@ -127,12 +151,14 @@
             animation: hizli-flas-kirmizi 0.35s infinite !important;
         }
 
-        .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px; }
+        /* YENİLİK 4: KATEGORİ İKON DÜZENLERİ */
+        .kategori-etiket, .marka-etiket, .raf-no-vurgu, .kasa-no-vurgu, .log-marka, .log-kategori-etiket { display: inline-flex !important; align-items: center; justify-content: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; border: 1px solid var(--border-color); letter-spacing: 0.5px; }
+        .kategori-etiket svg, .log-kategori-etiket svg { width: 14px; height: 14px; flex-shrink: 0; }
+        
         .kategori-etiket, .log-kategori-etiket { background-color: rgba(6, 182, 212, 0.08); color: var(--accent-cyan); }
         .marka-etiket, .log-marka { background-color: var(--bg-dark); color: var(--accent-yellow); }
         .raf-no-vurgu { background-color: rgba(239, 68, 68, 0.08); color: var(--accent-red); }
         .kasa-no-vurgu { background-color: rgba(245, 158, 11, 0.08) !important; color: var(--accent-orange) !important; border: 1px solid var(--border-color) !important; }
-        
         .kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; border: 1px solid var(--border-color) !important; animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3); }
         
         /* MALZEME KODU VE YAN BUTONLAR */
@@ -245,6 +271,10 @@
         .btn-daha-fazla { background: transparent; color: var(--accent-cyan); border: 2px dashed var(--border-color); padding: 14px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
         .btn-daha-fazla:hover { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); }
 
+        /* GLASSMORPHISM - MODALLAR VE AÇILIR MENÜLER */
+        .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); }
+        body.light-theme .custom-select-options { background: rgba(255, 255, 255, 0.95); }
+        
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
         .header .custom-select-wrapper { min-width: 100px; }
         .custom-select-input { width: 100%; padding: 12px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s ease; text-transform: uppercase; }
@@ -252,7 +282,6 @@
         .custom-select-input[readonly] { cursor: pointer; caret-color: transparent; }
         .custom-select-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         
-        .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background-color: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); }
         .custom-select-option { padding: 12px 14px; cursor: pointer; color: var(--text-main); font-size: 13.5px; font-weight: 600; border-bottom: 1px solid var(--border-color); transition: background 0.2s; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .custom-select-option:last-child { border-bottom: none; }
         .custom-select-option:hover { background-color: #1e293b; color: var(--accent-cyan); }
@@ -263,7 +292,8 @@
         #wrapper-kategoriFiltre .custom-select-options, #wrapper-logKategoriSecici .custom-select-options, #wrapper-inputKategori .custom-select-options, #wrapper-logAramaKriteri .custom-select-options, #wrapper-logKullaniciSecici .custom-select-options, #wrapper-inputMarka .custom-select-options, #wrapper-logMarkaSecici .custom-select-options, #wrapper-markaFiltre .custom-select-options, #wrapper-duzenleKategori .custom-select-options, #wrapper-duzenleMarka .custom-select-options { width: 100%; left: 0; right: auto; } 
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.85); justify-content: center; align-items: center; z-index: 2000; }
-        .modal-content { background-color: var(--bg-card); padding: 30px; border-radius: 16px; width: 90%; max-width: 440px; border: 1px solid var(--border-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); margin: 0 auto; }
+        .modal-content { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 30px; border-radius: 16px; width: 90%; max-width: 440px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); margin: 0 auto; }
+        body.light-theme .modal-content { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0,0,0,0.1); }
         .modal-content h3 { margin-top: 0; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px; font-size: 18px; text-align: center; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;}
 
         #CustomModal .modal-content { max-width: 380px; text-align: center; }
@@ -463,6 +493,54 @@
             return d + '.' + m + '.' + y;
         }
 
+        // YENİLİK 4: Kategori İkonları Fonksiyonu
+        function getKategoriStil(kategoriAdi) {
+            const kat = (kategoriAdi || '').toUpperCase().trim();
+            let ikon = ''; let sinif = 'kategori-etiket';
+            if (kat === 'PLC') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>';
+            } else if (kat === 'EKRAN') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+            } else if (kat === 'MOTOR') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>';
+            } else if (kat === 'SÜRÜCÜ') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10v4M12 8v8M16 12v4"/></svg>';
+            } else if (kat === 'KABLO') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9a2 2 0 0 1-2-2V4h20v3a2 2 0 0 1-2 2H4z"/><path d="M10 9v11a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9"/></svg>';
+            } else if (kat === 'G.RÖLE') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="16" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>';
+            } else if (kat === 'MMC KART') {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v4M12 4v4M16 4v4"/></svg>';
+            } else if (kat === 'KASALAR') {
+                sinif = 'kategori-etiket kasa-etiket';
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>';
+            } else {
+                ikon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+            }
+            return { ikon, sinif };
+        }
+
+        // YENİLİK 3: TOAST FONKSİYONU
+        function toastGoster(mesaj, tip = 'basari') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-mesaj ${tip === 'hata' ? 'toast-hata' : ''}`;
+            
+            let icon = tip === 'basari' 
+                ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>'
+                : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                
+            toast.innerHTML = `${icon} <span>${mesaj}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('toast-goster'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('toast-goster');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
         function koduKopyala(metin, btnId) {
             navigator.clipboard.writeText(metin).then(() => {
                 const btn = document.getElementById(btnId);
@@ -475,9 +553,10 @@
                         btn.style.borderColor = '';
                     }, 1500);
                 }
+                toastGoster("Malzeme kodu kopyalandı!");
             }).catch(err => {
                 console.error('Kopyalama başarısız!', err);
-                uyariGoster("Kopyalama başarısız oldu.", "hata");
+                toastGoster("Kopyalama başarısız oldu.", "hata");
             });
         }
     </script>
@@ -740,6 +819,9 @@
         </div>
     </div>
 
+    <!-- TOAST BİLDİRİM ALANI -->
+    <div id="toast-container"></div>
+
     <script>
         const supabaseUrl = 'https://ddpzkfefgdsrxwaltrwd.supabase.co';
         const supabaseKey = 'sb_publishable_rRLHZ89ad1rarH8h9yfw2A_iMq_-TZs';
@@ -946,7 +1028,7 @@
                 }, 5000);
 
             } else {
-                uyariGoster("Kayıt sırasında bir hata oluştu: " + error.message, "hata");
+                toastGoster("Kayıt sırasında bir hata oluştu: " + error.message, "hata");
                 btnElement.disabled = false;
             }
         }
@@ -1012,9 +1094,10 @@
             if (!error) {
                 let logMetni = `[CAT:${kategori}|MRK:${marka}] ÜRÜN SİLİNDİ`;
                 await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logMetni, kod: kod }]);
-                uyariGoster("Ürün başarıyla silindi.", "basari", () => { stokGetir(true, true); });
+                toastGoster("Ürün başarıyla silindi.");
+                stokGetir(true, true);
             } else {
-                uyariGoster("Silme işlemi sırasında hata oluştu: " + error.message, "hata");
+                toastGoster("Silme işlemi sırasında hata oluştu: " + error.message, "hata");
             }
         }
 
@@ -1361,7 +1444,7 @@
                 if (topListe.length > 0) {
                     topListeHTML = `
                         <div class="top3-konteyner">
-                            <div class="top3-baslik">SON 1 HAFTA - EN ÇOK STOK HAREKET</div>
+                            <div class="top3-baslik">SON 7 GÜN - EN ÇOK İŞLEM YAPANLAR</div>
                             <div style="display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; text-align: left;">
                     `;
                     topListe.forEach((kisi, index) => {
@@ -1410,7 +1493,28 @@
                 if (!arananInput && !kategori && !marka && !rafInput) { baslat(); return; }
                 if (!mevcutLimitiKoru) {
                     aramaLimiti = 50;
-                    document.getElementById('listeGövdesi').innerHTML = '<div style="text-align:center; color:var(--accent-blue); padding:30px; font-weight:600;">Aranıyor...</div>';
+                    // YENİLİK 2: İskelet Yükleme Ekranı
+                    let skeletonHTML = '';
+                    for(let i=0; i<3; i++) {
+                        skeletonHTML += `
+                        <div class="stok-satir" style="margin-bottom: 12px; pointer-events:none;">
+                            <div class="stok-baslik-konteyner" style="border-bottom:none;">
+                                <div class="masaustu-gorunum">
+                                    <div class="skeleton-kutu" style="width: 80px; height: 26px;"></div>
+                                    <div class="skeleton-kutu" style="width: 200px; height: 30px; margin:0 auto;"></div>
+                                    <div class="skeleton-kutu" style="width: 100px; height: 26px; margin-left:auto;"></div>
+                                </div>
+                                <div class="mobil-gorunum">
+                                    <div style="display:flex; justify-content:space-between; width:100%;">
+                                        <div class="skeleton-kutu" style="width: 60px; height: 26px;"></div>
+                                        <div class="skeleton-kutu" style="width: 80px; height: 26px;"></div>
+                                    </div>
+                                    <div class="skeleton-kutu" style="width: 150px; height: 28px; margin: 10px auto;"></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+                    document.getElementById('listeGövdesi').innerHTML = skeletonHTML;
                 }
 
                 const altKategoriler = ['SÜRÜCÜ', 'MOTOR'];
@@ -1563,9 +1667,9 @@
 
                 stokGetir(true, true);
                 
-                uyariGoster("Ürün bilgileri başarıyla güncellendi.", "basari");
+                toastGoster("Ürün bilgileri güncellendi.");
             } else {
-                 uyariGoster("Hata oluştu: " + error.message, "hata");
+                 toastGoster("Hata oluştu: " + error.message, "hata");
             }
             btn.disabled = false; btn.innerHTML = "Güncelle";
         }
@@ -1631,7 +1735,11 @@
                 const rafBaslik = isKasa ? "KASA" : "RAF";
                 
                 const satirClass = isKasa ? "stok-satir kasa-satir" : "stok-satir";
-                const etiketClass = isKasa ? "kategori-etiket kasa-etiket" : "kategori-etiket";
+                
+                // YENİLİK 4: Kategori İkon ve Düzen Ataması
+                const katBilgi = getKategoriStil(kategoriBuyuk);
+                const etiketClass = katBilgi.sinif;
+                const kategoriGorselHTML = `${katBilgi.ikon} <span>${kategoriBuyuk || '-'}</span>`;
                 
                 const disabledDurum = (aktifRol !== 'duzenleyici') ? 'disabled' : '';
                 const readonlyAttr = (aktifRol !== 'duzenleyici') ? 'readonly' : '';
@@ -1673,7 +1781,7 @@
                         <div class="stok-baslik-konteyner">
                             <!-- Masaüstü Görünüm -->
                             <div class="masaustu-gorunum">
-                                <div class="bilgi-sol"><span class="${etiketClass}">${kategoriBuyuk || '-'}</span></div>
+                                <div class="bilgi-sol"><span class="${etiketClass}">${kategoriGorselHTML}</span></div>
                                 <div class="bilgi-orta">
                                     ${solButonGrup}
                                     <span class="malzeme-kod ${kodSariClass}" id="kod_${malzeme.id}" title="${orjinalKod}">${orjinalKod}</span>
@@ -1686,7 +1794,7 @@
                             <div class="mobil-gorunum">
                                 <div class="mobil-alt-satir">
                                     <div class="mobil-alt-sol">
-                                        <span class="${etiketClass}">${kategoriBuyuk || '-'}</span>
+                                        <span class="${etiketClass}">${kategoriGorselHTML}</span>
                                         <span class="marka-etiket">${formatliMarka}</span>
                                     </div>
                                     <div class="mobil-alt-sag">
@@ -1879,7 +1987,8 @@
                 if(marka) { tumMarkalarSet.add(marka); markaOnerileriniDoldur([...tumMarkalarSet].sort()); }
 
                 document.getElementById('YeniEkleModal').style.display = 'none';
-                uyariGoster("Yeni parça sisteme başarıyla kaydedildi.", "basari", () => { stokGetir(true, true); });
+                toastGoster("Yeni parça sisteme eklendi.");
+                stokGetir(true, true);
             } else {
                 if (error.message && (error.message.includes('duplicate key') || error.message.includes('unique constraint'))) {
                     uyariGoster("<b>Veritabanı Engelledi!</b><br>Bu kod sistemde zaten var.", 'hata');
@@ -1926,8 +2035,13 @@
                 const islemRengi = hamIslem.includes('YENİ') ? 'var(--accent-green)' : 'var(--accent-blue)';
                 if (hamIslem.includes("GÜNCELLEME: ")) hamIslem = hamIslem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>"); else if (hamIslem.includes("YENİ KAYIT: ")) hamIslem = hamIslem.replace("YENİ KAYIT: ", "YENİ KAYIT<br>");
                 hamIslem = hamIslem.replace(/->/g, "➔"); let islemParcalari = hamIslem.split('<br>'); let islemBaslik = `<span style="color:${islemRengi}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${islemParcalari[0]}</span>`; let islemAltYazi = islemParcalari.length > 1 ? islemParcalari.slice(1).join('<br>') : '';
-                const etiketClass = kayitKategori === 'KASALAR' ? 'log-kategori-etiket log-kasa-etiket' : 'log-kategori-etiket'; let orijinalLogKod = (log.kod || '').toLocaleUpperCase('tr-TR');
-                tumLogKartlari += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${tarih}</span><span class="log-kullanici">${user}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${etiketClass}">${kayitKategori}</span><span class="log-marka">${kayitMarka}</span></div><span class="log-kod-span" style="font-size:13.5px;">${orijinalLogKod}</span></div><div class="log-islem-detay" style="border-left-color: ${islemRengi}">${islemBaslik}${islemAltYazi}</div></div>`;
+                
+                const katBilgi = getKategoriStil(kayitKategori);
+                const etiketClass = katBilgi.sinif.replace('kategori-etiket', 'log-kategori-etiket');
+                const kategoriGorselHTML = `${katBilgi.ikon} <span>${kayitKategori}</span>`;
+                let orijinalLogKod = (log.kod || '').toLocaleUpperCase('tr-TR');
+                
+                tumLogKartlari += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${tarih}</span><span class="log-kullanici">${user}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${etiketClass}">${kategoriGorselHTML}</span><span class="log-marka">${kayitMarka}</span></div><span class="log-kod-span" style="font-size:13.5px;">${orijinalLogKod}</span></div><div class="log-islem-detay" style="border-left-color: ${islemRengi}">${islemBaslik}${islemAltYazi}</div></div>`;
             });
             logGövdesi.innerHTML = tumLogKartlari;
         }
