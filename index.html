@@ -263,7 +263,6 @@
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: var(--text-main); letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
         .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); padding: 4px 0 4px 12px; border-left: 4px solid; }
 
-        /* YENİ EKLENEN: 2 SÜTUNLU ÖZET ALANI CSS */
         .karsilama-kutu { text-align:center; color:var(--text-muted); padding:20px 15px; font-size: 16px; border: 2px dashed var(--border-color); border-radius: 16px; margin: 10px auto; width: 100%; box-sizing: border-box; background: rgba(30, 41, 59, 0.5); }
         .buyutec-simge { font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7; }
         .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
@@ -282,15 +281,23 @@
         .ozet-adet-arti { color: var(--accent-green); font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
         .ozet-adet-eksi { color: var(--accent-red); font-weight: 800; background: rgba(239, 68, 68, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
 
+        /* --- SADECE MOBİL GÖRÜNÜM (BOŞLUK DÜZELTMELERİ BURADA) --- */
         @media screen and (max-width: 650px) {
             .masaustu-gizle { display: flex !important; }
             .mobil-gizle { display: none !important; }
-            .ust-bosluklu-container { padding-top: 15px !important; padding-bottom: 10px !important; }
+            
+            /* ALT KISIMDAKİ 12 PİKSELLİK BOŞLUK AYARI */
+            .ust-bosluklu-container { padding-top: 15px !important; padding-bottom: 6px !important; }
+            .liste-alani { padding-top: 6px !important; }
+            
             .ana-baslik { margin-top: 20px !important; font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
             .sabit-ust-alan { border-bottom: none !important; box-shadow: none !important; }
             .stok-satir { padding: 8px 6px !important; gap: 6px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
-            .header { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; align-items: stretch; }
+            
+            /* ÜST KISIMDAKİ ARAMA ÇUBUĞU ETRAFI 12 PİKSEL (Sadece dikey gap artırıldı) */
+            .header { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 6px; row-gap: 12px; width: 100%; align-items: stretch; }
+            
             .buton-grup { grid-column: 1 / 4; order: -1; width: 100%; display: flex !important; flex-wrap: nowrap; gap: 4px; min-width: 0 !important; }
             .buton-grup button { height: 32px !important; font-size: 10px !important; padding: 0 2px !important; border-radius: 6px !important; letter-spacing: -0.5px;}
             #aramaKutusu { grid-column: 1 / 4; width: 100%; height: 42px !important; font-size: 14px !important; padding: 0 14px !important; border-radius: 10px;}
@@ -333,9 +340,9 @@
             .log-islem-detay { font-size: 12.5px; padding: 0 0 0 10px; }
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
             
-            /* MOBİL ÖZET ALANI DİKEY İSTİFLEME */
             .iki-sutun-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 15px;}
-            .karsilama-kutu { padding: 12px 8px !important; margin: 5px auto !important; font-size: 12px !important;}
+            /* Sistem Hazır Kutusunun üst margin'i sıfırlanıp ince ayar yapıldı */
+            .karsilama-kutu { padding: 12px 8px !important; margin: 0 auto 5px auto !important; font-size: 12px !important;}
             #istatistikAlani { margin-bottom: 8px !important; }
             .istatistik-kutu { padding: 8px 5px !important; }
             .istatistik-kutu-deger { font-size: 18px !important; }
@@ -614,7 +621,6 @@
             const lblA = tablo === 'alt_kat' ? 'Testli' : 'Açık Kutu'; const lblK = tablo === 'alt_kat' ? 'Kutulu' : 'Kapalı Kutu';
 
             let degisimler = [];
-            // YENİLİK: Genel Toplam bilgisini de logluyoruz ki 30->27 gibi rakamları süzebilelim
             if (top !== top_eski) degisimler.push(`Genel Toplam: ${top_eski} ➔ ${top}`);
             
             if (e !== e_eski) degisimler.push(`İkinci El (${e_eski} ➔ ${e})`);
@@ -780,7 +786,6 @@
                         </div>`;
                 }
 
-                // LOGLARDAN 2 SÜTUNLU ÖZET ÇEKİMİ (Masaüstü yan yana, mobil alt alta)
                 const { data: loglar } = await sbClient.from('log_kayitlari').select('kullanici, islem, kod').order('tarih', { ascending: false }).limit(300);
                 
                 let htmlGuncellemeler = ''; let adetG = 0;
@@ -858,7 +863,7 @@
                 const [res1, res2] = await Promise.all([p1, p2]);
                 let dFazla = (res1.data && res1.data.length === aramaLimiti) || (res2.data && res2.data.length === aramaLimiti);
                 let bVeri = [...verileriNormallestir(res1.data || [], 'malzemeler'), ...verileriNormallestir(res2.data || [], 'alt_kat')];
-                bVeri.sort((a, b) => { const isKa = (temizKarakter(a.kategori) === 'KASALAR'); const isKb = (temizKarakter(b.kategori) === 'KASALAR'); if (isKa && !isKb) return 1; if (!isKa && isKb) return -1; let m = (a.marka || '').localeCompare(b.marka || ''); if (m !== 0) return m; let k = (a.kategori || '').localeCompare(b.kategori || ''); if (k !== 0) return k; return (a.kod || '').localeCompare(b.kod || ''); });
+                bVeri.sort((a, b) => { const isKa = (temizKarakter(a.kategori) === 'KASALAR'); const isKb = (temizKarakter(b.kategori) === 'KASALAR'); if (isKa && !isKa) return 1; if (!isKa && isKb) return -1; let m = (a.marka || '').localeCompare(b.marka || ''); if (m !== 0) return m; let k = (a.kategori || '').localeCompare(b.kategori || ''); if (k !== 0) return k; return (a.kod || '').localeCompare(b.kod || ''); });
 
                 ekranaYazdir(bVeri.slice(0, aramaLimiti), dFazla);
             }, beklemeSuresi); 
@@ -956,7 +961,6 @@
             if (hTablo === 'alt_kat') { p.testli = a; p.kutulu = k; } else { p.acik_kutu = a; p.kapali_kutu = k; }
             const { error } = await sbClient.from(hTablo).insert([p]);
             if (!error) { 
-                // YENİLİK: Toplam değeri belirten bir format eklendi ki özet alanında adet artsın.
                 await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: `[CAT:${kat}|MRK:${mar}] YENİ KAYIT (Toplam: ${top})<br>2.El (${e}) - Açık/Testli (${a})<br>Kapalı/Kutulu (${k}) - Arızalı (${r})`, kod }]);
                 if(mar) { tumMarkalarSet.add(mar); markaOnerileriniDoldur([...tumMarkalarSet].sort()); }
                 document.getElementById('YeniEkleModal').style.display = 'none'; toastGoster("Eklendi."); stokGetir(true, true);
