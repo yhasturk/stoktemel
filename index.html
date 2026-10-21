@@ -272,7 +272,6 @@
         .iki-sutun-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; width: 100%; }
         .ozet-tablo { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 6px; }
         
-        /* BAŞLIKLAR MERKEZE HİZALANDI (Masaüstü ve Mobil) */
         .ozet-baslik { font-size: 12px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;}
         
         .ozet-satir { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: rgba(15, 23, 42, 0.4); border-radius: 8px; font-size: 13px; }
@@ -284,12 +283,10 @@
         .ozet-adet-arti { color: var(--accent-green); font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
         .ozet-adet-eksi { color: var(--accent-red); font-weight: 800; background: rgba(239, 68, 68, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
 
-        /* --- SADECE MOBİL GÖRÜNÜM (BOŞLUK DÜZELTMELERİ) --- */
         @media screen and (max-width: 650px) {
             .masaustu-gizle { display: flex !important; }
             .mobil-gizle { display: none !important; }
             
-            /* ALT VE ÜST BOŞLUK 12PX OLARAK EŞİTLENDİ */
             .ust-bosluklu-container { padding-top: 12px !important; padding-bottom: 12px !important; }
             .liste-alani { padding-top: 6px !important; }
             
@@ -298,7 +295,6 @@
             .stok-satir { padding: 8px 6px !important; gap: 6px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
-            /* ARAMA ÇUBUĞU ETRAFI 12 PİKSEL EŞİT DİKEY BOŞLUK (row-gap) */
             .header { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 6px; row-gap: 12px; width: 100%; align-items: stretch; }
             
             .buton-grup { grid-column: 1 / 4; order: -1; width: 100%; display: flex !important; flex-wrap: nowrap; gap: 4px; min-width: 0 !important; }
@@ -546,6 +542,7 @@
         const kullaniciSozlugu = {
             'ahmettariksrky.tr@gmail.com': 'AHMET SARIKAYA',
             'buluttgokdeniz@gmail.com': 'GÖKDENİZ BULUT',
+            'e.cubuk44@gmail.com': 'ENVER ÇUBUK',
             'fazlisen@gmail.com': 'FAZLI ŞEN',
             'info@temelotomasyon.com': 'MUSTAFA TEMEL',
             'koksaldur@gmail.com': 'KÖKSAL DUR',
@@ -973,7 +970,7 @@
         function logAramaOnerileriniGuncelle() {
             const krt = document.getElementById('logAramaKriteriDeğer').value; const k = document.getElementById('logAramaKutusu'); const wu = document.getElementById('wrapper-logKullaniciSecici'); const wk = document.getElementById('wrapper-logKategoriSecici'); const wm = document.getElementById('wrapper-logMarkaSecici');
             k.value = ''; k.style.display = 'none'; wu.style.display = 'none'; wk.style.display = 'none'; wm.style.display = 'none';
-            if (krt === 'kullanici') { wu.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const siralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN"]; let users = siralama.map(i => temizKarakter(i)); const dbUsers = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; dbUsers.forEach(u => { if(u && u !== 'BİLİNMEYEN' && !users.includes(u)) users.push(u); }); let h = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; users.forEach(u => h += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`); document.getElementById('options-logKullaniciSecici').innerHTML = h; } 
+            if (krt === 'kullanici') { wu.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const siralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "ENVER ÇUBUK", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN"]; let users = siralama.map(i => temizKarakter(i)); const dbUsers = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; dbUsers.forEach(u => { if(u && u !== 'BİLİNMEYEN' && !users.includes(u)) users.push(u); }); let h = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; users.forEach(u => h += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`); document.getElementById('options-logKullaniciSecici').innerHTML = h; } 
             else if (krt === 'kategori') { wk.style.display = 'block'; document.getElementById('logKategoriSecici').value = ''; } 
             else if (krt === 'marka') { wm.style.display = 'block'; document.getElementById('logMarkaSecici').value = ''; } 
             else { k.style.display = 'block'; } logIciAra(); 
