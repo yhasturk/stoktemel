@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%2306b6d4' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
-    
-    <!-- YENİ: Modern Arayüz ve Teknik Malzeme Kodu Fontları (Inter & JetBrains Mono) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
@@ -28,6 +25,7 @@
             --accent-yellow: #fbbf24; 
         }
 
+        /* AÇIK TEMA RENKLERİ */
         body.light-theme {
             --bg-dark: #f1f5f9; 
             --bg-card: #ffffff;       
@@ -35,6 +33,8 @@
             --text-main: #0f172a;     
             --text-muted: #475569;    
         }
+        body.light-theme .malzeme-kod { color: #0f172a; }
+        body.light-theme .log-kod-span { color: #0f172a; }
         body.light-theme .kutu-input { color: #0f172a; background: #f8fafc; border-color: #cbd5e1; }
         body.light-theme .kutu-btn { color: #0f172a; background: #e2e8f0; border-color: #cbd5e1; }
         body.light-theme .kutu-btn:hover:not(:disabled) { background: #cbd5e1; color:var(--accent-cyan); border-color:var(--accent-cyan); }
@@ -44,11 +44,13 @@
         body.light-theme .btn-soruldu { background: #cbd5e1; color: #0f172a; }
         body.light-theme .btn-soruldu:hover:not(:disabled) { background: #94a3b8; color: #fff; }
         body.light-theme .log-islem-detay { color: #334155; }
+        body.light-theme .ana-baslik { text-shadow: none; }
         body.light-theme .btn-guncelle-pasif { color: #64748b; background: #e2e8f0; }
         body.light-theme #CustomModal h3 { border-bottom-color: #cbd5e1; color: #0f172a; }
         body.light-theme .istatistik-kutu { background: #ffffff !important; }
         body.light-theme .istatistik-kutu:nth-child(1) { color: #059669 !important; border-color: #059669 !important; }
         body.light-theme .istatistik-kutu:nth-child(2) { color: #0284c7 !important; border-color: #0284c7 !important; }
+        
         body.light-theme .marka-etiket, body.light-theme .log-marka { background-color: #f1f5f9; color: #c2410c; border-color: #cbd5e1; }
         body.light-theme .kategori-etiket, body.light-theme .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
         body.light-theme .btn-ikon { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
@@ -77,39 +79,17 @@
 
         #anaUygulama { display: none; width: 100%; }
 
-        /* YENİLİK 1: Kurumsal App Bar */
-        .sabit-ust-alan { position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.90); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px -5px rgba(0,0,0,0.4); width: 100%; transition: background-color 0.3s, border-color 0.3s; }
-        body.light-theme .sabit-ust-alan { background: rgba(255, 255, 255, 0.90); border-bottom: 1px solid rgba(0,0,0,0.08); box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); }
-        
-        .kurumsal-app-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; max-width: 950px; margin: 0 auto; width: 100%; }
-        .app-bar-sol { display: flex; align-items: center; gap: 12px; }
-        .app-logo { background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: #fff; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 900; font-size: 16px; letter-spacing: -0.5px; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3); }
-        .app-baslik-grup { display: flex; flex-direction: column; justify-content: center; }
-        .app-baslik { font-size: 16px; font-weight: 800; color: var(--text-main); letter-spacing: 0.5px; line-height: 1.1; }
-        .app-altbaslik { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
-        
-        .app-bar-sag { display: flex; align-items: center; gap: 15px; }
-        .durum-gosterge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; background: var(--bg-card); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color);}
-        @keyframes nabiz-yesil { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
-        .durum-nokta { width: 8px; height: 8px; background-color: var(--accent-green); border-radius: 50%; animation: nabiz-yesil 2s infinite; }
-        .kullanici-isim { font-size: 13px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; border-left: 1px solid var(--border-color); padding-left: 15px; }
-        .kullanici-isim svg { width: 16px; height: 16px; color: var(--accent-cyan); }
-
+        .sabit-ust-alan { position: sticky; top: 0; z-index: 1000; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.5); width: 100%; transition: background-color 0.3s, border-color 0.3s; }
+        body.light-theme .sabit-ust-alan { background: rgba(241, 245, 249, 0.85); border-bottom: 1px solid rgba(0,0,0,0.05); }
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
+        .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 1px; font-weight: 900; width: 100%; background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 4px 20px rgba(59, 130, 246, 0.25); }
 
         .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%; position: relative; z-index: 10;}
         .header button { position: relative; z-index: 10; }
-        
-        /* YENİLİK 4: Gelişmiş Arama Çubuğu */
-        .arama-wrapper { position: relative; flex: 1.2; min-width: 120px; width: 100%; }
-        .arama-ikon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--text-muted); pointer-events: none; transition: color 0.3s; }
-        .arama-wrapper:focus-within .arama-ikon { color: var(--accent-cyan); }
-        .esc-ipucu { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 10px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-muted); padding: 2px 6px; border-radius: 4px; pointer-events: none; font-weight: 700; letter-spacing: 0.5px; opacity: 0.7;}
-        
         .header input { background-color: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); height: 42px; padding: 0 14px; border-radius: 10px; font-size: 14px; outline: none; text-transform: uppercase; width: 100%; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        .arama-wrapper input { padding-left: 40px !important; padding-right: 48px !important; }
         .header input::placeholder { text-transform: none; color: var(--text-muted); font-weight: 600; }
         .header input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
+        #aramaKutusu { flex: 1.2; min-width: 120px; }
         
         @keyframes arama-sari-flas {
             0%, 100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); border-color: var(--border-color); background-color: var(--bg-card); }
@@ -119,17 +99,15 @@
         .arama-flas-efekt { animation: arama-sari-flas 3s ease-out !important; }
         
         .buton-grup { display: flex; gap: 6px; flex: 1.5; min-width: 280px;}
-        .buton-grup button { flex: 1; height: 42px; padding: 0 6px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .buton-grup button svg { width: 16px; height: 16px; stroke-width: 2.5; flex-shrink: 0;}
+        .buton-grup button { flex: 1; height: 42px; padding: 0 4px; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; white-space: nowrap; color: #fff; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s; }
         @media (hover: hover) { .buton-grup button:hover { transform: translateY(-2px); } }
         
-        /* YENİLİK 2: Ghost (Hayalet) Kurumsal Butonlar */
-        .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); border: 1px solid transparent !important; }
-        .btn-ghost { background: transparent !important; border: 1px solid var(--border-color) !important; color: var(--text-main) !important; box-shadow: none !important; }
-        .btn-ghost:hover { background: var(--bg-card) !important; border-color: var(--accent-cyan) !important; color: var(--accent-cyan) !important; box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;}
-        .btn-ghost-kirmizi { background: transparent !important; border: 1px solid var(--border-color) !important; color: var(--text-muted) !important; box-shadow: none !important; }
-        .btn-ghost-kirmizi:hover { background: rgba(239, 68, 68, 0.05) !important; border-color: var(--accent-red) !important; color: var(--accent-red) !important; }
-
+        .btn-yeni { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .btn-excel { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
+        .btn-log { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2); }
+        .btn-tema { background: linear-gradient(135deg, #475569 0%, #334155 100%); box-shadow: 0 4px 10px rgba(71, 85, 105, 0.2); }
+        .btn-cikis { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
 
         @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
@@ -163,10 +141,7 @@
         .kasa-no-vurgu { background-color: rgba(245, 158, 11, 0.08) !important; color: var(--accent-orange) !important; border: 1px solid var(--border-color) !important; }
         .kasa-etiket { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #fff !important; border: 1px solid var(--border-color) !important; animation: pulse-etiket 1.5s infinite ease-in-out; box-shadow: 0 0 10px rgba(234, 88, 12, 0.3); }
         
-        /* YENİLİK 3: Teknik Monospace Font Atamaları */
-        .malzeme-kod, .kutu-input, .ozet-kod, .log-kod-span, .istatistik-kutu-deger { font-family: 'JetBrains Mono', monospace !important; }
-        
-        .malzeme-kod { font-size: 20px; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 0px; word-break: break-all; margin: 0; transition: color 0.3s, text-shadow 0.3s; text-align: center;}
+        .malzeme-kod { font-size: 20px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; word-break: break-all; margin: 0; transition: color 0.3s, text-shadow 0.3s; text-align: center;}
         
         .btn-ikon { background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-muted); border-radius: 6px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; padding: 3px; outline: none; }
         .btn-ikon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; }
@@ -191,10 +166,10 @@
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
 
-        .kutu-input { width: 100%; height: 38px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); text-align: center; border-radius: 8px; font-weight: 800; font-size: 17px; outline: none; transition: all 0.3s; }
+        .kutu-input { width: 100%; height: 38px; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); text-align: center; border-radius: 8px; font-weight: 800; font-size: 16px; outline: none; transition: all 0.3s; }
         .kutu-input:focus:not([readonly]) { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
         .kutu-input:disabled { opacity: 0.6; cursor: not-allowed; }
-        .kutu-input-raf { color: var(--accent-cyan); font-size: 15px; text-transform: uppercase; font-family: 'Inter', sans-serif !important; font-weight: 700;}
+        .kutu-input-raf { color: var(--accent-cyan); font-size: 14px; text-transform: uppercase; }
 
         .buton-satiri { display: flex; gap: 4px; margin-top: 6px; width: 100%; }
         .kutu-btn { flex: 1; height: 28px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 900; font-size: 16px; border-radius: 6px; cursor: pointer; display:flex; align-items:center; justify-content:center; transition: background 0.2s; }
@@ -222,8 +197,8 @@
         .sari-yan-son-btn { animation: pulse-sari-bg 1.2s infinite ease-in-out !important; }
         @keyframes yesil-flas-btn { 0%, 100% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); } 10%, 30%, 50% { background: #34d399; box-shadow: 0 0 20px rgba(16, 185, 129, 0.9); } 20%, 40%, 60% { background: #10b981; box-shadow: 0 0 0px rgba(16, 185, 129, 0); } }
         .islem-basarili-buton { animation: yesil-flas-btn 3s ease-out !important; }
-        .btn-daha-fazla { background: transparent; color: var(--accent-cyan); border: 1px solid var(--border-color); padding: 14px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
-        .btn-daha-fazla:hover { border-color: var(--accent-cyan); background: var(--bg-card); color: var(--text-main); transform: translateY(-2px);}
+        .btn-daha-fazla { background: transparent; color: var(--accent-cyan); border: 2px dashed var(--border-color); padding: 14px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-daha-fazla:hover { border-color: var(--accent-cyan); background: rgba(6, 182, 212, 0.05); }
 
         .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); }
         body.light-theme .custom-select-options { background: rgba(255, 255, 255, 0.95); }
@@ -288,12 +263,11 @@
         .log-kod-span { font-size: 15.5px; font-weight: 500; color: var(--text-main); letter-spacing: 0; text-transform: uppercase; text-align: right; word-break: break-all; }
         .log-islem-detay { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); padding: 4px 0 4px 12px; border-left: 4px solid; }
 
-        /* YENİLİK 5: Kurumsal Karşılama Alanı */
-        .karsilama-kutu { text-align:center; color:var(--text-muted); padding:30px 20px; font-size: 15px; border: 1px solid var(--border-color); border-radius: 12px; margin: 10px auto; width: 100%; box-sizing: border-box; background: var(--bg-card); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .buyutec-svg { width: 42px; height: 42px; stroke: var(--accent-cyan); opacity: 0.8; display: block; margin: 0 auto 15px auto;}
-        .sistem-hazir-metin { display:block; margin-bottom: 8px; color:var(--text-main); font-weight: 700; font-size: 16px;}
-        .istatistik-kutu-deger { font-size: 24px; font-weight: 800; font-family: 'JetBrains Mono', monospace;}
-        .istatistik-kutu-baslik { font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 700; text-align: center; }
+        .karsilama-kutu { text-align:center; color:var(--text-muted); padding:20px 15px; font-size: 16px; border: 2px dashed var(--border-color); border-radius: 16px; margin: 10px auto; width: 100%; box-sizing: border-box; background: rgba(30, 41, 59, 0.5); }
+        .buyutec-simge { font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7; }
+        .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
+        .istatistik-kutu-deger { font-size: 24px; font-weight: 900; }
+        .istatistik-kutu-baslik { font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; }
         
         .iki-sutun-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; width: 100%; }
         .ozet-tablo { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 6px; }
@@ -306,41 +280,31 @@
         .ozet-sag { text-align: right; }
         .ozet-kod { font-weight: 700; color: var(--text-main); letter-spacing: 0.5px;}
         .ozet-kisi { color: var(--text-muted); font-size: 10.5px; font-weight: 600; }
-        .ozet-adet-arti { color: var(--accent-green); font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace;}
-        .ozet-adet-eksi { color: var(--accent-red); font-weight: 800; background: rgba(239, 68, 68, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace;}
+        .ozet-adet-arti { color: var(--accent-green); font-weight: 800; background: rgba(16, 185, 129, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
+        .ozet-adet-eksi { color: var(--accent-red); font-weight: 800; background: rgba(239, 68, 68, 0.15); padding: 4px 8px; border-radius: 6px; font-size: 12px;}
 
         @media screen and (max-width: 650px) {
             .masaustu-gizle { display: flex !important; }
             .mobil-gizle { display: none !important; }
             
-            /* Kurumsal App Bar Mobil Düzeni */
-            .kurumsal-app-bar { padding: 10px 15px; }
-            .app-altbaslik { display: none; } /* Mobilde yerden tasarruf için alt başlık gizli */
-            
             .ust-bosluklu-container { padding-top: 12px !important; padding-bottom: 12px !important; }
             .liste-alani { padding-top: 6px !important; }
             
-            .sabit-ust-alan { box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important; border-bottom: 1px solid var(--border-color) !important;}
+            .ana-baslik { margin-top: 20px !important; font-size: 24px; margin-bottom: 12px; text-align: center; width: 100%; display: block;}
+            .sabit-ust-alan { border-bottom: none !important; box-shadow: none !important; }
             .stok-satir { padding: 8px 6px !important; gap: 6px; border-radius: 10px; }
             .container { padding: 0 6px !important; }
             
-            /* Arama Kutusu artık grid-column 1 / 4 olarak arama-wrapper'ı kullanıyor */
             .header { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 6px; row-gap: 12px; width: 100%; align-items: stretch; }
             
             .buton-grup { grid-column: 1 / 4; order: -1; width: 100%; display: flex !important; flex-wrap: nowrap; gap: 4px; min-width: 0 !important; }
-            
-            /* Mobilde Buton İçi Yazıları Küçült, İkonla Sıkıştır */
-            .buton-grup button { height: 32px !important; font-size: 10.5px !important; padding: 0 4px !important; border-radius: 6px !important; letter-spacing: -0.3px; gap: 4px;}
-            .buton-grup button svg { width: 14px; height: 14px;}
-            
-            .arama-wrapper { grid-column: 1 / 4; width: 100%; }
-            #aramaKutusu { width: 100%; height: 42px !important; font-size: 14px !important; border-radius: 10px;}
-            
+            .buton-grup button { height: 32px !important; font-size: 10px !important; padding: 0 2px !important; border-radius: 6px !important; letter-spacing: -0.5px;}
+            #aramaKutusu { grid-column: 1 / 4; width: 100%; height: 42px !important; font-size: 14px !important; padding: 0 14px !important; border-radius: 10px;}
             .header .custom-select-wrapper { height: 34px !important; min-width: 0 !important;}
             .header .custom-select-input { height: 34px !important; font-size: 11px !important; text-align: center; border-radius: 8px; padding: 0 4px !important; letter-spacing: -0.5px;}
             #wrapper-markaFiltre .custom-select-options, #wrapper-inputMarka .custom-select-options, #wrapper-logMarkaSecici .custom-select-options, #wrapper-kategoriFiltre .custom-select-options, #wrapper-logKategoriSecici .custom-select-options, #wrapper-inputKategori .custom-select-options, #wrapper-logAramaKriteri .custom-select-options, #wrapper-logKullaniciSecici .custom-select-options, #wrapper-duzenleKategori .custom-select-options, #wrapper-duzenleMarka .custom-select-options { left: 0; right: 0; width: 100%; max-width: 100%; }
             #wrapper-markaFiltre .custom-select-option, #wrapper-inputMarka .custom-select-option, #wrapper-logMarkaSecici .custom-select-option, #wrapper-kategoriFiltre .custom-select-option, #wrapper-logKategoriSecici .custom-select-option, #wrapper-inputKategori .custom-select-option, #wrapper-logAramaKriteri .custom-select-option, #wrapper-logKullaniciSecici .custom-select-option { font-size: 11.5px; }
-            
+            .baslik-ayrac, .baslik-alt { display: none !important; }
             .masaustu-gorunum { display: none !important; }
             .mobil-gorunum { display: flex !important; flex-direction: column; gap: 4px; width: 100%; }
             .mobil-ust-satir { display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 10px; margin-bottom: 8px;}
@@ -358,9 +322,9 @@
             .soran-ayrac::before { content: " - "; }
             .stok-sayilar { grid-template-columns: repeat(6, 1fr) !important; gap: 3px !important; margin-bottom: 2px;}
             .kutu-baslik { font-size: 8.5px !important; letter-spacing: -0.5px !important; margin-bottom: 2px; }
-            .kutu-input { height: 26px !important; font-size: 14px !important; padding: 0 !important; }
+            .kutu-input { height: 26px !important; font-size: 13px !important; padding: 0 !important; }
             .kutu-btn { height: 20px !important; font-size: 14px !important; border-radius: 4px !important; }
-            .kutu-input-raf { font-size: 12px !important; }
+            .kutu-input-raf { font-size: 11px !important; }
             .modal-content { padding: 22px 18px; width: 92%; }
             #LogModal .modal-content { padding: 20px 12px; width: 96%; }
             .log-arama-konteyner { flex-direction: row; flex-wrap: nowrap; gap: 8px; align-items: stretch; }
@@ -376,8 +340,7 @@
             .log-kod-alani { flex-direction: column; align-items: flex-start; gap: 10px; }
             
             .iki-sutun-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 15px;}
-            .karsilama-kutu { padding: 16px 12px !important; margin: 0 auto 5px auto !important; font-size: 13px !important;}
-            .buyutec-svg { width: 36px; height: 36px; margin-bottom: 10px; }
+            .karsilama-kutu { padding: 12px 8px !important; margin: 0 auto 5px auto !important; font-size: 12px !important;}
             #istatistikAlani { margin-bottom: 8px !important; }
             .istatistik-kutu { padding: 8px 5px !important; }
             .istatistik-kutu-deger { font-size: 18px !important; }
@@ -393,21 +356,9 @@
         
         document.addEventListener("DOMContentLoaded", () => {
             const btnTema = document.getElementById('btnTema');
-            if(btnTema) { btnTema.innerHTML = document.body.classList.contains('light-theme') ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> <span>Koyu</span>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> <span>Açık</span>'; }
+            if(btnTema) { btnTema.innerText = document.body.classList.contains('light-theme') ? 'Koyu' : 'Açık'; }
         });
         
-        // YENİLİK 4: ESC Tuşu ile Arama Kutusunu Temizleme
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const aramaKutusu = document.getElementById('aramaKutusu');
-                if (aramaKutusu) {
-                    aramaKutusu.value = '';
-                    aramaKutusu.blur();
-                    stokGetir(true);
-                }
-            }
-        });
-
         function gununTarihiGGAA() {
             const date = new Date();
             const d = String(date.getDate()).padStart(2, '0');
@@ -481,31 +432,11 @@
 
     <div id="anaUygulama">
         <div class="sabit-ust-alan">
-            <div class="kurumsal-app-bar">
-                <div class="app-bar-sol">
-                    <div class="app-logo">TO</div>
-                    <div class="app-baslik-grup">
-                        <span class="app-baslik">TEMEL OTOMASYON</span>
-                        <span class="app-altbaslik">Stok Yönetimi Paneli</span>
-                    </div>
-                </div>
-                <div class="app-bar-sag">
-                    <div class="durum-gosterge"><span class="durum-nokta"></span> Sistem Aktif</div>
-                    <div class="kullanici-isim" id="ustBarIsim">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span id="ustBarIsimMetin">Kullanıcı</span>
-                    </div>
-                </div>
-            </div>
-            
             <div class="container ust-bosluklu-container">
+                <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> - </span><span class="baslik-alt">STOK LİSTESİ</span></h1>
+
                 <div class="header">
-                    
-                    <div class="arama-wrapper">
-                        <svg class="arama-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
-                        <span class="esc-ipucu">ESC</span>
-                    </div>
+                    <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
                     
                     <div class="custom-select-wrapper" id="wrapper-kategoriFiltre">
                         <input type="text" id="kategoriFiltre" class="custom-select-input" autocomplete="off" placeholder="KATEGORİ" readonly onclick="gosterCustom('kategoriFiltre')">
@@ -532,11 +463,11 @@
                     </div>
                     
                     <div class="buton-grup">
-                        <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> <span>Yeni</span></button>
-                        <button class="btn-excel btn-ghost" onclick="excelDokumuAl()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2M8 17h2M14 13h2M14 17h2"/></svg> <span>Excel</span></button>
-                        <button id="btnLogGoruntule" class="btn-log btn-ghost" onclick="logModalAc()" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>Log</span></button>
-                        <button id="btnTema" class="btn-tema btn-ghost" onclick="temaDegistir()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg> <span>Açık</span></button>
-                        <button class="btn-cikis btn-ghost-kirmizi" onclick="cikisYap()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg> <span>Çıkış</span></button>
+                        <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">+Yeni</button>
+                        <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
+                        <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
+                        <button id="btnTema" class="btn-tema" onclick="temaDegistir()">Tema</button>
+                        <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
                     </div>
                 </div>
             </div>
@@ -623,6 +554,12 @@
             'semragenc2590@gmail.com': 'SEMRA GENÇ',
             'yns.dgn60@icloud.com': 'YUNUS DOĞAN'
         };
+
+        function temaDegistir() {
+            const body = document.body; body.classList.toggle('light-theme');
+            localStorage.setItem('stok_tema', body.classList.contains('light-theme') ? 'light' : 'dark');
+            const btnTema = document.getElementById('btnTema'); if(btnTema) btnTema.innerText = body.classList.contains('light-theme') ? 'Koyu' : 'Açık';
+        }
 
         function kullaniciAdiGetir(email) {
             if(!email) return 'BİLİNMEYEN';
@@ -815,9 +752,6 @@
                 const { data: yData } = await sbClient.from('kullanicilar').select('*').eq('email', aktifKullaniciEmail).single();
                 if(!yData || yData.onayli === false) { await sbClient.auth.signOut(); document.getElementById('authMesaj').innerText = "Hesap onaylanmadı."; return; }
                 let rol = yData.rol ? yData.rol.toLowerCase().trim() : 'okuyucu';
-                
-                document.getElementById('ustBarIsimMetin').innerText = kullaniciAdiGetir(aktifKullaniciEmail).split(' ')[0];
-                
                 if (rol === 'düzenleyici' || rol === 'duzenleyici') { aktifRol = 'duzenleyici'; document.getElementById('btnYeniEkle').style.display = 'flex'; document.getElementById('btnLogGoruntule').style.display = 'flex'; markalariArkaPlandaCek(); } else { aktifRol = 'okuyucu'; }
                 document.getElementById('authEkrani').style.display = 'none'; document.getElementById('anaUygulama').style.display = 'block';
                 baslat(); canliYayinBaslat(); setTimeout(() => { const ar = document.getElementById('aramaKutusu'); if (ar) ar.focus(); }, 300);
@@ -829,10 +763,10 @@
         async function baslat() {
             const liste = document.getElementById('listeGövdesi');
             liste.innerHTML = `
-                <div class="karsilama-kutu yeni-karsilama">
-                    <svg class="buyutec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    <strong class="sistem-hazir-metin">Sistem aktif ve hazır.</strong>
-                    <span style="display:inline-block; margin-bottom: 25px;">Hızlı arama yapmak için klavyeden yazmaya başlayabilirsiniz.</span>
+                <div class="karsilama-kutu">
+                    <span class="buyutec-simge">🔍</span>
+                    <strong class="sistem-hazir-metin">Sistem hazır.</strong>
+                    <span style="display:inline-block; margin-bottom: 25px;">Malzeme kodu yazın veya filtreleri seçin.</span>
                     <div id="istatistikAlani" style="margin-bottom: 10px; font-weight: bold; color: var(--accent-cyan);">İstatistikler Hesaplanıyor...</div>
                     <div id="ozetGridAlani"></div>
                 </div>`;
@@ -964,7 +898,7 @@
                 const aBaslik = isA ? "TESTLİ" : "A.KUTU"; const kBaslik = isA ? "KUTULU" : "K.KUTU"; const rBaslik = isK ? "KASA" : "RAF";
                 const katBilgi = getKategoriStil(kBuyuk); const kHTML = `${katBilgi.ikon} <span>${kBuyuk || '-'}</span>`;
                 const dDurum = aktifRol !== 'duzenleyici' ? 'disabled' : ''; const rAttr = aktifRol !== 'duzenleyici' ? 'readonly' : '';
-                let tHTML = m.guncelleme_tarihi ? `<br><span style="font-size:10px; font-weight:500; white-space:nowrap; letter-spacing:-0.2px; font-family:'Inter',sans-serif;">(En son: ${m.guncelleme_tarihi})</span>` : "";
+                let tHTML = m.guncelleme_tarihi ? `<br><span style="font-size:10px; font-weight:500; white-space:nowrap; letter-spacing:-0.2px;">(En son: ${m.guncelleme_tarihi})</span>` : "";
                 
                 const bGM = aktifRol === 'duzenleyici' ? `<button id="btn_guncelle_masaustu_${m.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${m.id}', '${m._tablo}', '${oKod}', '${fMar}', '${kBuyuk}', this)">GÜNCELLE${tHTML}</button>` : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
                 const bGMob = aktifRol === 'duzenleyici' ? `<button id="btn_guncelle_mobil_${m.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${m.id}', '${m._tablo}', '${oKod}', '${fMar}', '${kBuyuk}', this)">GÜNCELLE${tHTML}</button>` : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
