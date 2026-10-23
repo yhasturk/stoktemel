@@ -270,7 +270,7 @@
         }
         .islem-basarili-buton { animation: yesil-flas-btn 3s ease-out !important; }
         
-        .btn-daha-fazla { background: transparent; color: var(--accent-cyan); border: 1.5px dashed var(--border-color); padding: 14px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+        .btn-daha-fazla { background: transparent; color: var(--accent-cyan); border: 1.5px dashed var(--border-color); padding: 14px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
 
         .custom-select-options { position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999; background: var(--bg-dropdown); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 10px; max-height: 280px; overflow-y: auto; overflow-x: hidden; display: none; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.6); }
         .custom-select-wrapper { position: relative; width: 100%; flex: 1; }
@@ -1110,7 +1110,9 @@
             let bos = []; if (!kat) bos.push("Kategori"); if (!mar) bos.push("Marka"); if (!kod) bos.push("Malzeme Kodu");
             if (bos.length > 0) { uyariGoster(`Eksik alanlar:<br><br><b style='color:var(--accent-blue);'>${bos.join("<br>")}</b>`, 'hata'); return; }
             if (top <= 0) { uyariGoster("Yeni malzeme eklerken adetlerinden en az birini girmelisiniz.", 'hata'); return; }
-            if (kat !== 'KASALAR' && hTablo !== 'alt_kat') { const { data } = await sbClient.from('malzemeler').select('kod').ilike('kod', kod).neq('kategori', 'KASALAR'); if (data && data.length > 0) { uyariGoster("Bu kod sistemde zaten var!", 'hata'); return; } }
+            
+            if (kat !== 'KASALAR') { const { data } = await sbClient.from(hTablo).select('kod').ilike('kod', kod).neq('kategori', 'KASALAR'); if (data && data.length > 0) { uyariGoster("Bu kod sistemde zaten var!", 'hata'); return; } }
+            
             if (!raf) { uyariGoster(`${kat === 'KASALAR' ? "Kasa" : "Raf"} no boş. Devam mı?`, 'onay', () => gYeniVeri(kat, mar, kod, e, a, k, r, raf, hTablo)); return; }
             gYeniVeri(kat, mar, kod, e, a, k, r, raf, hTablo);
         }
