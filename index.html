@@ -30,6 +30,11 @@
             --bg-modal: rgba(39, 39, 42, 0.95);
             --bg-dropdown: rgba(24, 24, 27, 0.95);
             --bg-toast: rgba(39, 39, 42, 0.95);
+            
+            /* Dinamik İstatistik & Başlık Renkleri (Varsayılan Dark) */
+            --theme-stat-1: var(--accent-green);
+            --theme-stat-2: var(--accent-cyan);
+            --theme-ozet-baslik: var(--accent-cyan);
         }
 
         /* 2) SNOW TEMA (Tok ve Mat Gümüş/Gri) */
@@ -45,10 +50,14 @@
             --bg-modal: rgba(248, 250, 252, 0.95);
             --bg-dropdown: rgba(255, 255, 255, 0.95);
             --bg-toast: rgba(255, 255, 255, 0.95);
+            
+            --theme-stat-1: #059669;
+            --theme-stat-2: #0284c7;
+            --theme-ozet-baslik: #0284c7;
         }
         
-        /* 3) BLUE TEMA (Belirgin Çelik / Okyanus Mavisi) */
-        body.theme-blue {
+        /* 3) NAVY TEMA (Belirgin Çelik / Okyanus Mavisi) */
+        body.theme-navy {
             --bg-dark: #172535;       
             --bg-card: #223449;       
             --border-color: #334863;  
@@ -58,6 +67,10 @@
             --bg-modal: rgba(34, 52, 73, 0.95);
             --bg-dropdown: rgba(23, 37, 53, 0.95);
             --bg-toast: rgba(34, 52, 73, 0.95);
+            
+            --theme-stat-1: #38bdf8; /* Açık Mavi */
+            --theme-stat-2: #818cf8; /* Mor/Çivit */
+            --theme-ozet-baslik: #38bdf8;
         }
 
         /* 4) MOSS TEMA (Daha Canlı Orman Yeşili) */
@@ -71,6 +84,10 @@
             --bg-modal: rgba(38, 66, 45, 0.95);
             --bg-dropdown: rgba(27, 46, 32, 0.95);
             --bg-toast: rgba(38, 66, 45, 0.95);
+            
+            --theme-stat-1: #4ade80; /* Fosforlu Yeşil */
+            --theme-stat-2: #a3e635; /* Fıstık Yeşili */
+            --theme-ozet-baslik: #4ade80;
         }
 
         /* 5) WOOD TEMA (Mat Ahşap/Toprak Kahvesi) */
@@ -84,6 +101,10 @@
             --bg-modal: rgba(61, 42, 31, 0.95);
             --bg-dropdown: rgba(44, 30, 22, 0.95);
             --bg-toast: rgba(61, 42, 31, 0.95);
+            
+            --theme-stat-1: #fb923c; /* Turuncu */
+            --theme-stat-2: #facc15; /* Kehribar/Sarı */
+            --theme-ozet-baslik: #fb923c;
         }
 
         /* Snow Tema Spesifik Düzeltmeler */
@@ -104,7 +125,7 @@
         body.theme-snow .kategori-etiket, body.theme-snow .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
         body.theme-snow .btn-ikon { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
         body.theme-snow .btn-ikon:hover { border-color: var(--accent-cyan); color: #0f172a; }
-        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #cbd5e1 !important;}
+        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #475569 !important;} /* Snow'da tema butonu konturu belirginleştirildi */
         body.theme-snow .skeleton-kutu { background: #f1f5f9; background-image: linear-gradient(to right, #f1f5f9 0%, #e2e8f0 20%, #f1f5f9 40%, #f1f5f9 100%); border: 1px solid rgba(0,0,0,0.05); }
         body.theme-snow .custom-select-option:hover { background-color: #e2e8f0; }
         body.theme-snow .sari-yan-son { animation: pulse-sari-metin-light 1.2s infinite ease-in-out !important; }
@@ -169,7 +190,7 @@
         .btn-yeni { color: var(--accent-green); border: 1.5px solid var(--accent-green) !important; }
         .btn-excel { color: var(--accent-orange); border: 1.5px solid var(--accent-orange) !important; }
         .btn-log { color: var(--accent-purple); border: 1.5px solid var(--accent-purple) !important; }
-        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--border-color) !important; }
+        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted) !important; } /* Kontur belirginleştirildi */
         .btn-cikis { color: var(--accent-red); border: 1.5px solid var(--accent-red) !important; }
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
@@ -347,6 +368,8 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
+        .log-arama-konteyner .btn-excel { border-radius: 30px !important; } /* Excel'e Aktar Oval Yapısı */
+        
         #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
         #wrapper-logAramaKriteri .custom-select-input { font-weight: 600; cursor: pointer; }
         #logAramaKutusu { text-transform: uppercase; flex: 1; margin-bottom: 0; padding: 14px; background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 10px; font-size: 14px; outline: none; transition: all 0.2s; }
@@ -366,11 +389,17 @@
         .buyutec-simge { font-size: 32px; display: block; margin-bottom: 15px; opacity: 0.7; }
         .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
         .istatistik-kutu-deger { font-size: 24px; font-weight: 900; }
-        .istatistik-kutu-baslik { font-size: 10px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; }
+        
+        /* Font boyutu masaüstü için büyütüldü */
+        .istatistik-kutu-baslik { font-size: 13px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; color: var(--text-muted); }
+        
+        /* Dinamik Renk Sınıfları */
+        .stat-1 { color: var(--theme-stat-1); }
+        .stat-2 { color: var(--theme-stat-2); }
+        .ozet-baslik { font-size: 12px; font-weight: 800; color: var(--theme-ozet-baslik); margin-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;}
         
         .iki-sutun-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; width: 100%; }
         .ozet-tablo { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 6px; }
-        .ozet-baslik { font-size: 12px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;}
         .ozet-satir { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--bg-ozet-satir); border-radius: 8px; font-size: 13px; }
         .ozet-sol { display: flex; flex-direction: column; gap: 4px; text-align: left;}
         .ozet-sag { text-align: right; }
@@ -443,6 +472,7 @@
             #istatistikAlani { margin-bottom: 8px !important; }
             .istatistik-kutu { padding: 8px 5px !important; }
             .istatistik-kutu-deger { font-size: 18px !important; }
+            /* Mobil boyutta orijinal 9px değeri korundu */
             .istatistik-kutu-baslik { font-size: 9px !important; margin-bottom: 2px !important;}
         }
     </style>
@@ -453,7 +483,7 @@
         const themes = [
             { id: 'dark', label: 'Dark' },
             { id: 'snow', label: 'Snow' },
-            { id: 'blue', label: 'Blue' },
+            { id: 'navy', label: 'Navy' },
             { id: 'moss', label: 'Moss' },
             { id: 'wood', label: 'Wood' }
         ];
@@ -461,6 +491,7 @@
 
         let savedTheme = localStorage.getItem('stok_tema') || 'dark';
         if (savedTheme === 'light') savedTheme = 'snow'; 
+        if (savedTheme === 'blue') savedTheme = 'navy';
 
         activeThemeIndex = themes.findIndex(t => t.id === savedTheme);
         if(activeThemeIndex === -1) activeThemeIndex = 0;
@@ -605,8 +636,8 @@
                     <div class="buton-grup">
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">Yeni</button>
                         <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
-                        <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
                         <button id="btnTema" class="btn-tema" onclick="temaDegistir()"><span id="temaMetin">Dark</span></button>
+                        <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
                         <button class="btn-cikis" onclick="cikisYap()">Çıkış</button>
                     </div>
                 </div>
@@ -691,7 +722,8 @@
             'yhasturk@gmail.com': 'YASİN HASTÜRK',
             'ylmzsukru1998@gmail.com': 'ŞÜKRÜ YILMAZ',
             'semragenc2590@gmail.com': 'SEMRA GENÇ',
-            'yns.dgn60@icloud.com': 'YUNUS DOĞAN'
+            'yns.dgn60@icloud.com': 'YUNUS DOĞAN',
+            'yasoterzi@gmail.com': 'YASİN TERZİ'
         };
 
         function kullaniciAdiGetir(email) {
@@ -941,8 +973,8 @@
                 if (istAlan) {
                     istAlan.innerHTML = `
                         <div style="display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 500px; margin: 0 auto;">
-                            <div class="istatistik-kutu" style="flex: 1; background: var(--bg-card); border: 1.5px solid var(--border-color); padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><div class="istatistik-kutu-baslik" style="color:var(--text-muted);">Toplam Malzeme</div><div class="istatistik-kutu-deger" style="color:var(--accent-green);">${toplamMalzeme}</div></div>
-                            <div class="istatistik-kutu" style="flex: 1; background: var(--bg-card); border: 1.5px solid var(--border-color); padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><div class="istatistik-kutu-baslik" style="color:var(--text-muted);">Toplam Çeşit</div><div class="istatistik-kutu-deger" style="color:var(--accent-cyan);">${kodSet.size}</div></div>
+                            <div class="istatistik-kutu" style="flex: 1; background: var(--bg-card); border: 1.5px solid var(--border-color); padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><div class="istatistik-kutu-baslik">TOPLAM MALZEME</div><div class="istatistik-kutu-deger stat-1">${toplamMalzeme}</div></div>
+                            <div class="istatistik-kutu" style="flex: 1; background: var(--bg-card); border: 1.5px solid var(--border-color); padding: 15px 5px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><div class="istatistik-kutu-baslik">TOPLAM ÇEŞİT</div><div class="istatistik-kutu-deger stat-2">${kodSet.size}</div></div>
                         </div>`;
                 }
 
@@ -1061,7 +1093,7 @@
             mevcutEkranVerileri = veriler; const liste = document.getElementById('listeGövdesi');
             aktifSorulduZamanlayicilari.forEach(clearTimeout); aktifSorulduZamanlayicilari = [];
             if(!veriler || veriler.length === 0) { liste.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Kayıt bulunamadı.</div>'; return; }
-            let tKartlar = ''; const suan = Date.now(); const iIsim = kullaniciAdiGetir(aktifKullaniciEmail).split(' ')[0]; const sorabilirMi = ['FAZLI', 'MUSTAFA', 'ŞÜKRÜ', 'YASİN', 'YASIN'].includes(iIsim) && aktifRol === 'duzenleyici';
+            let tKartlar = ''; const suan = Date.now(); const iIsim = kullaniciAdiGetir(aktifKullaniciEmail).split(' ')[0]; const sorabilirMi = ['FAZLI', 'MUSTAFA', 'ŞÜKRÜ', 'YASİN'].includes(iIsim) && aktifRol === 'duzenleyici';
 
             veriler.forEach(m => {
                 const kBuyuk = temizKarakter(m.kategori); const isK = kBuyuk === 'KASALAR'; const isA = m._tablo === 'alt_kat'; const fMar = temizKarakter(m.marka || '-'); const oKod = (m.kod || '').toLocaleUpperCase('tr-TR');
