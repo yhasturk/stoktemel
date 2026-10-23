@@ -101,10 +101,9 @@
         
         .buton-grup { display: flex; gap: 6px; flex: 1.5; min-width: 280px;}
         
-        /* ŞEFFAF, ÇİZGİLİ, İKONSUZ (OUTLINE) BUTON TASARIMLARI */
+        /* ŞEFFAF İÇLİ VE DIŞ ÇİZGİLİ (OUTLINE) BUTONLAR */
         .buton-grup button { 
             flex: 1; height: 42px; padding: 0 4px; 
-            border: 1px solid transparent; 
             border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12.5px; 
             display: flex; align-items: center; justify-content: center; 
             white-space: nowrap; background: transparent; 
@@ -112,21 +111,21 @@
         }
         @media (hover: hover) { .buton-grup button:hover { transform: translateY(-2px); } }
 
-        .btn-yeni { color: var(--accent-green); border-color: var(--accent-green); }
+        .btn-yeni { color: var(--accent-green); border: 1.5px solid var(--accent-green); }
         .btn-yeni:hover { background: var(--accent-green); color: #fff; }
         
-        .btn-excel { color: var(--accent-orange); border-color: var(--accent-orange); }
+        .btn-excel { color: var(--accent-orange); border: 1.5px solid var(--accent-orange); }
         .btn-excel:hover { background: var(--accent-orange); color: #fff; }
         
-        .btn-log { color: var(--accent-purple); border-color: var(--accent-purple); }
+        .btn-log { color: var(--accent-purple); border: 1.5px solid var(--accent-purple); }
         .btn-log:hover { background: var(--accent-purple); color: #fff; }
         
-        .btn-tema { color: var(--text-muted); border-color: var(--border-color); }
+        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted); }
         .btn-tema:hover { background: var(--text-muted); color: #fff; border-color: var(--text-muted); }
-        body.light-theme .btn-tema { color: #475569; border-color: #cbd5e1; }
-        body.light-theme .btn-tema:hover { background: #475569; color: #fff; border-color: #475569; }
+        body.light-theme .btn-tema { color: #475569; border: 1.5px solid #475569; }
+        body.light-theme .btn-tema:hover { background: #475569; color: #fff; }
         
-        .btn-cikis { color: var(--accent-red); border-color: var(--accent-red); }
+        .btn-cikis { color: var(--accent-red); border: 1.5px solid var(--accent-red); }
         .btn-cikis:hover { background: var(--accent-red); color: #fff; }
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
@@ -319,7 +318,7 @@
             .header { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 6px; row-gap: 12px; width: 100%; align-items: stretch; }
             
             .buton-grup { grid-column: 1 / 4; order: -1; width: 100%; display: flex !important; flex-wrap: nowrap; gap: 4px; min-width: 0 !important; }
-            .buton-grup button { height: 32px !important; font-size: 11px !important; padding: 0 2px !important; border-radius: 6px !important; letter-spacing: -0.5px;}
+            .buton-grup button { height: 32px !important; font-size: 10px !important; padding: 0 2px !important; border-radius: 6px !important; letter-spacing: -0.5px;}
             
             #aramaKutusu { grid-column: 1 / 4; width: 100%; height: 42px !important; font-size: 14px !important; padding: 0 14px !important; border-radius: 10px;}
             .header .custom-select-wrapper { height: 34px !important; min-width: 0 !important;}
@@ -508,6 +507,7 @@
                     </div>
                     
                     <div class="buton-grup">
+                        <!-- İKONLAR KALDIRILDI, SADECE METİN KALDI -->
                         <button id="btnYeniEkle" class="btn-yeni" onclick="yeniKayitModalAc()" style="display:none;">Yeni</button>
                         <button class="btn-excel" onclick="excelDokumuAl()">Excel</button>
                         <button id="btnLogGoruntule" class="btn-log" onclick="logModalAc()" style="display:none;">Log</button>
@@ -523,6 +523,7 @@
         </div>
     </div>
 
+    <!-- MODALLAR -->
     <div id="CustomModal" class="modal" style="z-index: 3000;">
         <div class="modal-content"><h3 id="CustomModalBaslik" style="color: var(--accent-orange);">Sistem Mesajı</h3><p id="CustomModalMesaj"></p><div class="modal-buttons" style="border-top: none; padding-top: 0; margin-top: 0;"><button id="btnCustomTamam" class="btn-kaydet">Tamam</button><button id="btnCustomGeri" class="btn-iptal">Geri Dön</button></div></div>
     </div>
