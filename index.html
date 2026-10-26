@@ -985,14 +985,18 @@
 
                 if (loglar) {
                     loglar.forEach(log => {
-                        if (adetG < 5 && log.islem.includes('GÜNCELLEME')) {
+                        if (adetG < 5 && (log.islem.includes('GÜNCELLEME') || log.islem.includes('ÜRÜN SİLİNDİ'))) {
                             let formatG = `<span class="ozet-kisi">Güncellendi</span>`;
-                            const match = log.islem.match(/Genel Toplam:\s*(\d+)\s*➔\s*(\d+)/) || log.islem.match(/Toplam:\s*(\d+)\s*➔\s*(\d+)/);
-                            if (match) {
-                                let eski = parseInt(match[1]); let yeni = parseInt(match[2]);
-                                if (yeni > eski) formatG = `<span class="ozet-adet-arti">${eski} ➔ ${yeni}</span>`;
-                                else if (yeni < eski) formatG = `<span class="ozet-adet-eksi">${eski} ➔ ${yeni}</span>`;
-                                else formatG = `<span class="ozet-kisi">${eski} ➔ ${yeni}</span>`;
+                            if (log.islem.includes('ÜRÜN SİLİNDİ')) {
+                                formatG = `<span class="ozet-adet-eksi">SİLİNDİ</span>`;
+                            } else {
+                                const match = log.islem.match(/Genel Toplam:\s*(\d+)\s*➔\s*(\d+)/) || log.islem.match(/Toplam:\s*(\d+)\s*➔\s*(\d+)/);
+                                if (match) {
+                                    let eski = parseInt(match[1]); let yeni = parseInt(match[2]);
+                                    if (yeni > eski) formatG = `<span class="ozet-adet-arti">${eski} ➔ ${yeni}</span>`;
+                                    else if (yeni < eski) formatG = `<span class="ozet-adet-eksi">${eski} ➔ ${yeni}</span>`;
+                                    else formatG = `<span class="ozet-kisi">${eski} ➔ ${yeni}</span>`;
+                                }
                             }
                             htmlGuncellemeler += `<div class="ozet-satir"><div class="ozet-sol"><span class="ozet-kod">${log.kod}</span><span class="ozet-kisi">${kullaniciAdiGetir(log.kullanici)}</span></div><div class="ozet-sag">${formatG}</div></div>`;
                             adetG++;
@@ -1213,8 +1217,11 @@
                 let islem = l.islem, kat = l._mapKategori, mar = l._mapMarka;
                 if (islem.startsWith('[CAT:')) { let b = islem.indexOf('] '); if (b !== -1) { kat = l._logIciKategori || l._mapKategori; mar = l._logIciMarka || l._mapMarka; islem = islem.substring(b + 2); } }
                 l._gosterilenKategori = kat; l._gosterilenMarka = mar;
-                const c = islem.includes('YENİ') ? 'var(--accent-green)' : 'var(--accent-blue)';
-                islem = islem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>").replace("YENİ KAYIT: ", "YENİ KAYIT<br>").replace(/->/g, "➔"); let p = islem.split('<br>'); let b = `<span style="color:${c}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${p[0]}</span>`; let a = p.length > 1 ? p.slice(1).join('<br>') : '';
+                
+                const c = islem.includes('YENİ') ? 'var(--accent-green)' : (islem.includes('SİLİNDİ') ? 'var(--accent-red)' : 'var(--accent-blue)');
+                islem = islem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>").replace("YENİ KAYIT: ", "YENİ KAYIT<br>").replace("ÜRÜN SİLİNDİ", "ÜRÜN SİLİNDİ<br>").replace(/->/g, "➔"); 
+                
+                let p = islem.split('<br>'); let b = `<span style="color:${c}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${p[0]}</span>`; let a = p.length > 1 ? p.slice(1).join('<br>') : '';
                 const kB = getKategoriStil(kat);
                 h += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${t}</span><span class="log-kullanici">${u}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${kB.sinif.replace('kategori-etiket', 'log-kategori-etiket')}">${kB.ikon} <span>${kat}</span></span><span class="log-marka">${mar}</span></div><span class="log-kod-span" style="font-size:13.5px;">${(l.kod || '').toLocaleUpperCase('tr-TR')}</span></div><div class="log-islem-detay" style="border-left-color: ${c}">${b}${a}</div></div>`;
             });
