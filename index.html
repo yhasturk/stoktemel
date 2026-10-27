@@ -125,7 +125,7 @@
         body.theme-snow .kategori-etiket, body.theme-snow .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
         body.theme-snow .btn-ikon { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
         body.theme-snow .btn-ikon:hover { border-color: var(--accent-cyan); color: #0f172a; }
-        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #475569 !important;} /* Snow'da tema butonu konturu belirginleştirildi */
+        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #475569 !important;}
         body.theme-snow .skeleton-kutu { background: #f1f5f9; background-image: linear-gradient(to right, #f1f5f9 0%, #e2e8f0 20%, #f1f5f9 40%, #f1f5f9 100%); border: 1px solid rgba(0,0,0,0.05); }
         body.theme-snow .custom-select-option:hover { background-color: #e2e8f0; }
         body.theme-snow .sari-yan-son { animation: pulse-sari-metin-light 1.2s infinite ease-in-out !important; }
@@ -158,6 +158,24 @@
         .ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
 
         .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 0.5px; font-weight: 900; width: 100%; color: var(--text-main); }
+        
+        /* BAŞLIK ANİMASYONU (Kelebek Etkisi) */
+        @keyframes header-soft-akis {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .baslik-ana-metin {
+            background: linear-gradient(to right, var(--text-main) 15%, var(--theme-stat-1) 40%, var(--text-main) 60%, var(--theme-stat-2) 85%, var(--text-main) 100%);
+            background-size: 200% auto;
+            color: var(--text-main); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: header-soft-akis 25s linear infinite;
+            display: inline-block;
+        }
+        
         .baslik-ayrac { color: var(--border-color); font-weight: 300; margin: 0 10px; }
         .baslik-alt { color: var(--accent-cyan); font-weight: 500; letter-spacing: 1px; }
 
@@ -190,7 +208,7 @@
         .btn-yeni { color: var(--accent-green); border: 1.5px solid var(--accent-green) !important; }
         .btn-excel { color: var(--accent-orange); border: 1.5px solid var(--accent-orange) !important; }
         .btn-log { color: var(--accent-purple); border: 1.5px solid var(--accent-purple) !important; }
-        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted) !important; } /* Kontur belirginleştirildi */
+        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted) !important; }
         .btn-cikis { color: var(--accent-red); border: 1.5px solid var(--accent-red) !important; }
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
@@ -604,7 +622,7 @@
     <div id="anaUygulama">
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
-                <h1 class="ana-baslik">TEMEL OTOMASYON<span class="baslik-ayrac"> | </span><span class="baslik-alt">STOK YÖNETİMİ</span></h1>
+                <h1 class="ana-baslik"><span class="baslik-ana-metin">TEMEL OTOMASYON</span><span class="baslik-ayrac"> | </span><span class="baslik-alt">STOK YÖNETİMİ</span></h1>
 
                 <div class="header">
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
