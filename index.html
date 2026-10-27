@@ -125,7 +125,7 @@
         body.theme-snow .kategori-etiket, body.theme-snow .log-kategori-etiket { background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
         body.theme-snow .btn-ikon { background: #f8fafc; border-color: #cbd5e1; color: #475569; }
         body.theme-snow .btn-ikon:hover { border-color: var(--accent-cyan); color: #0f172a; }
-        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #475569 !important;} /* Snow'da tema butonu konturu belirginleştirildi */
+        body.theme-snow .btn-tema { color: #475569; border: 1.5px solid #475569 !important;}
         body.theme-snow .skeleton-kutu { background: #f1f5f9; background-image: linear-gradient(to right, #f1f5f9 0%, #e2e8f0 20%, #f1f5f9 40%, #f1f5f9 100%); border: 1px solid rgba(0,0,0,0.05); }
         body.theme-snow .custom-select-option:hover { background-color: #e2e8f0; }
         body.theme-snow .sari-yan-son { animation: pulse-sari-metin-light 1.2s infinite ease-in-out !important; }
@@ -190,7 +190,7 @@
         .btn-yeni { color: var(--accent-green); border: 1.5px solid var(--accent-green) !important; }
         .btn-excel { color: var(--accent-orange); border: 1.5px solid var(--accent-orange) !important; }
         .btn-log { color: var(--accent-purple); border: 1.5px solid var(--accent-purple) !important; }
-        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted) !important; } /* Kontur belirginleştirildi */
+        .btn-tema { color: var(--text-muted); border: 1.5px solid var(--text-muted) !important; } 
         .btn-cikis { color: var(--accent-red); border: 1.5px solid var(--accent-red) !important; }
         
         .liste-alani { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; padding-bottom: 40px; width: 100%; }
@@ -368,7 +368,7 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
-        .log-arama-konteyner .btn-excel { border-radius: 30px !important; } /* Excel'e Aktar Oval Yapısı */
+        .log-arama-konteyner .btn-excel { border-radius: 30px !important; } 
         
         #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
         #wrapper-logAramaKriteri .custom-select-input { font-weight: 600; cursor: pointer; }
@@ -390,10 +390,8 @@
         .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
         .istatistik-kutu-deger { font-size: 24px; font-weight: 900; }
         
-        /* Font boyutu masaüstü için büyütüldü */
         .istatistik-kutu-baslik { font-size: 13px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; color: var(--text-muted); }
         
-        /* Dinamik Renk Sınıfları */
         .stat-1 { color: var(--theme-stat-1); }
         .stat-2 { color: var(--theme-stat-2); }
         .ozet-baslik { font-size: 12px; font-weight: 800; color: var(--theme-ozet-baslik); margin-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;}
@@ -472,7 +470,6 @@
             #istatistikAlani { margin-bottom: 8px !important; }
             .istatistik-kutu { padding: 8px 5px !important; }
             .istatistik-kutu-deger { font-size: 18px !important; }
-            /* Mobil boyutta orijinal 9px değeri korundu */
             .istatistik-kutu-baslik { font-size: 9px !important; margin-bottom: 2px !important;}
         }
     </style>
@@ -729,8 +726,8 @@
         function kullaniciAdiGetir(email) {
             if(!email) return 'BİLİNMEYEN';
             const lowerEmail = email.toLowerCase().trim();
-            if(kullaniciSozlugu[lowerEmail]) return temizKarakter(kullaniciSozlugu[lowerEmail]);
-            return temizKarakter(lowerEmail.split('@')[0].replace(/\./g, ' '));
+            if(kullaniciSozlugu[lowerEmail]) return kullaniciSozlugu[lowerEmail];
+            return lowerEmail.split('@')[0].replace(/\./g, ' ').toLocaleUpperCase('tr-TR');
         }
 
         function temizKarakter(str) { return str ? str.replace(/i/g, 'I').replace(/İ/g, 'I').replace(/ı/g, 'I').replace(/I/g, 'I').toLocaleUpperCase('tr-TR') : ''; }
@@ -1190,7 +1187,17 @@
         function logAramaOnerileriniGuncelle() {
             const krt = document.getElementById('logAramaKriteriDeğer').value; const k = document.getElementById('logAramaKutusu'); const wu = document.getElementById('wrapper-logKullaniciSecici'); const wk = document.getElementById('wrapper-logKategoriSecici'); const wm = document.getElementById('wrapper-logMarkaSecici');
             k.value = ''; k.style.display = 'none'; wu.style.display = 'none'; wk.style.display = 'none'; wm.style.display = 'none';
-            if (krt === 'kullanici') { wu.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const siralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "ENVER ÇUBUK", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN"]; let users = siralama.map(i => temizKarakter(i)); const dbUsers = [...new Set(tumLoglar.map(l => temizKarakter(kullaniciAdiGetir(l.kullanici))))]; dbUsers.forEach(u => { if(u && u !== 'BİLİNMEYEN' && !users.includes(u)) users.push(u); }); let h = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; users.forEach(u => h += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`); document.getElementById('options-logKullaniciSecici').innerHTML = h; } 
+            if (krt === 'kullanici') { 
+                wu.style.display = 'block'; 
+                document.getElementById('logKullaniciSecici').value = ''; 
+                const siralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "ENVER ÇUBUK", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN", "YASİN TERZİ"]; 
+                let users = [...siralama]; 
+                const dbUsers = [...new Set(tumLoglar.map(l => kullaniciAdiGetir(l.kullanici)))]; 
+                dbUsers.forEach(u => { if(u && u !== 'BİLİNMEYEN' && !users.includes(u)) users.push(u); }); 
+                let h = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; 
+                users.forEach(u => h += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`); 
+                document.getElementById('options-logKullaniciSecici').innerHTML = h; 
+            } 
             else if (krt === 'kategori') { wk.style.display = 'block'; document.getElementById('logKategoriSecici').value = ''; } 
             else if (krt === 'marka') { wm.style.display = 'block'; document.getElementById('logMarkaSecici').value = ''; } 
             else { k.style.display = 'block'; } logIciAra(); 
@@ -1234,7 +1241,7 @@
             if (!a) { loglariCiz(tumLoglar); return; }
             const f = tumLoglar.filter(l => {
                 if (krt === 'kod') { const at = a.replace(/[^A-Z0-9]/g, ''); const tK = temizKarakter(l.kod || '').replace(/[^A-Z0-9]/g, ''); let sI = 0; for (let i = 0; i < tK.length; i++) { let cK = tK[i], cA = at[sI]; if ((cK === 'I' || cK === 'İ') && (cA === 'I' || cA === 'İ')) sI++; else if (cK === cA) sI++; if (sI === at.length) return true; } return false; } 
-                else if (krt === 'marka') { return temizKarakter(l._gosterilenMarka || '').includes(a); } else if (krt === 'kategori') { return (l._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === a; } else if (krt === 'kullanici') { return temizKarakter(kullaniciAdiGetir(l.kullanici)) === a; } return false;
+                else if (krt === 'marka') { return temizKarakter(l._gosterilenMarka || '').includes(a); } else if (krt === 'kategori') { return (l._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === a; } else if (krt === 'kullanici') { return kullaniciAdiGetir(l.kullanici) === a; } return false;
             });
             loglariCiz(f, uAd, kAd);
         }
