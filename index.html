@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
+    
+    <!-- PWA UYGULAMA KİMLİK KARTLARI (YENİ EKLENDİ) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#18181b">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%2306b6d4' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
+    
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e293b'/%3E%3Ctext x='50' y='65' font-size='50' font-family='Arial' font-weight='bold' fill='%2306b6d4' text-anchor='middle'%3ETO%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -31,7 +37,7 @@
             --bg-dropdown: rgba(24, 24, 27, 0.95);
             --bg-toast: rgba(39, 39, 42, 0.95);
             
-            /* Dinamik İstatistik & Başlık Renkleri (Varsayılan Dark) */
+            /* Dinamik İstatistik & Başlık Renkleri */
             --theme-stat-1: var(--accent-green);
             --theme-stat-2: var(--accent-cyan);
             --theme-ozet-baslik: var(--accent-cyan);
@@ -68,8 +74,8 @@
             --bg-dropdown: rgba(23, 37, 53, 0.95);
             --bg-toast: rgba(34, 52, 73, 0.95);
             
-            --theme-stat-1: #38bdf8; /* Açık Mavi */
-            --theme-stat-2: #818cf8; /* Mor/Çivit */
+            --theme-stat-1: #38bdf8; 
+            --theme-stat-2: #818cf8; 
             --theme-ozet-baslik: #38bdf8;
         }
 
@@ -85,8 +91,8 @@
             --bg-dropdown: rgba(27, 46, 32, 0.95);
             --bg-toast: rgba(38, 66, 45, 0.95);
             
-            --theme-stat-1: #4ade80; /* Fosforlu Yeşil */
-            --theme-stat-2: #a3e635; /* Fıstık Yeşili */
+            --theme-stat-1: #4ade80; 
+            --theme-stat-2: #a3e635; 
             --theme-ozet-baslik: #4ade80;
         }
 
@@ -102,8 +108,8 @@
             --bg-dropdown: rgba(44, 30, 22, 0.95);
             --bg-toast: rgba(61, 42, 31, 0.95);
             
-            --theme-stat-1: #fb923c; /* Turuncu */
-            --theme-stat-2: #facc15; /* Kehribar/Sarı */
+            --theme-stat-1: #fb923c; 
+            --theme-stat-2: #facc15; 
             --theme-ozet-baslik: #fb923c;
         }
 
@@ -160,10 +166,7 @@
         .ana-baslik { font-family: 'Montserrat', sans-serif; text-align: center; margin: 0 auto 15px auto; font-size: 26px; letter-spacing: 0.5px; font-weight: 900; width: 100%; color: var(--text-main); }
         
         /* BAŞLIK ANİMASYONU (Kelebek Etkisi) */
-        @keyframes header-soft-akis {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
+        @keyframes header-soft-akis { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
         
         .baslik-ana-metin {
             background: linear-gradient(to right, var(--text-main) 15%, var(--theme-stat-1) 40%, var(--text-main) 60%, var(--theme-stat-2) 85%, var(--text-main) 100%);
@@ -195,7 +198,6 @@
         
         .buton-grup { display: flex; gap: 6px; flex: 1.5; min-width: 280px;}
         
-        /* ANA SAYFA ÜST MENÜ BUTONLARI */
         .buton-grup button { 
             flex: 1; height: 42px; padding: 0 4px; 
             border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 12.5px; 
@@ -386,7 +388,7 @@
         #LogModal .modal-content { max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; }
         #LogModal h3 { border-bottom: none; padding-bottom: 5px; margin-bottom: 15px;}
         .log-arama-konteyner { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; align-items: stretch; }
-        .log-arama-konteyner .btn-excel { border-radius: 30px !important; } /* Excel'e Aktar Oval Yapısı */
+        .log-arama-konteyner .btn-excel { border-radius: 30px !important; }
         
         #wrapper-logAramaKriteri { width: 100%; margin-bottom: 12px; }
         #wrapper-logAramaKriteri .custom-select-input { font-weight: 600; cursor: pointer; }
@@ -408,7 +410,6 @@
         .sistem-hazir-metin { display:block; margin-bottom: 10px; color:var(--text-main); font-weight: bold; }
         .istatistik-kutu-deger { font-size: 24px; font-weight: 900; }
         
-        /* Font boyutu masaüstü için büyütüldü */
         .istatistik-kutu-baslik { font-size: 13px; text-transform: uppercase; margin-bottom: 5px; font-weight: 800; text-align: center; color: var(--text-muted); }
         
         /* Dinamik Renk Sınıfları */
@@ -490,7 +491,6 @@
             #istatistikAlani { margin-bottom: 8px !important; }
             .istatistik-kutu { padding: 8px 5px !important; }
             .istatistik-kutu-deger { font-size: 18px !important; }
-            /* Mobil boyutta orijinal 9px değeri korundu */
             .istatistik-kutu-baslik { font-size: 9px !important; margin-bottom: 2px !important;}
         }
     </style>
@@ -1307,6 +1307,15 @@
                     ws.eachRow((rw, rn) => { rw.eachCell((c, cn) => { c.font={name:'Calibri',size:10}; c.alignment={vertical:'middle',horizontal:'center',wrapText:true}; c.border={top:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}}; if(rn===1) {c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFF00'}}; c.font={name:'Calibri',size:10,bold:true};} else {if(cn===2) c.font={name:'Calibri',size:10,bold:true,color:{argb:'FF06B6D4'}}; if(cn===5) c.font.bold=true;} }); });
                     const bf = await wb.xlsx.writeBuffer(); const bl = new Blob([bf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const l = document.createElement("a"); l.href = URL.createObjectURL(bl); l.download = "sistem_loglari.xlsx"; document.body.appendChild(l); l.click(); document.body.removeChild(l);
                 } catch (e) { alert("Excel oluşturulamadı!"); } btn.disabled = false;
+            });
+        }
+        
+        // PWA UYGULAMASINI ÇALIŞTIRAN SCRIPT (YENİ EKLENDİ)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Servis İşçisi Aktif:', reg.scope))
+                    .catch(err => console.log('PWA Hatası:', err));
             });
         }
     </script>
