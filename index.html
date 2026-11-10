@@ -943,7 +943,6 @@
             if(input.hasAttribute('readonly')) { for (let i = 0; i < options.length; i++) options[i].style.display = "block"; return; }
             const val = input.value.trim();
             
-            /* Sadece Hızlı Düzenle - Marka bölümüne özel ESNEK (Regex) Arama */
             if (id === 'duzenleMarka' && val !== '') {
                 const temizVal = val.replace(/[^A-Z0-9]/ig, '');
                 if (temizVal.length > 0) {
@@ -957,7 +956,6 @@
                 }
             }
 
-            /* Diğer tüm bölümler (Kategori, Yeni Ekle vb.) için klasik standart arama */
             for (let i = 0; i < options.length; i++) { 
                 if (options[i].innerText === "TÜM MARKALAR") { options[i].style.display = "block"; continue; } 
                 options[i].style.display = options[i].innerText.includes(val.toLocaleUpperCase('tr-TR')) ? "block" : "none"; 
@@ -1093,10 +1091,231 @@
                 if (s1) { let q1 = sbClient.from('malzemeler').select('*').limit(aramaLimiti); if(kat) q1 = q1.ilike('kategori', kat); if(mar) q1 = q1.ilike('marka', `%${mar}%`); if(aranan) q1 = q1.filter('kod', aOp, aDeg); if(raf) q1 = q1.filter('raf_no', rOp, rDeg); p1 = q1; }
                 if (s2) { let q2 = sbClient.from('alt_kat').select('*').limit(aramaLimiti); if(kat) q2 = q2.ilike('kategori', kat); if(mar) q2 = q2.ilike('marka', `%${mar}%`); if(aranan) q2 = q2.filter('kod', aOp, aDeg); if(raf) q2 = q2.filter('raf_no', rOp, rDeg); p2 = q2; }
 
-                const [res1, res2] = await Promise.all([p1, p2Harika hocam, onayınızı aldım. Ekranda o tam istediğiniz ferahlığı ve simetriyi sağlayacak kodlamayı hazırladım.
+                const [res1, res2] = await Promise.all([p1, p2]);
+                let dFazla = (res1.data && res1.data.length === aramaLimiti) || (res2.data && res2.data.length === aramaLimiti);
+                let bVeri = [...verileriNormallestir(res1.data || [], 'malzemeler'), ...verileriNormallestir(res2.data || [], 'alt_kat')];
+                bVeri.sort((a, b) => { const isKa = (temizKarakter(a.kategori) === 'KASALAR'); const isKb = (temizKarakter(b.kategori) === 'KASALAR'); if (isKa && !isKb) return 1; if (!isKa && isKb) return -1; let m = (a.marka || '').localeCompare(b.marka || ''); if (m !== 0) return m; let k = (a.kategori || '').localeCompare(b.kategori || ''); if (k !== 0) return k; return (a.kod || '').localeCompare(b.kod || ''); });
 
-Lütfen kodunuzun içindeki `<style>` etiketleri arasında bulunan şu satırı bulun ve yenisiyle değiştirin:
+                ekranaYazdir(bVeri.slice(0, aramaLimiti), dFazla);
+            }, beklemeSuresi); 
+        }
 
-**ESKİ HALİ:**
-```css
-.ust-bosluklu-container { padding-top: 15px; padding-bottom: 15px; }
+        function editModalAc(id, tablo, kod, marka, kategori) { document.getElementById('duzenleUrunId').value = id; document.getElementById('duzenleTablo').value = tablo; document.getElementById('duzenleEskiKategori').value = kategori; document.getElementById('duzenleEskiMarka').value = marka; document.getElementById('duzenleEskiKod').value = kod; document.getElementById('duzenleKategori').value = kategori; document.getElementById('duzenleMarka').value = marka; document.getElementById('duzenleKod').value = kod; document.getElementById('DuzenleModal').style.display = 'flex'; }
+
+        async function duzenleVeriKaydet() {
+            const id = document.getElementById('duzenleUrunId').value; const tablo = document.getElementById('duzenleTablo').value; const esKat = document.getElementById('duzenleEskiKategori').value; const esMar = document.getElementById('duzenleEskiMarka').value; const esKod = document.getElementById('duzenleEskiKod').value;
+            const yeKat = temizKarakter(document.getElementById('duzenleKategori').value.trim()); const yeMar = temizKarakter(document.getElementById('duzenleMarka').value.trim()); const yeKod = document.getElementById('duzenleKod').value.trim().toLocaleUpperCase('tr-TR');
+            if (!yeKat || !yeMar || !yeKod) { uyariGoster("Lütfen alanları doldurun.", "hata"); return; }
+            if (esKat === yeKat && esMar === yeMar && esKod === yeKod) { document.getElementById('DuzenleModal').style.display = 'none'; return; }
+            if (['SÜRÜCÜ', 'MOTOR'].includes(esKat) !== ['SÜRÜCÜ', 'MOTOR'].includes(yeKat)) { uyariGoster("Kategori değişimi tablo yapısını bozar. Ürünü silip baştan ekleyin.", "hata"); return; }
+            
+            if (esKod !== yeKod && yeKat !== 'KASALAR') { 
+                const [r1, r2] = await Promise.all([
+                    sbClient.from('malzemeler').select('id, kod').ilike('kod', yeKod).neq('kategori', 'KASALAR'),
+                    sbClient.from('alt_kat').select('id, kod').ilike('kod', yeKod).neq('kategori', 'KASALAR')
+                ]);
+                let d1 = r1.data || []; let d2 = r2.data || [];
+                if (tablo === 'malzemeler') d1 = d1.filter(i => String(i.id) !== String(id));
+                if (tablo === 'alt_kat') d2 = d2.filter(i => String(i.id) !== String(id));
+                if (d1.length > 0 || d2.length > 0) { 
+                    uyariGoster("Bu kod sisteme kayıtlı!", 'hata'); return; 
+                } 
+            }
+            
+            const btn = document.getElementById('btnDuzenleKaydet'); btn.disabled = true; btn.innerHTML = "Kaydediliyor...";
+            const { error } = await sbClient.from(tablo).update({ kategori: yeKat, marka: yeMar, kod: yeKod }).eq('id', id);
+            if (!error) { let logM = `[CAT:${yeKat}|MRK:${yeMar}] KİMLİK GÜNCELLEMESİ<br>`; let d = []; if (esKat !== yeKat) d.push(`Kategori: ${esKat} ➔ ${yeKat}`); if (esMar !== yeMar) d.push(`Marka: ${esMar} ➔ ${yeMar}`); if (esKod !== yeKod) d.push(`Kod: ${esKod} ➔ ${yeKod}`); await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: logM + d.join(' | '), kod: yeKod }]); if(yeMar) { tumMarkalarSet.add(yeMar); markaOnerileriniDoldur([...tumMarkalarSet].sort()); } document.getElementById('DuzenleModal').style.display = 'none'; stokGetir(true, true); toastGoster("Güncellendi."); } else { toastGoster("Hata: " + error.message, "hata"); }
+            btn.disabled = false; btn.innerHTML = "Güncelle";
+        }
+
+        function ekranaYazdir(veriler, dFazla = false) {
+            mevcutEkranVerileri = veriler; const liste = document.getElementById('listeGövdesi');
+            aktifSorulduZamanlayicilari.forEach(clearTimeout); aktifSorulduZamanlayicilari = [];
+            if(!veriler || veriler.length === 0) { liste.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Kayıt bulunamadı.</div>'; return; }
+            let tKartlar = ''; const suan = Date.now(); const iIsim = kullaniciAdiGetir(aktifKullaniciEmail).split(' ')[0]; const sorabilirMi = ['FAZLI', 'MUSTAFA', 'ŞÜKRÜ', 'YASİN'].includes(iIsim) && aktifRol === 'duzenleyici';
+
+            veriler.forEach(m => {
+                const kBuyuk = temizKarakter(m.kategori); const isK = kBuyuk === 'KASALAR'; const isA = m._tablo === 'alt_kat'; const fMar = temizKarakter(m.marka || '-'); const oKod = (m.kod || '').toLocaleUpperCase('tr-TR');
+                let isS = false, sKisi = "<span>SORULDU</span>", mSoranlar = "";
+                if (m.soruldu_vakti) { const gZ = suan - m.soruldu_vakti; if (gZ < 86400000) { isS = true; if(m.soruldu_kisi) { mSoranlar = m.soruldu_kisi; let d = mSoranlar.split(','); sKisi = d.length === 1 ? `<span>${d[0]}</span>` : `<span>${d[0]}</span><span class="soran-ayrac"></span><span>${d[1]}</span>`; } } }
+                
+                const kSari = isS ? 'sari-yan-son' : '', bSari = isS ? 'sari-yan-son-btn' : ''; const sBtnA = !sorabilirMi ? 'disabled' : `onclick="sorulduOnayIste('${m.id}', '${m._tablo}', '${mSoranlar}')"`;
+                const aBaslik = isA ? "TESTLİ" : "A.KUTU"; const kBaslik = isA ? "KUTULU" : "K.KUTU"; const rBaslik = isK ? "KASA" : "RAF";
+                const katBilgi = getKategoriStil(kBuyuk); const kHTML = `${katBilgi.ikon} <span>${kBuyuk || '-'}</span>`;
+                const dDurum = aktifRol !== 'duzenleyici' ? 'disabled' : ''; const rAttr = aktifRol !== 'duzenleyici' ? 'readonly' : '';
+                let tHTML = m.guncelleme_tarihi ? `<br><span style="font-size:10px; font-weight:500; white-space:nowrap; letter-spacing:-0.2px; font-family:'Inter',sans-serif;">(En son: ${m.guncelleme_tarihi})</span>` : "";
+                
+                const bGM = aktifRol === 'duzenleyici' ? `<button id="btn_guncelle_masaustu_${m.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${m.id}', '${m._tablo}', '${oKod}', '${fMar}', '${kBuyuk}', this)">GÜNCELLE${tHTML}</button>` : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
+                const bGMob = aktifRol === 'duzenleyici' ? `<button id="btn_guncelle_mobil_${m.id}" class="btn-guncelle-tam" onclick="inlineGuncelle('${m.id}', '${m._tablo}', '${oKod}', '${fMar}', '${kBuyuk}', this)">GÜNCELLE${tHTML}</button>` : `<button class="btn-guncelle-tam btn-guncelle-pasif" disabled>İZLEME</button>`;
+
+                let mBut = "", mobBut = "";
+                if (aktifRol === 'duzenleyici') {
+                    const gK = oKod.replace(/'/g, "\\'").replace(/"/g, "&quot;"); const gM = fMar.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+                    const bg = `<button class="btn-ikon" onclick="window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent('${gK}'), '_blank')" title="Google Görseller'de Ara"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></button>`;
+                    const bk = `<button id="btn_kopya_${m.id}" class="btn-ikon" onclick="koduKopyala('${gK}', 'btn_kopya_${m.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
+                    const bkm = `<button id="btn_kopya_m_${m.id}" class="btn-ikon" onclick="koduKopyala('${gK}', 'btn_kopya_m_${m.id}')" title="Kodu Kopyala"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
+                    const bd = `<button class="btn-ikon" onclick="editModalAc('${m.id}', '${m._tablo}', '${gK}', '${gM}', '${kBuyuk}')" title="Düzenle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>`;
+                    const bs = `<button class="btn-ikon btn-sil" onclick="silOnayIste('${m.id}', '${m._tablo}', '${gK}', '${gM}', '${kBuyuk}')" title="Sil"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>`;
+                    mBut = `<div class="islem-buton-grup">${bg}${bk}${bd}${bs}</div>`; mobBut = `${bg}${bkm}${bd}${bs}`;
+                }
+
+                tKartlar += `
+                    <div class="${isK ? 'stok-satir kasa-satir' : 'stok-satir'}">
+                        <div class="stok-baslik-konteyner">
+                            <div class="masaustu-gorunum"><div class="bilgi-sol" style="display:flex; gap:8px;"><span class="${katBilgi.sinif}">${kHTML}</span><span class="marka-etiket">${fMar}</span></div><div class="bilgi-orta"><span class="malzeme-kod ${kSari}" id="kod_${m.id}">${oKod}</span></div><div class="bilgi-sag" style="display:flex; justify-content:flex-end;">${mBut}</div></div>
+                            <div class="mobil-gorunum"><div class="mobil-alt-satir"><div class="mobil-alt-sol"><span class="${katBilgi.sinif}">${kHTML}</span><span class="marka-etiket">${fMar}</span></div><div class="mobil-alt-sag">${mobBut}</div></div><div class="mobil-ust-satir"><span class="malzeme-kod ${kSari}" id="kod_m_${m.id}">${oKod}</span></div></div>
+                        </div>
+                        <div class="stok-sayilar">
+                            <div class="stok-buton-alani mobil-gizle"><div class="kutu-baslik" style="opacity:0;">İŞLEM</div><button id="soruldu_btn_masaustu_${m.id}" class="btn-soruldu ${bSari}" ${sBtnA}>${sKisi}</button></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">2.EL</div><input type="number" id="ikinci_el_${m.id}" class="kutu-input" data-orj="${m.ikinci_el ?? 0}" value="${m.ikinci_el ?? 0}" oninput="inlineToplamHesapla('${m.id}')" ${rAttr}><div class="buton-satiri"><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'ikinci_el', -1)" ${dDurum}>-</button><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'ikinci_el', 1)" ${dDurum}>+</button></div></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">${aBaslik}</div><input type="number" id="acik_${m.id}" class="kutu-input" data-orj="${m._acik_testli ?? 0}" value="${m._acik_testli ?? 0}" oninput="inlineToplamHesapla('${m.id}')" ${rAttr}><div class="buton-satiri"><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'acik', -1)" ${dDurum}>-</button><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'acik', 1)" ${dDurum}>+</button></div></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">${kBaslik}</div><input type="number" id="kapali_${m.id}" class="kutu-input" data-orj="${m._kapali_kutulu ?? 0}" value="${m._kapali_kutulu ?? 0}" oninput="inlineToplamHesapla('${m.id}')" ${rAttr}><div class="buton-satiri"><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'kapali', -1)" ${dDurum}>-</button><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'kapali', 1)" ${dDurum}>+</button></div></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">ARIZALI</div><input type="number" id="arizali_${m.id}" class="kutu-input" style="color:var(--accent-red);" data-orj="${m.arizali ?? 0}" value="${m.arizali ?? 0}" ${rAttr}><div class="buton-satiri"><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'arizali', -1)" ${dDurum}>-</button><button class="kutu-btn" onclick="inlineSayiDegistir('${m.id}', 'arizali', 1)" ${dDurum}>+</button></div></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">TOPLAM</div><input type="number" id="toplam_${m.id}" class="kutu-input" data-orj="${m.toplam ?? 0}" value="${m.toplam ?? 0}" readonly><div class="buton-satiri"><button class="kutu-btn" disabled>-</button><button class="kutu-btn" disabled>+</button></div></div>
+                            <div class="sayi-blogu"><div class="kutu-baslik">${rBaslik}</div><input type="text" id="raf_no_${m.id}" class="kutu-input kutu-input-raf" data-orj="${temizKarakter(m.raf_no)}" value="${temizKarakter(m.raf_no)}" ${rAttr}><div class="buton-satiri"><button class="kutu-btn" disabled>-</button><button class="kutu-btn" disabled>+</button></div></div>
+                            <div class="stok-buton-alani mobil-gizle"><div class="kutu-baslik" style="opacity:0;">İŞLEM</div>${bGM}</div>
+                        </div>
+                        <div class="mobil-guncelle-btn-kutu masaustu-gizle">${bGMob}<button id="soruldu_btn_mobil_${m.id}" class="btn-soruldu ${bSari}" ${sBtnA}>${sKisi}</button></div>
+                    </div>`;
+            });
+            
+            if (dFazla) tKartlar += `<button class="btn-daha-fazla" onclick="dahaFazlaYukle()">⬇️ Daha Fazla Göster ⬇️</button>`;
+            liste.innerHTML = tKartlar;
+            veriler.forEach(m => { if (m.soruldu_vakti && suan - m.soruldu_vakti < 86400000) { const tId = setTimeout(() => { const k=document.getElementById('kod_'+m.id),km=document.getElementById('kod_m_'+m.id),bm=document.getElementById('soruldu_btn_masaustu_'+m.id),bt=document.getElementById('soruldu_btn_mobil_'+m.id); if(k)k.classList.remove('sari-yan-son'); if(km)km.classList.remove('sari-yan-son'); if(bm){bm.classList.remove('sari-yan-son-btn');bm.innerHTML='<span>SORULDU</span>';} if(bt){bt.classList.remove('sari-yan-son-btn');bt.innerHTML='<span>SORULDU</span>';} }, 86400000 - (suan - m.soruldu_vakti)); aktifSorulduZamanlayicilari.push(tId); } });
+        }
+
+        function yeniKayitModalAc() { ['inputKategori', 'inputMarka', 'inputKod', 'inputRafNo'].forEach(i => document.getElementById(i).value = ''); ['inputIkinciEl', 'inputAcikKutu', 'inputKapaliKutu', 'inputArizali'].forEach(i => document.getElementById(i).value = 0); document.getElementById('wrapper-inputKategori').classList.remove('disabled'); kategoriDegisti(); document.getElementById('YeniEkleModal').style.display = 'flex'; }
+
+        async function yeniVeriKaydet() {
+            if(aktifRol !== 'duzenleyici') return;
+            const kat = temizKarakter(document.getElementById('inputKategori').value.trim()); const mar = temizKarakter(document.getElementById('inputMarka').value.trim()); const kod = document.getElementById('inputKod').value.trim().toLocaleUpperCase('tr-TR'); const raf = temizKarakter(document.getElementById('inputRafNo').value.trim());
+            const e = parseInt(document.getElementById('inputIkinciEl').value)||0; const a = parseInt(document.getElementById('inputAcikKutu').value)||0; const k = parseInt(document.getElementById('inputKapaliKutu').value)||0; const r = parseInt(document.getElementById('inputArizali').value)||0; const top = e+a+k+r;
+            const hTablo = (kat === 'SÜRÜCÜ' || kat === 'MOTOR') ? 'alt_kat' : 'malzemeler';
+            let bos = []; if (!kat) bos.push("Kategori"); if (!mar) bos.push("Marka"); if (!kod) bos.push("Malzeme Kodu");
+            if (bos.length > 0) { uyariGoster(`Eksik alanlar:<br><br><b style='color:var(--accent-blue);'>${bos.join("<br>")}</b>`, 'hata'); return; }
+            if (top <= 0) { uyariGoster("Yeni malzeme eklerken adetlerinden en az birini girmelisiniz.", 'hata'); return; }
+            
+            if (kat !== 'KASALAR') { 
+                const [r1, r2] = await Promise.all([
+                    sbClient.from('malzemeler').select('kod').ilike('kod', kod).neq('kategori', 'KASALAR'),
+                    sbClient.from('alt_kat').select('kod').ilike('kod', kod).neq('kategori', 'KASALAR')
+                ]);
+                if ((r1.data && r1.data.length > 0) || (r2.data && r2.data.length > 0)) { 
+                    uyariGoster("Bu kod sistemde zaten var!", 'hata'); return; 
+                } 
+            }
+            
+            if (!raf) { uyariGoster(`${kat === 'KASALAR' ? "Kasa" : "Raf"} no boş. Devam mı?`, 'onay', () => gYeniVeri(kat, mar, kod, e, a, k, r, raf, hTablo)); return; }
+            gYeniVeri(kat, mar, kod, e, a, k, r, raf, hTablo);
+        }
+
+        async function gYeniVeri(kat, mar, kod, e, a, k, r, raf, hTablo) {
+            const btn = document.getElementById('btnModalKaydet'); if(btn) { btn.disabled = true; btn.innerHTML = 'Kaydediliyor...'; }
+            const top = e + a + k; const t = gununTarihiGGAA(); let p = { kategori: kat, marka: mar, kod, ikinci_el: e, arizali: r, toplam: top, raf_no: raf, guncelleme_tarihi: t };
+            if (hTablo === 'alt_kat') { p.testli = a; p.kutulu = k; } else { p.acik_kutu = a; p.kapali_kutu = k; }
+            const { error } = await sbClient.from(hTablo).insert([p]);
+            if (!error) { 
+                await sbClient.from('log_kayitlari').insert([{ kullanici: aktifKullaniciEmail, islem: `[CAT:${kat}|MRK:${mar}] YENİ KAYIT (Toplam: ${top})<br>2.El (${e}) - Açık/Testli (${a})<br>Kapalı/Kutulu (${k}) - Arızalı (${r})`, kod }]);
+                if(mar) { tumMarkalarSet.add(mar); markaOnerileriniDoldur([...tumMarkalarSet].sort()); }
+                document.getElementById('YeniEkleModal').style.display = 'none'; toastGoster("Eklendi."); stokGetir(true, true);
+            } else { uyariGoster("Hata: " + (error.message || "Bilinmeyen Hata"), 'hata'); }
+            setTimeout(() => { if(btn) { btn.disabled = false; btn.innerHTML = 'Kaydet'; } }, 1500);
+        }
+
+        function logAramaOnerileriniGuncelle() {
+            const krt = document.getElementById('logAramaKriteriDeğer').value; const k = document.getElementById('logAramaKutusu'); const wu = document.getElementById('wrapper-logKullaniciSecici'); const wk = document.getElementById('wrapper-logKategoriSecici'); const wm = document.getElementById('wrapper-logMarkaSecici');
+            k.value = ''; k.style.display = 'none'; wu.style.display = 'none'; wk.style.display = 'none'; wm.style.display = 'none';
+            if (krt === 'kullanici') { wu.style.display = 'block'; document.getElementById('logKullaniciSecici').value = ''; const siralama = ["FAZLI ŞEN", "MUSTAFA TEMEL", "YASİN HASTÜRK", "ŞÜKRÜ YILMAZ", "ENVER ÇUBUK", "KÖKSAL DUR", "TALHA ÇADIR", "AHMET SARIKAYA", "GÖKDENİZ BULUT", "BERAT KANAT", "SERHAT ÖZ", "SEMRA GENÇ", "YUNUS DOĞAN"]; let users = [...siralama]; const dbUsers = [...new Set(tumLoglar.map(l => kullaniciAdiGetir(l.kullanici)))]; dbUsers.forEach(u => { if(u && u !== 'BİLİNMEYEN' && !users.includes(u)) users.push(u); }); let h = `<div class="custom-select-option" onclick="secCustomKullanici(this, '')">BİR KULLANICI SEÇİN...</div>`; users.forEach(u => h += `<div class="custom-select-option" onclick="secCustomKullanici(this, '${u}')">${u}</div>`); document.getElementById('options-logKullaniciSecici').innerHTML = h; } 
+            else if (krt === 'kategori') { wk.style.display = 'block'; document.getElementById('logKategoriSecici').value = ''; } 
+            else if (krt === 'marka') { wm.style.display = 'block'; document.getElementById('logMarkaSecici').value = ''; } 
+            else { k.style.display = 'block'; } logIciAra(); 
+        }
+
+        async function logModalAc() {
+            document.getElementById('logAramaKriteri').value = 'Malzeme Koduna Göre'; document.getElementById('logAramaKriteriDeğer').value = 'kod'; document.getElementById('logAramaKutusu').style.display = 'block'; document.getElementById('wrapper-logKullaniciSecici').style.display = 'none'; document.getElementById('wrapper-logKategoriSecici').style.display = 'none'; document.getElementById('wrapper-logMarkaSecici').style.display = 'none'; document.getElementById('logAramaKutusu').value = ''; document.getElementById('LogModal').style.display = 'flex';
+            const logGövdesi = document.getElementById('logGövdesi'); logGövdesi.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:30px;">Kayıtlar çekiliyor...</div>';
+            const { data: lData, error: lError } = await sbClient.from('log_kayitlari').select('*').order('tarih', { ascending: false }).limit(500);
+            if (lError || !lData) { logGövdesi.innerHTML = '<div style="text-align:center; color:var(--accent-red); padding:30px;">Kayıtlar alınamadı!</div>'; return; }
+            const [r1, r2] = await Promise.all([sbClient.from('malzemeler').select('kod, kategori, marka'), sbClient.from('alt_kat').select('kod, kategori, marka')]);
+            const mMap = {}; [...(r1.data||[]), ...(r2.data||[])].forEach(m => { let kat = temizKarakter(m.kategori); let k = (m.kod || '').toLocaleUpperCase('tr-TR'); if(!mMap[k] || kat === 'KASALAR') mMap[k] = { kategori: kat, marka: temizKarakter(m.marka) }; });
+            const { data: uData } = await sbClient.from('kullanicilar').select('email'); let emailler = uData ? uData.map(u => u.email) : [];
+            tumLoglar = lData.map(log => { if(log.kullanici && !emailler.includes(log.kullanici)) emailler.push(log.kullanici); let kat='', mar=''; if (log.islem.startsWith('[CAT:')) { let b = log.islem.indexOf('] '); if (b !== -1) { let c = log.islem.substring(5, b).split('|MRK:'); kat = temizKarakter(c[0]); mar = temizKarakter(c[1]); } } const m = mMap[(log.kod||'').toLocaleUpperCase('tr-TR')] || { kategori: '-', marka: '-' }; return { ...log, _mapKategori: m.kategori, _mapMarka: m.marka, _logIciKategori: kat, _logIciMarka: mar }; });
+            logAramaOnerileriniGuncelle(); loglariCiz(tumLoglar);
+        }
+
+        function loglariCiz(dizi, oMsgI = '', oMsgK = '') {
+            suankiLoglar = dizi; const lG = document.getElementById('logGövdesi');
+            if(dizi.length === 0) { lG.innerHTML = oMsgI ? `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${oMsgI} işlemi yok.</div>` : (oMsgK ? `<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">${oMsgK} kayıt yok.</div>` : '<div style="text-align:center; color:var(--accent-red); padding:30px; font-weight:600;">Log bulunamadı.</div>'); return; }
+            let h = '';
+            dizi.forEach(l => {
+                const t = new Date(l.tarih).toLocaleString('tr-TR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }); const u = kullaniciAdiGetir(l.kullanici);
+                let islem = l.islem, kat = l._mapKategori, mar = l._mapMarka;
+                if (islem.startsWith('[CAT:')) { let b = islem.indexOf('] '); if (b !== -1) { kat = l._logIciKategori || l._mapKategori; mar = l._logIciMarka || l._mapMarka; islem = islem.substring(b + 2); } }
+                l._gosterilenKategori = kat; l._gosterilenMarka = mar;
+                
+                const c = islem.includes('YENİ') ? 'var(--accent-green)' : (islem.includes('SİLİNDİ') ? 'var(--accent-red)' : 'var(--accent-blue)');
+                islem = islem.replace("GÜNCELLEME: ", "GÜNCELLEME<br>").replace("YENİ KAYIT: ", "YENİ KAYIT<br>").replace("ÜRÜN SİLİNDİ", "ÜRÜN SİLİNDİ<br>").replace(/->/g, "➔"); 
+                
+                let p = islem.split('<br>'); let b = `<span style="color:${c}; font-weight:800; font-size:14px; display:block; margin-bottom:6px;">${p[0]}</span>`; let a = p.length > 1 ? p.slice(1).join('<br>') : '';
+                const kB = getKategoriStil(kat);
+                h += `<div class="log-kart"><div class="log-kart-ust"><span class="log-tarih">${t}</span><span class="log-kullanici">${u}</span></div><div class="log-kod-alani"><div class="log-sol-bilgi"><span class="${kB.sinif.replace('kategori-etiket', 'log-kategori-etiket')}">${kB.ikon} <span>${kat}</span></span><span class="log-marka">${mar}</span></div><span class="log-kod-span" style="font-size:13.5px;">${(l.kod || '').toLocaleUpperCase('tr-TR')}</span></div><div class="log-islem-detay" style="border-left-color: ${c}">${b}${a}</div></div>`;
+            });
+            lG.innerHTML = h;
+        }
+
+        function logIciAra() {
+            const krt = document.getElementById('logAramaKriteriDeğer').value; let a = '', uAd = '', kAd = '';
+            if (krt === 'kullanici') { a = document.getElementById('logKullaniciSecici').value; if(a) uAd = a; } else if (krt === 'kategori') { a = document.getElementById('logKategoriSecici').value.trim(); if(a) kAd = a; } else if (krt === 'marka') { a = document.getElementById('logMarkaSecici').value.trim(); } else { a = document.getElementById('logAramaKutusu').value.trim().toLocaleUpperCase('tr-TR'); }
+            if (!a) { loglariCiz(tumLoglar); return; }
+            const f = tumLoglar.filter(l => {
+                if (krt === 'kod') { const at = a.replace(/[^A-Z0-9]/g, ''); const tK = temizKarakter(l.kod || '').replace(/[^A-Z0-9]/g, ''); let sI = 0; for (let i = 0; i < tK.length; i++) { let cK = tK[i], cA = at[sI]; if ((cK === 'I' || cK === 'İ') && (cA === 'I' || cA === 'İ')) sI++; else if (cK === cA) sI++; if (sI === at.length) return true; } return false; } 
+                else if (krt === 'marka') { return temizKarakter(l._gosterilenMarka || '').includes(a); } else if (krt === 'kategori') { return (l._gosterilenKategori || '').toLocaleUpperCase('tr-TR') === a; } else if (krt === 'kullanici') { return kullaniciAdiGetir(l.kullanici) === a; } return false;
+            });
+            loglariCiz(f, uAd, kAd);
+        }
+
+        function excelDokumuAl() {
+            const a = document.getElementById('aramaKutusu').value.trim(); const k = document.getElementById('kategoriFiltre').value.trim(); const m = document.getElementById('markaFiltre').value.trim(); const r = document.getElementById('rafFiltre').value.trim();
+            uyariGoster((!a && !k && !m && !r) ? "TÜM STOK LİSTESİNİ İNDİRMEK İSTİYOR MUSUNUZ?" : "Mevcut filtreyi indirmek istiyor musunuz?", "onay", async () => {
+                const btn = document.querySelector('.btn-excel'); btn.disabled = true; let aD = []; const limit = 1000; 
+                let aOp = 'ilike', aDeg = ''; if (a) { const bA = a.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); const sK = bA.replace(/[^A-Z0-9]/g, '').split(''); if (sK.length > 0) { aDeg = sK.join('[- /.]*'); aOp = 'imatch'; } else { aDeg = `%${bA}%`; aOp = 'ilike'; } }
+                let rOp = 'ilike', rDeg = r ? (r.includes('*') ? r.replace(/\*/g, '%') : r) : '';
+                
+                if (!k || !['SÜRÜCÜ', 'MOTOR'].includes(k)) { let bs=0, dev=true; while(dev) { let q=sbClient.from('malzemeler').select('*').order('id').range(bs, bs+limit-1); if(k) q=q.ilike('kategori', k); if(m) q=q.ilike('marka', `%${m}%`); if(a) q=q.filter('kod', aOp, aDeg); if(r) q=q.filter('raf_no', rOp, rDeg); let { data } = await q; if(data && data.length>0) { aD=aD.concat(verileriNormallestir(data, 'malzemeler')); bs+=limit; if(data.length<limit) dev=false; } else dev=false; } }
+                if (!k || ['SÜRÜCÜ', 'MOTOR'].includes(k)) { let bs=0, dev=true; while(dev) { let q=sbClient.from('alt_kat').select('*').order('id').range(bs, bs+limit-1); if(k) q=q.ilike('kategori', k); if(m) q=q.ilike('marka', `%${m}%`); if(a) q=q.filter('kod', aOp, aDeg); if(r) q=q.filter('raf_no', rOp, rDeg); let { data } = await q; if(data && data.length>0) { aD=aD.concat(verileriNormallestir(data, 'alt_kat')); bs+=limit; if(data.length<limit) dev=false; } else dev=false; } }
+                
+                if (aD.length === 0) { btn.disabled = false; alert("Kayıt bulunamadı!"); return; }
+                try {
+                    const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Stok_Listesi', { views: [{ state: 'frozen', ySplit: 1 }] });
+                    ws.columns = [ { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İKİNCİ EL', key: 'ikinci_el', width: 16 }, { header: 'AÇIK KUTU / TESTLİ', key: 'acik_testli', width: 20 }, { header: 'KAPALI KUTU / KUTULU', key: 'kapali_kutulu', width: 22 }, { header: 'ARIZALI', key: 'arizali', width: 16 }, { header: 'TOPLAM', key: 'toplam', width: 16 }, { header: 'RAF / KASA NO', key: 'raf_no', width: 18 } ];
+                    aD.forEach(x => { ws.addRow({ kategori: temizKarakter(x.kategori)||'', marka: temizKarakter(x.marka)||'-', kod: (x.kod||'').toLocaleUpperCase('tr-TR'), ikinci_el: x.ikinci_el??0, acik_testli: x._acik_testli??0, kapali_kutulu: x._kapali_kutulu??0, arizali: x.arizali??0, toplam: x.toplam??0, raf_no: temizKarakter(x.raf_no)||'' }); });
+                    ws.eachRow((rw, rn) => { rw.eachCell((c, cn) => { c.font={name:'Calibri',size:10}; c.alignment={vertical:'middle',horizontal:'center',wrapText:true}; c.border={top:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}}; if(rn===1) {c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFF00'}}; c.font={name:'Calibri',size:10,bold:true};} else {if(cn===3) c.font.bold=true; if(cn===8) {c.font.bold=true; c.font.color={argb:'FF059669'};}} }); });
+                    const bf = await wb.xlsx.writeBuffer(); const bl = new Blob([bf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const l = document.createElement("a"); l.href = URL.createObjectURL(bl); l.download = "STOK_TEMEL_HIBER_LISTESI.xlsx"; document.body.appendChild(l); l.click(); document.body.removeChild(l);
+                } catch (e) { alert("Excel oluşturulamadı!"); } btn.disabled = false; 
+            });
+        }
+
+        function logExcelDokumuAl() {
+            uyariGoster("Logları Excel'e aktarmak istiyor musunuz?", "onay", async () => {
+                if (!suankiLoglar || suankiLoglar.length === 0) { alert("Log bulunamadı!"); return; } const btn = document.querySelector('.log-arama-konteyner .btn-excel'); btn.disabled = true;
+                try {
+                    const wb = new ExcelJS.Workbook(); const ws = wb.addWorksheet('Sistem_Loglari', { views: [{ state: 'frozen', ySplit: 1 }] });
+                    ws.columns = [ { header: 'TARİH', key: 'tarih', width: 20 }, { header: 'KULLANICI', key: 'kullanici', width: 25 }, { header: 'KATEGORİ', key: 'kategori', width: 16 }, { header: 'MARKA', key: 'marka', width: 20 }, { header: 'MALZEME KODU', key: 'kod', width: 45 }, { header: 'İŞLEM DETAYI', key: 'islem', width: 90 } ];
+                    suankiLoglar.forEach(l => { const t=new Date(l.tarih).toLocaleString('tr-TR'), u=kullaniciAdiGetir(l.kullanici); let islem = l.islem.startsWith('[CAT:') ? l.islem.substring(l.islem.indexOf('] ')+2) : l.islem; ws.addRow({ tarih: t, kullanici: u, kategori: l._gosterilenKategori||'-', marka: l._gosterilenMarka||'-', kod: (l.kod||'').toLocaleUpperCase('tr-TR'), islem: islem.replace(/<br>/g, " | ").replace(/➔/g, "➔") }); });
+                    ws.eachRow((rw, rn) => { rw.eachCell((c, cn) => { c.font={name:'Calibri',size:10}; c.alignment={vertical:'middle',horizontal:'center',wrapText:true}; c.border={top:{style:'thin',color:{argb:'FF000000'}},left:{style:'thin',color:{argb:'FF000000'}},bottom:{style:'thin',color:{argb:'FF000000'}},right:{style:'thin',color:{argb:'FF000000'}}}; if(rn===1) {c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFFFFF00'}}; c.font={name:'Calibri',size:10,bold:true};} else {if(cn===2) c.font={name:'Calibri',size:10,bold:true,color:{argb:'FF06B6D4'}}; if(cn===5) c.font.bold=true;} }); });
+                    const bf = await wb.xlsx.writeBuffer(); const bl = new Blob([bf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const l = document.createElement("a"); l.href = URL.createObjectURL(bl); l.download = "sistem_loglari.xlsx"; document.body.appendChild(l); l.click(); document.body.removeChild(l);
+                } catch (e) { alert("Excel oluşturulamadı!"); } btn.disabled = false;
+            });
+        }
+        
+        // PWA UYGULAMASINI ÇALIŞTIRAN SCRIPT (YENİ EKLENDİ)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA Servis İşçisi Aktif:', reg.scope))
+                    .catch(err => console.log('PWA Hatası:', err));
+            });
+        }
+    </script>
+</body>
+</html>
