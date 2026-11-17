@@ -1085,7 +1085,7 @@
 
                 let p1 = Promise.resolve({ data: [] }), p2 = Promise.resolve({ data: [] });
                 let aOp = 'ilike', aDeg = '';
-                if (aranan) { const bA = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); const sK = bA.replace(/[^A-Z0-9]/g, '').split(''); if (sK.length > 0) { aDeg = sK.join('[- /.]*'); aOp = 'imatch'; } else { aDeg = `%${bA}%`; aOp = 'ilike'; } }
+                if (aranan) { const bA = aranan.toLocaleUpperCase('tr-TR').replace(/i/g, 'I').replace(/İ/g, 'I'); const sK = bA.replace(/[^A-Z0-9]/g, '').split(''); if (sK.length > 0) { aDeg = sK.join('[- /._]*'); aOp = 'imatch'; } else { aDeg = `%${bA}%`; aOp = 'ilike'; } }
                 let rOp = 'ilike', rDeg = raf ? (raf.includes('*') ? raf.replace(/\*/g, '%') : raf) : '';
 
                 if (s1) { let q1 = sbClient.from('malzemeler').select('*').limit(aramaLimiti); if(kat) q1 = q1.ilike('kategori', kat); if(mar) q1 = q1.ilike('marka', `%${mar}%`); if(aranan) q1 = q1.filter('kod', aOp, aDeg); if(raf) q1 = q1.filter('raf_no', rOp, rDeg); p1 = q1; }
