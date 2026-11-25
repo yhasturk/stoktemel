@@ -1007,7 +1007,7 @@
 
             try {
                 let toplamMalzeme = 0; let kodSet = new Set(); const limit = 1000;
-                let bs = 0, dev = true; while(dev) { const { data, error } = await sbClient.from('malzemeler').select('kod, toplam, arizali').order('id').range(bs, bs + limit - 1); if (error) break; if (data && data.length > 0) { data.forEach(i => { toplamMalzeme += (i.toplam || 0) + (i.arizali || 0); if (i.kod) kodSet.add(i.kod.toUpperCase()); }); bs += limit; if (data.length < limit) dev = false; } else { dev = false; } }
+                let bs = 0, dev = true; while(dev) { const { data, error } = await sbClient.from('malzemeler').select('kod, toplam, arizali, kategori').order('id').range(bs, bs + limit - 1); if (error) break; if (data && data.length > 0) { data.forEach(i => { toplamMalzeme += (i.toplam || 0) + (i.arizali || 0); if (i.kod && temizKarakter(i.kategori) !== 'KASALAR') kodSet.add(i.kod.toUpperCase()); }); bs += limit; if (data.length < limit) dev = false; } else { dev = false; } }
                 let bs2 = 0, dev2 = true; while(dev2) { const { data, error } = await sbClient.from('alt_kat').select('kod, testli, kutulu, arizali, ikinci_el').order('id').range(bs2, bs2 + limit - 1); if (error) break; if (data && data.length > 0) { data.forEach(i => { toplamMalzeme += (i.ikinci_el || 0) + (i.testli || 0) + (i.kutulu || 0) + (i.arizali || 0); if (i.kod) kodSet.add(i.kod.toUpperCase()); }); bs2 += limit; if (data.length < limit) dev2 = false; } else { dev2 = false; } }
 
                 const istAlan = document.getElementById('istatistikAlani');
