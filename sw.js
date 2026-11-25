@@ -1,5 +1,5 @@
 // Her yeni güncellemede sadece bu sürüm numarasını artırın (Örn: v2 -> v3 -> v4)
-const CACHE_NAME = 'stok-temel-v3';
+const CACHE_NAME = 'stok-temel-v3.0';
 
 const TEMEL_DOSYALAR = [
     './',
