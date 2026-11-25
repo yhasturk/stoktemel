@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Stok Temel</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- PWA UYGULAMA KİMLİK KARTLARI (YENİ EKLENDİ) -->
     <link rel="manifest" href="manifest.json">
@@ -1311,10 +1315,22 @@
         }
         
         // PWA UYGULAMASINI ÇALIŞTIRAN SCRIPT (YENİ EKLENDİ)
+        // PWA UYGULAMASINI ÇALIŞTIRAN VE OTOMATİK GÜNCELLEYEN SCRIPT
         if ('serviceWorker' in navigator) {
+            let sayfaYenilendi = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!sayfaYenilendi) {
+                    sayfaYenilendi = true;
+                    window.location.reload();
+                }
+            });
+
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA Servis İşçisi Aktif:', reg.scope))
+                navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+                    .then(reg => {
+                        console.log('PWA Servis İşçisi Aktif:', reg.scope);
+                        reg.update();
+                    })
                     .catch(err => console.log('PWA Hatası:', err));
             });
         }
