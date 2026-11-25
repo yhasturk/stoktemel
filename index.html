@@ -185,6 +185,7 @@
         
         .baslik-ayrac { color: var(--border-color); font-weight: 300; margin: 0 10px; }
         .baslik-alt { color: var(--accent-cyan); font-weight: 500; letter-spacing: 1px; }
+        .versiyon-etiket { font-size: 13px; font-weight: 800; color: var(--accent-orange); margin-left: 6px; letter-spacing: 0.5px; vertical-align: middle; }
 
         .header { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; width: 100%; position: relative; z-index: 10;}
         .header button { position: relative; z-index: 10; }
@@ -627,7 +628,7 @@
     <div id="anaUygulama">
         <div class="sabit-ust-alan">
             <div class="container ust-bosluklu-container">
-                <h1 class="ana-baslik"><span class="baslik-ana-metin">TEMEL OTOMASYON</span><span class="baslik-ayrac"> | </span><span class="baslik-alt">STOK YÖNETİMİ</span></h1>
+                <h1 class="ana-baslik"><span class="baslik-ana-metin">TEMEL OTOMASYON</span><span class="baslik-ayrac"> | </span><span class="baslik-alt">STOK YÖNETİMİ<span id="versiyonEtiket" class="versiyon-etiket"></span></span></h1>
 
                 <div class="header">
                     <input type="text" id="aramaKutusu" placeholder="Malzeme Kodu Ara..." oninput="stokGetir()">
@@ -1333,6 +1334,16 @@
                     })
                     .catch(err => console.log('PWA Hatası:', err));
             });
+
+            // sw.js içindeki versiyon numarasını otomatik çekip başlığa yazdır
+        fetch('sw.js', { cache: 'no-store' })
+            .then(r => r.text())
+            .then(txt => {
+                const eslesme = txt.match(/stok-temel-(v[\d.]+)/);
+                const el = document.getElementById('versiyonEtiket');
+                if (eslesme && el) el.innerText = `(${eslesme[1]})`;
+            })
+            .catch(() => {});
         }
     </script>
 </body>
